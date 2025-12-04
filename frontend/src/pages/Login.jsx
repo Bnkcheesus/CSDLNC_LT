@@ -26,17 +26,17 @@ export default function Login() {
           case 'customer':
             navigate('/customer/home');
             break;
-          case 'admin':
-            navigate('/admin/home');
+          case 'manager':
+            navigate('/staff/home');
             break;
           case 'receptionist':
-            navigate('/reception/home');
+            navigate('/staff/home');
             break;
           case 'sales':
-            navigate('/sales/home');
+            navigate('/staff/home');
             break;
           case 'doctor':
-            navigate('/doctor/home');
+            navigate('/staff/home');
             break;
           default:
             navigate('/login');
@@ -54,7 +54,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <div className="min-h-screen flex justify-center items-center bg-indigo-100">
       <div className="bg-white shadow-2xl rounded-xl p-10 w-[380px]">
         <div className="flex justify-center mb-6">
           <img
@@ -78,7 +78,7 @@ export default function Login() {
             <label className="block mb-1 font-semibold">ID</label>
             <input
               type="text"
-              className="w-full border rounded px-3 py-2 focus:ring focus:border-blue-500"
+              className="w-full border rounded px-3 py-2 hover:ring focus:ring focus:border-blue-700"
               value={maTK}
               onChange={(e) => setMaTK(e.target.value)}
               required
@@ -90,7 +90,7 @@ export default function Login() {
             <label className="block mb-1 font-semibold">Password</label>
             <input
               type="password"
-              className="w-full border rounded px-3 py-2 focus:ring focus:border-blue-500"
+              className="w-full border rounded px-3 py-2 hover:ring focus:ring focus:border-blue-700"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

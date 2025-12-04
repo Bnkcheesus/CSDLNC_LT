@@ -11,37 +11,10 @@ export default function App() {
 
         <Route path="/login" element={<Login />} />
         <Route
-          path="/admin/home"
+          path="/staff/home"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <div>Admin Home</div>
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/doctor/home"
-          element={
-            <ProtectedRoute allowedRoles={["doctor"]}>
-              <div>Doctor Home</div>
-            </ProtectedRoute>
-          }
-        />
-        
-        <Route
-          path="/reception/home"
-          element={
-            <ProtectedRoute allowedRoles={["receptionist"]}>
-              <div>Receptionist Home</div>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/sales/home"
-          element={
-            <ProtectedRoute allowedRoles={["sales"]}>
-              <div>Sales Home</div>
+            <ProtectedRoute allowedRoles={["manager", "receptionist", "sales", "doctor"]}>
+              <div>Staff Home</div>
             </ProtectedRoute>
           }
         />

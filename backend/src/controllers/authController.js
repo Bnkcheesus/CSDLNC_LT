@@ -36,7 +36,7 @@ export const login = async (req, res) => {
                 return res.status(404).json({ message: 'Staff details not found' });
             }
             const jobRoleMap = {
-                'QLCN': 'admin',
+                'QLCN': 'manager',
                 'NVTT': 'receptionist',
                 'NVBH': 'sales',
                 'BSTY': 'doctor',
