@@ -12,3 +12,16 @@ export const getCustomerNameByID = async (maTKKH) => {
         throw err;
     }
 };
+
+export const getCustomerDetailsByID = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT * FROM KHACHHANG WHERE MaTKKH = @maTKKH');
+        return result.recordset[0] || null;
+    } catch (err) {
+        console.error('Error getting customer details by ID:', err);
+        throw err;
+    }
+};

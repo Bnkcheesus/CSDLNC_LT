@@ -54,7 +54,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-indigo-100">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="bg-white shadow-2xl rounded-xl p-10 w-[380px]">
         <div className="flex justify-center mb-6">
           <img
