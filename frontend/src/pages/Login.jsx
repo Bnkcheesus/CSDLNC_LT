@@ -101,7 +101,15 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="relative inline-block px-6 py-2 rounded-md bg-blue-700 text-blue-200 font-medium hover:text-white shadow-inner active:translate-y-0.5 transition-colors"
+                  className="
+                    mt-4 py-2 px-6 
+                    bg-blue-500 text-white font-medium
+                    rounded 
+                    shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                    hover:brightness-110
+                    active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                    transition-all
+                  "
                   style={{
                     // slight bevel feel (concave)
                     boxShadow: "inset 0 3px 0 rgba(255,255,255,0.06), inset 0 -3px 0 rgba(0,0,0,0.12)",

@@ -57,6 +57,7 @@ export default function CustomerProfile() {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
             alert("Cập nhật thông tin thành công!");
         } catch (err) {
             console.error("Error updating customer profile:", err);
@@ -139,7 +140,7 @@ export default function CustomerProfile() {
           <div>
             <label className="block font-medium mb-1">Giới tính</label>
             <div className="flex items-center gap-6">
-              {["Nam", "Nữ", "Khác"].map((g) => (
+              {["Nam", "Nữ"].map((g) => (
                 <label key={g} className="flex items-center gap-2">
                   <input
                     type="radio"
