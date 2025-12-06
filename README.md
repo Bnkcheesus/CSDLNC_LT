@@ -20,6 +20,12 @@ PetCareX là hệ thống quản lý dịch vụ chăm sóc thú cưng dành cho
 git clone https://github.com/mattykng/petcarex.git
 cd petcarex
 ```
+hoặc
+```
+cd clone https://github.com/Bnkcheesus/CSDLNC_LT.git
+cd CSDLNC_LT.git
+```
+
 
 ### 2️⃣ Khởi tạo cơ sở dữ liệu SQL Server (nếu máy chưa có database)
 
