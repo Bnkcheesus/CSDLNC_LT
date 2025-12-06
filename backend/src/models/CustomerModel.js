@@ -25,3 +25,31 @@ export const getCustomerDetailsByID = async (maTKKH) => {
         throw err;
     }
 };
+
+export const updateCustomerDetailsByID = async (maTKKH, details) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .input('HoTen', details.name)
+            .input('SDT', details.phone)
+            .input('Email', details.email)
+            .input('CCCD', details.cccd)
+            .input('GioiTinh', details.gender)
+            .input('NgaySinh', details.dob)
+            .query(`
+                UPDATE KHACHHANG
+                SET HoTen = @HoTen,
+                    SDT = @SDT,
+                    Email = @Email,
+                    CCCD = @CCCD,
+                    GioiTinh = @GioiTinh,
+                    NgaySinh = @NgaySinh
+                WHERE MaTKKH = @maTKKH
+            `);
+        return result.rowsAffected[0] > 0;
+    } catch (err) {
+        console.error('Error updating customer details by ID:', err);
+        throw err;
+    }
+};

@@ -1,4 +1,4 @@
-import { getCustomerNameByID, getCustomerDetailsByID } from "../models/CustomerModel.js";
+import { getCustomerNameByID, getCustomerDetailsByID, updateCustomerDetailsByID } from "../models/CustomerModel.js";
 
 export const getCustomerName = async (req, res) => {
     try {
@@ -38,6 +38,27 @@ export const getCustomerDetails = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getCustomerDetails controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateCustomerDetails = async (req, res) => {
+    try {
+        const { maTK } = req.params;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+
+        const updateSuccess = await updateCustomerDetailsByID(maTK, req.body);
+        if (!updateSuccess) {
+            return res.status(500).json({ message: 'Failed to update customer details' });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Customer details updated successfully'
+        });
+    } catch (err) {
+        console.error('Error in updateCustomerDetails controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

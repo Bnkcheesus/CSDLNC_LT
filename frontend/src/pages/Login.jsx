@@ -59,13 +59,13 @@ export default function Login() {
         <div className="mx-auto w-full max-w-[720px] rounded-md border border-gray-300 overflow-hidden shadow-sm">
           {/* header */}
           <div className="bg-blue-200 px-6 py-3 text-center border-b border-gray-300">
-            <h3 className="text-base font-semibold text-gray-800">Đăng Nhập</h3>
+            <h3 className="text-base font-semibold text-gray-800">Đăng nhập</h3>
           </div>
 
           {/* body: form */}
           <div className="bg-white px-8 py-8">
             {error && (
-              <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
+              <div className="bg-red-200 text-red-700 px-4 py-2 mb-4">
                 {error}
               </div>
             )}
@@ -73,18 +73,19 @@ export default function Login() {
             <form onSubmit={handleLogin} className="w-full">
               {/* row: ID */}
               <div className="flex items-center mb-6">
-                <label className="w-36 text-right pr-4 font-medium">ID</label>
+                <label className="w-36 text-right pr-4 font-medium">ID:</label>
                 <input
                   value={maTK}
                   onChange={(e) => setMaTK(e.target.value)}
                   className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-2 focus:border-black"
                   required
                 />
+                <label className="w-20"></label>
               </div>
 
               {/* row: Password */}
               <div className="flex items-center mb-8">
-                <label className="w-36 text-right pr-4 font-medium">Password</label>
+                <label className="w-36 text-right pr-4 font-medium">Password:</label>
                 <input
                   type="password"
                   value={password}
@@ -92,6 +93,7 @@ export default function Login() {
                   className="flex-1 border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-2 focus:border-black"
                   required
                 />
+                <label className="w-20"></label>
               </div>
 
               {/* button (concave style) */}
@@ -99,7 +101,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="relative inline-block px-6 py-2 rounded-md bg-blue-700 text-blue-100 hover:text-white shadow-inner active:translate-y-0.5 transition-colors"
+                  className="relative inline-block px-6 py-2 rounded-md bg-blue-700 text-blue-200 font-medium hover:text-white shadow-inner active:translate-y-0.5 transition-colors"
                   style={{
                     // slight bevel feel (concave)
                     boxShadow: "inset 0 3px 0 rgba(255,255,255,0.06), inset 0 -3px 0 rgba(0,0,0,0.12)",
