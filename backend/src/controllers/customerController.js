@@ -1,4 +1,10 @@
-import { getCustomerNameByID, getCustomerDetailsByID, updateCustomerDetailsByID } from "../models/CustomerModel.js";
+import { 
+    getCustomerNameByID,
+    getCustomerDetailsByID,
+    updateCustomerDetailsByID,
+    getCustomerServiceHistoryByID,
+    getCustomerServiceHistoryDetailByID
+} from "../models/CustomerModel.js";
 
 export const getCustomerName = async (req, res) => {
     try {
@@ -59,6 +65,48 @@ export const updateCustomerDetails = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in updateCustomerDetails controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerServiceHistory = async (req, res) => {
+    try {
+        const { maTK } = req.params;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+        const type = req.query.type || 'all';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const history = await getCustomerServiceHistoryByID(maTK, type, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: history
+        });
+    } catch (err) {
+        console.error('Error in getCustomerServiceHistory controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerServiceHistoryDetail = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+
+        const historyDetail = await getCustomerServiceHistoryDetailByID(maSDDV);
+        if (!historyDetail) {
+            return res.status(404).json({ message: 'Service history detail not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: historyDetail
+        });
+    } catch (err) {
+        console.error('Error in getCustomerServiceHistoryDetail controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

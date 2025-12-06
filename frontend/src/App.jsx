@@ -3,6 +3,8 @@ import Login from './pages/Login.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import CustomerHome from './pages/customer/CustomerHome.jsx';
 import CustomerProfile from './pages/customer/CustomerProfile.jsx';
+import CustomerServiceHistory from './pages/customer/CustomerServiceHistory.jsx';
+//import ServiceHistoryDetail from './pages/customer/ServiceHistoryDetail.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 
 export default function App() {
@@ -36,6 +38,24 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/history"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerServiceHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/history/:maSDDV"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <div>Service History Detail Page (to be implemented)</div>
             </ProtectedRoute>
           }
         />
