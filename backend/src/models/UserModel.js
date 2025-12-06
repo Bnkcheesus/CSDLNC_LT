@@ -48,7 +48,7 @@ export const findStaffByID = async (maTK) => {
         const pool = await getPool();
         const result = await pool.request()
             .input('maTK', maTK)
-            .query('SELECT MaTKNV, ChucVu, FROM NHANVIEN WHERE MaTKNV = @maTK');
+            .query('SELECT MaTKNV, ChucVu FROM NHANVIEN WHERE MaTKNV = @maTK');
         return result.recordset[0];
     } catch (err) {
         console.error('Error finding staff by ID:', err);

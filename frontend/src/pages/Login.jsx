@@ -29,7 +29,10 @@ export default function Login() {
           case 'customer':
             navigate('/customer/home');
             break;
-          case 'manager', 'receptionist', 'sales', 'doctor':
+          case 'manager':
+          case 'receptionist':
+          case 'sales':
+          case 'doctor':
             navigate('/staff/home');
             break;
           default:
@@ -110,12 +113,8 @@ export default function Login() {
                     active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
                     transition-all
                   "
-                  style={{
-                    // slight bevel feel (concave)
-                    boxShadow: "inset 0 3px 0 rgba(255,255,255,0.06), inset 0 -3px 0 rgba(0,0,0,0.12)",
-                  }}
                 >
-                  {loading ? "Đang đăng nhập..." : "Login"}
+                  {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </button>
               </div>
             </form>

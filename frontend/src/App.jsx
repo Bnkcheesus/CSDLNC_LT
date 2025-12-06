@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './pages/Login.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import CustomerHome from './pages/customer/CustomerHome.jsx';
 import CustomerProfile from './pages/customer/CustomerProfile.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import StaffHome from './pages/staff/StaffHome.jsx';
 
 export default function App() {
   return (
@@ -16,7 +17,7 @@ export default function App() {
           path="/staff/home"
           element={
             <ProtectedRoute allowedRoles={["manager", "receptionist", "sales", "doctor"]}>
-              <div>Staff Home</div>
+              <StaffHome />
             </ProtectedRoute>
           }
         />

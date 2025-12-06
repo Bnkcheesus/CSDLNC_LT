@@ -7,6 +7,8 @@ const MENU_CONFIG = [
     { label: "Vaccine", to: "/customer/vaccines", roles: ["customer"] },
     { label: "Thú cưng", to: "/customer/pets", roles: ["customer"] },
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
+    { label: "Hoá đơn dịch vụ", to: "/staff/service-invoices", roles: ["receptionist"] },
+    { label: "Hoá đơn mua hàng", to: "/staff/sales-invoices", roles: ["sales"] },
 ];
 
 export default function Navbar() {
