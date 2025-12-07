@@ -51,7 +51,7 @@ export default function CustomerExaminationDetail() {
             }
         };
         fetchDetail();
-    }, [maSDDV]);
+    }, [maSDDV, token]);
 
     const handleRate = async (e) => {
         e.preventDefault();
