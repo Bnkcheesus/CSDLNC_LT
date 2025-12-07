@@ -179,6 +179,69 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
     }
 };
 
+export const getCustomerVaccinationDetailByID = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                TP.MaSDDV,
+                HD.MaHD,
+                HD.NgayLap,
+                CN.TenCN,
+                TC.TenTC,
+                NV.HoTen AS TenBS,
+                SDV.TongTienDV
+            FROM TIEMPHONG TP
+            JOIN SUDUNGDICHVU SDV ON TP.MaSDDV = SDV.MaSDDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            JOIN THUCUNG TC ON TP.MaTC = TC.MaTC
+            JOIN NHANVIEN NV ON TP.MaBS = NV.MaTKNV
+            WHERE TP.MaSDDV = @maSDDV
+        `;
+
+        const toaTiemQuery = `
+            SELECT 
+                SP.MaSP,
+                SP.TenSP,
+                CT.LieuLuong,
+                DG.MaGoi
+            FROM CHITIETTIEMPHONG CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            LEFT JOIN DANGKYGOITIEM DG ON CT.MaDK = DG.MaDK
+            WHERE CT.MaSDDV = @maSDDV
+        `;
+
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+
+        const toaTiemResult = await pool.request()
+            .input("maSDDV", maSDDV)
+            .query(toaTiemQuery);
+
+        if (result.recordset.length === 0) return null;
+
+        const detail = result.recordset[0];
+
+        return {
+            general: {
+                MaSDDV: detail.MaSDDV,
+                MaHD: detail.MaHD,
+                NgayLap: detail.NgayLap,
+                TenCN: detail.TenCN,
+                TenTC: detail.TenTC,
+                TenBS: detail.TenBS,
+                TongTien: detail.TongTienDV
+            },
+            toaTiem: toaTiemResult.recordset || [],
+        };
+    } catch (err) {
+        console.error('Error getting customer vaccination detail by ID:', err);
+        throw err;
+    }
+};
+
 export const getServiceRatingByID = async (maSDDV) => {
     try {
         const pool = await getPool();

@@ -4,6 +4,7 @@ import {
     updateCustomerDetailsByID,
     getCustomerServiceHistoryByID,
     getCustomerExaminationDetailByID,
+    getCustomerVaccinationDetailByID,
     getServiceRatingByID,
     saveServiceRatingByID
 } from "../models/CustomerModel.js";
@@ -113,6 +114,27 @@ export const getCustomerExaminationDetail = async (req, res) => {
     }
 };
 
+export const getCustomerVaccinationDetail = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+
+        const vaccinationDetail = await getCustomerVaccinationDetailByID(maSDDV);
+        if (!vaccinationDetail) {
+            return res.status(404).json({ message: 'Vaccination detail not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: vaccinationDetail
+        });
+    } catch (err) {
+        console.error('Error in getCustomerVaccinationDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 export const getServiceRating = async (req, res) => {
     try {
         const { maSDDV } = req.params;
@@ -130,7 +152,6 @@ export const getServiceRating = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
-
 
 export const saveServiceRating = async (req, res) => {
     try {

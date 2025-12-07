@@ -5,6 +5,7 @@ import CustomerHome from './pages/customer/CustomerHome.jsx';
 import CustomerProfile from './pages/customer/CustomerProfile.jsx';
 import CustomerServiceHistory from './pages/customer/CustomerServiceHistory.jsx';
 import CustomerExaminationDetail from './pages/customer/CustomerExaminationDetail.jsx';
+import CustomerVaccinationDetail from './pages/customer/CustomerVaccinationDetail.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 
 export default function App() {
@@ -56,6 +57,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerExaminationDetail />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/tiemphong/:maSDDV"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerVaccinationDetail />
             </ProtectedRoute>
           }
         />

@@ -5,6 +5,7 @@ import {
     updateCustomerDetails,
     getCustomerServiceHistory,
     getCustomerExaminationDetail,
+    getCustomerVaccinationDetail,
     getServiceRating,
     saveServiceRating
 } from '../controllers/customerController.js';
@@ -17,6 +18,7 @@ router.get('/:maTK', authMiddleware, getCustomerDetails);
 router.put('/:maTK', authMiddleware, updateCustomerDetails);
 router.get('/:maTK/history', authMiddleware, getCustomerServiceHistory);
 router.get('/khambenh/:maSDDV', authMiddleware, getCustomerExaminationDetail);
+router.get('/tiemphong/:maSDDV', authMiddleware, getCustomerVaccinationDetail);
 router.get('/rating/:maSDDV', authMiddleware, getServiceRating);
 router.post('/rating/:maSDDV', authMiddleware, saveServiceRating);
 
