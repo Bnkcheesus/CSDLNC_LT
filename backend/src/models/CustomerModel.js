@@ -122,7 +122,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 TC.TenTC,
                 NV.HoTen AS TenBS,
                 KB.TrieuChung,
-                KB.CHuanDoan,
+                KB.ChuanDoan,
                 KB.NgayTaiKham,
                 SDV.TongTienDV
             FROM KHAMBENH KB
@@ -167,7 +167,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 TenTC: detail.TenTC,
                 TenBS: detail.TenBS,
                 TrieuChung: detail.TrieuChung,
-                ChuanDoan: detail.CHuanDoan,
+                ChuanDoan: detail.ChuanDoan,
                 NgayTaiKham: detail.NgayTaiKham,
                 TongTien: detail.TongTienDV
             },
@@ -238,6 +238,65 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
         };
     } catch (err) {
         console.error('Error getting customer vaccination detail by ID:', err);
+        throw err;
+    }
+};
+
+export const getCustomerPurchaseDetailByID = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                MH.MaSDDV,
+                HD.MaHD,
+                HD.NgayLap,
+                CN.TenCN,
+                NV.HoTen AS TenNV,
+                SDV.TongTienDV
+            FROM MUAHANG MH
+            JOIN SUDUNGDICHVU SDV ON MH.MaSDDV = SDV.MaSDDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            JOIN NHANVIEN NV ON MH.MaNVBH = NV.MaTKNV
+            WHERE MH.MaSDDV = @maSDDV
+        `;
+
+        const hoaDonMuaQuery = `
+            SELECT 
+                SP.MaSP,
+                SP.TenSP,
+                CT.SoLuong
+            FROM CHITIETMUAHANG CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            WHERE CT.MaSDDV = @maSDDV
+        `;
+
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+        
+        const hoaDonMuaResult = await pool.request()
+            .input("maSDDV", maSDDV)
+            .query(hoaDonMuaQuery);
+
+        if (result.recordset.length === 0) return null;
+
+        const detail = result.recordset[0];
+
+        return {
+            general: {
+                MaSDDV: detail.MaSDDV,
+                MaHD: detail.MaHD,
+                NgayLap: detail.NgayLap,
+                TenCN: detail.TenCN,
+                TenTC: detail.TenTC,
+                TenNV: detail.TenNV,
+                TongTien: detail.TongTienDV
+            },
+            hoaDonMua: hoaDonMuaResult.recordset || [],
+        };
+    } catch (err) {
+        console.error('Error getting customer purchase detail by ID:', err);
         throw err;
     }
 };

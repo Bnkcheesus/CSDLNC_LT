@@ -5,6 +5,7 @@ import {
     getCustomerServiceHistoryByID,
     getCustomerExaminationDetailByID,
     getCustomerVaccinationDetailByID,
+    getCustomerPurchaseDetailByID,
     getServiceRatingByID,
     saveServiceRatingByID
 } from "../models/CustomerModel.js";
@@ -131,6 +132,27 @@ export const getCustomerVaccinationDetail = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getCustomerVaccinationDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerPurchaseDetail = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+
+        const purchaseDetail = await getCustomerPurchaseDetailByID(maSDDV);
+        if (!purchaseDetail) {
+            return res.status(404).json({ message: 'Purchase detail not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: purchaseDetail
+        });
+    } catch (err) {
+        console.error('Error in getCustomerPurchaseDetail controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
