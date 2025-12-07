@@ -110,38 +110,112 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
     }
 };
 
-export const getCustomerServiceHistoryDetailByID = async (maSDDV) => {
+export const getCustomerExaminationDetailByID = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
             SELECT 
-                SDV.MaSDDV,
-                SDV.LoaiDV,
-                SDV.TongTienDV,
+                KB.MaSDDV,
+                HD.MaHD,
                 HD.NgayLap,
                 CN.TenCN,
-                NV.TenNV AS NhanVien,
                 TC.TenTC,
+                NV.HoTen AS TenBS,
                 KB.TrieuChung,
                 KB.CHuanDoan,
-                KB.NgayTaiKham
-            FROM SUDUNGDICHVU SDV
+                KB.NgayTaiKham,
+                SDV.TongTienDV,
+
+                DG.Diem,
+                DG.ThaiDoNhanVien,
+                DG.MucDoHaiLong,
+                DG.BinhLuan
+
+            FROM KHAMBENH KB
+            JOIN SUDUNGDICHVU SDV ON KB.MaSDDV = SDV.MaSDDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-            LEFT JOIN NHANVIEN NV ON NV.MaTKNV = HD.MaTKNV
-            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
-            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
-            LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
-            WHERE SDV.MaSDDV = @maSDDV
+            JOIN THUCUNG TC ON KB.MaTC = TC.MaTC
+            JOIN NHANVIEN NV ON KB.MaBS = NV.MaTKNV
+            LEFT JOIN DANHGIA DG ON DG.MaSDDV = KB.MaSDDV
+
+            WHERE KB.MaSDDV = @maSDDV
+        `;
+
+        const toaThuocQuery = `
+            SELECT 
+                SP.TenSP,
+                CT.SoLuong,
+                CT.LieuLuong,
+                CT.CachDung
+            FROM CHITIETTOATHUOC CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            WHERE CT.MaSDDV = @maSDDV
         `;
 
         const result = await pool.request()
             .input('maSDDV', maSDDV)
             .query(query);
 
-        return result.recordset[0] || null;
+        const toaThuocResult = await pool.request()
+            .input("maSDDV", maSDDV)
+            .query(toaThuocQuery);
+
+        if (result.recordset.length === 0) return null;
+
+        const detail = result.recordset[0];
+
+        return {
+            general: {
+                MaSDDV: detail.MaSDDV,
+                MaHD: detail.MaHD,
+                NgayLap: detail.NgayLap,
+                TenCN: detail.TenCN,
+                TenTC: detail.TenTC,
+                TenBS: detail.TenBS,
+                TrieuChung: detail.TrieuChung,
+                ChuanDoan: detail.CHuanDoan,
+                NgayTaiKham: detail.NgayTaiKham,
+                TongTien: detail.TongTienDV
+            },
+            rating: detail.Diem ? {
+                Diem: detail.Diem,
+                ThaiDoNhanVien: detail.ThaiDoNhanVien,
+                MucDoHaiLong: detail.MucDoHaiLong,
+                BinhLuan: detail.BinhLuan
+            } : null,
+            toaThuoc: toaThuocResult.recordset || [],
+        };
     } catch (err) {
-        console.error('Error getting customer service history detail by ID:', err);
+        console.error('Error getting customer examination detail by ID:', err);
+        throw err;
+    }
+};
+
+export const saveServiceRatingByID = async (maSDDV, rating) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query("SELECT MaSDDV FROM DANHGIA WHERE MaSDDV = @maSDDV");
+
+        if (result.recordset.length > 0) {
+            throw new Error("Rating already exists for this service.");
+        }
+
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('diem', rating.diem)
+            .input('thaiDoNhanVien', rating.thaiDoNhanVien)
+            .input('mucDoHaiLong', rating.mucDoHaiLong)
+            .input('binhLuan', rating.binhLuan)
+            .query(`
+                INSERT INTO DANHGIA (MaSDDV, Diem, ThaiDoNhanVien, MucDoHaiLong, BinhLuan)
+                VALUES (@maSDDV, @diem, @thaiDoNhanVien, @mucDoHaiLong, @binhLuan)
+            `);
+        return true;
+    } catch (err) {
+        console.error('Error saving service rating:', err);
         throw err;
     }
 };

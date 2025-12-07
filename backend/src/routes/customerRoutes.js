@@ -4,7 +4,8 @@ import {
     getCustomerDetails,
     updateCustomerDetails,
     getCustomerServiceHistory,
-    getCustomerServiceHistoryDetail
+    getCustomerExaminationDetail,
+    saveServiceRating
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -14,6 +15,7 @@ router.get('/:maTK/name', authMiddleware, getCustomerName);
 router.get('/:maTK', authMiddleware, getCustomerDetails);
 router.put('/:maTK', authMiddleware, updateCustomerDetails);
 router.get('/:maTK/history', authMiddleware, getCustomerServiceHistory);
-router.get('/history/:maSDDV', authMiddleware, getCustomerServiceHistoryDetail);
+router.get('/khambenh/:maSDDV', authMiddleware, getCustomerExaminationDetail);
+router.post('/khambenh/:maSDDV/rating', authMiddleware, saveServiceRating);
 
 export default router;

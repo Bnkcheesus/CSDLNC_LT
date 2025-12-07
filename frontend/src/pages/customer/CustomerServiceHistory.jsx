@@ -56,15 +56,27 @@ export default function CustomerServiceHistory() {
         setPage(1); // Reset to first page on type change
     }
 
-    const handleViewDetails = (maSDDV) => {
-        navigate(`/customer/history/${maSDDV}`);
+    const handleViewDetails = (loaiDV, maSDDV) => {
+        switch (loaiDV) {
+            case "KB":
+                navigate(`/customer/khambenh/${maSDDV}`);
+                break;
+            case "TP":
+                navigate(`/customer/tiemphong/${maSDDV}`);
+                break;
+            case "MH":
+                navigate(`/customer/muahang/${maSDDV}`);
+                break;
+            default:
+                break;
+        }
     }
 
   return (
     <div className="min-h-screen bg-white text-sm">
       <Header />
       <Navbar />
-      <PageTitle title="Lịch sử dịch vụ" />
+      <PageTitle title="Dịch vụ" />
 
       <ServiceTypeBar active={type} onChange={handleTypeChange} />
 
@@ -115,7 +127,7 @@ export default function CustomerServiceHistory() {
                         <td className="px-3 py-3 text-sm">{r.TenTC || "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
                           <button
-                            onClick={() => handleViewDetails(r.MaSDDV)}
+                            onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}
                             className="inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100"
                             title="Xem chi tiết"
                           >

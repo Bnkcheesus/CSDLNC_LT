@@ -3,7 +3,8 @@ import {
     getCustomerDetailsByID,
     updateCustomerDetailsByID,
     getCustomerServiceHistoryByID,
-    getCustomerServiceHistoryDetailByID
+    getCustomerExaminationDetailByID,
+    saveServiceRatingByID
 } from "../models/CustomerModel.js";
 
 export const getCustomerName = async (req, res) => {
@@ -90,23 +91,42 @@ export const getCustomerServiceHistory = async (req, res) => {
     }
 };
 
-export const getCustomerServiceHistoryDetail = async (req, res) => {
+export const getCustomerExaminationDetail = async (req, res) => {
     try {
         const { maSDDV } = req.params;
         if (!maSDDV) {
             return res.status(400).json({ message: 'MaSDDV is required' });
         }
 
-        const historyDetail = await getCustomerServiceHistoryDetailByID(maSDDV);
-        if (!historyDetail) {
-            return res.status(404).json({ message: 'Service history detail not found' });
+        const examinationDetail = await getCustomerExaminationDetailByID(maSDDV);
+        if (!examinationDetail) {
+            return res.status(404).json({ message: 'Examination detail not found' });
         }
         return res.status(200).json({
             success: true,
-            data: historyDetail
+            data: examinationDetail
         });
     } catch (err) {
-        console.error('Error in getCustomerServiceHistoryDetail controller:', err);
+        console.error('Error in getCustomerExaminationDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const saveServiceRating = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const rating = req.body;
+
+        await saveServiceRatingByID(maSDDV, rating);
+        return res.status(200).json({
+            success: true,
+            message: 'Rating saved successfully'
+        });
+    } catch (err) {
+        console.error('Error in saveServiceRating controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

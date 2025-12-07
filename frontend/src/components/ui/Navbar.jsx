@@ -3,7 +3,16 @@ import { Link, useLocation } from "react-router-dom";
 const MENU_CONFIG = [
     { label: "Trang chủ", to: "/customer/home", roles: ["customer"] },
     { label: "Trang chủ", to: "/staff/home", roles: ["manager", "receptionist", "sales", "doctor"] },
-    { label: "Dịch vụ", to: "/customer/history", roles: ["customer"] },
+    {
+        label: "Dịch vụ",
+        to: "/customer/history",
+        roles: ["customer"],
+        relatedPaths: [
+            "/customer/khambenh",
+            "/customer/tiemphong",
+            "/customer/muahang"
+        ]
+    },
     { label: "Vaccine", to: "/customer/vaccines", roles: ["customer"] },
     { label: "Thú cưng", to: "/customer/pets", roles: ["customer"] },
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
@@ -26,7 +35,9 @@ export default function Navbar() {
       <div className="max-w-[1200px] mx-auto px-4">
         <ul className="flex gap-10 py-3">
           {filteredMenu.map((item) => {
-            const isActive = location.pathname === item.to;
+            const isActive =
+                location.pathname === item.to ||
+                item.relatedPaths?.some(prefix => location.pathname.startsWith(prefix));
             return (
               <li key={item.to}>
                 <Link
