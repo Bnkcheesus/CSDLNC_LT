@@ -1,0 +1,69 @@
+import React, { useEffect, useState } from "react";
+import { User, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+export default function Header() {
+    const [hoTen, setHoTen] = useState("");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const maTK = localStorage.getItem("maTK");
+                if (!maTK) return;
+
+                const res = await axios.get(`http://localhost:5000/api/user/${maTK}/name`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                setHoTen(res.data.hoTen);
+            } catch (err) {
+                console.error("Error fetching user name:", err);
+            }
+        };
+        fetchUser();
+    }, []);
+
+    const handleAuthClick = () => {
+        if (localStorage.getItem("token")) {
+            // Logout
+            localStorage.clear();
+            setHoTen("");
+            navigate("/login");
+        } else {
+            // Navigate to login
+            navigate("/login");
+        }
+    };
+
+  return (
+    <header className="w-full bg-gray-800 text-white text-sm">
+      <div className="max-w-[1200px] mx-auto px-4 py-2 flex items-center gap-4">
+        {/* left: user icon + name */}
+        <div className="flex items-center gap-2">
+          <div className="p-1 rounded-sm bg-gray-700">
+            <User size={16} />
+          </div>
+          <div className="text-gray-200">{hoTen ? hoTen : ""}</div>
+        </div>
+
+        {/* spacer */}
+        <div className="flex-1" />
+
+        {/* right: lock icon + login/logout text */}
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:text-blue-400 transition-colors"
+          onClick={handleAuthClick}
+          title={localStorage.getItem("token") ? "Logout" : "Login"}
+        >
+          <Lock size={16} />
+          <span className="underline-offset-2">
+            {localStorage.getItem("token") ? "Logout" : "Login"}
+          </span>
+        </div>
+      </div>
+    </header>
+  );
+}
