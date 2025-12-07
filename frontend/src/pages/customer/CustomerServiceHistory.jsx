@@ -129,10 +129,10 @@ export default function CustomerServiceHistory() {
                           <button
                             onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}
                             className="inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100"
-                            title="Xem chi tiết"
+                            title="Xem chi tiết và đánh giá"
                           >
                             <Eye size={16} />
-                            <span className="sr-only">Xem chi tiết</span>
+                            <span className="sr-only">Xem chi tiết và đánh giá</span>
                           </button>
                         </td>
                       </tr>

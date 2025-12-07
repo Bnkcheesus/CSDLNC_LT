@@ -4,6 +4,7 @@ import {
     updateCustomerDetailsByID,
     getCustomerServiceHistoryByID,
     getCustomerExaminationDetailByID,
+    getServiceRatingByID,
     saveServiceRatingByID
 } from "../models/CustomerModel.js";
 
@@ -112,12 +113,32 @@ export const getCustomerExaminationDetail = async (req, res) => {
     }
 };
 
+export const getServiceRating = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+
+        const rating = await getServiceRatingByID(maSDDV);
+        return res.status(200).json({
+            success: true,
+            data: rating
+        });
+    } catch (err) {
+        console.error('Error in getServiceRating controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
 export const saveServiceRating = async (req, res) => {
     try {
         const { maSDDV } = req.params;
         if (!maSDDV) {
             return res.status(400).json({ message: 'MaSDDV is required' });
         }
+        
         const rating = req.body;
 
         await saveServiceRatingByID(maSDDV, rating);

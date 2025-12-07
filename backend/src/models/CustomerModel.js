@@ -124,26 +124,19 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 KB.TrieuChung,
                 KB.CHuanDoan,
                 KB.NgayTaiKham,
-                SDV.TongTienDV,
-
-                DG.Diem,
-                DG.ThaiDoNhanVien,
-                DG.MucDoHaiLong,
-                DG.BinhLuan
-
+                SDV.TongTienDV
             FROM KHAMBENH KB
             JOIN SUDUNGDICHVU SDV ON KB.MaSDDV = SDV.MaSDDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
             JOIN THUCUNG TC ON KB.MaTC = TC.MaTC
             JOIN NHANVIEN NV ON KB.MaBS = NV.MaTKNV
-            LEFT JOIN DANHGIA DG ON DG.MaSDDV = KB.MaSDDV
-
             WHERE KB.MaSDDV = @maSDDV
         `;
 
         const toaThuocQuery = `
             SELECT 
+                SP.MaSP,
                 SP.TenSP,
                 CT.SoLuong,
                 CT.LieuLuong,
@@ -178,16 +171,23 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 NgayTaiKham: detail.NgayTaiKham,
                 TongTien: detail.TongTienDV
             },
-            rating: detail.Diem ? {
-                Diem: detail.Diem,
-                ThaiDoNhanVien: detail.ThaiDoNhanVien,
-                MucDoHaiLong: detail.MucDoHaiLong,
-                BinhLuan: detail.BinhLuan
-            } : null,
             toaThuoc: toaThuocResult.recordset || [],
         };
     } catch (err) {
         console.error('Error getting customer examination detail by ID:', err);
+        throw err;
+    }
+};
+
+export const getServiceRatingByID = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query('SELECT * FROM DANHGIA WHERE MaSDDV = @maSDDV');
+        return result.recordset[0] || null;
+    } catch (err) {
+        console.error('Error getting service rating by ID:', err);
         throw err;
     }
 };
