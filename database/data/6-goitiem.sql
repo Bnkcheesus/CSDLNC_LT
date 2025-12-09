@@ -1,0 +1,54 @@
+USE PETCAREDB
+GO
+
+-- ====================== 6-GOITIEM - 50 ROWS ======================
+INSERT INTO GOITIEM VALUES ('G0001', N'Gói Vaccine 1 Xám', N'1 năm', 15.0, 1702278.00);
+INSERT INTO GOITIEM VALUES ('G0002', N'Gói Vaccine 2 Rêu', N'6 tháng', 15.0, 612989.00);
+INSERT INTO GOITIEM VALUES ('G0003', N'Gói Vaccine 3 Hồng', N'6 tháng', 15.0, 1039223.00);
+INSERT INTO GOITIEM VALUES ('G0004', N'Gói Vaccine 4 Hồng', N'6 tháng', 5.0, 1568278.00);
+INSERT INTO GOITIEM VALUES ('G0005', N'Gói Vaccine 5 Xanh lá cây', N'2 năm', 5.0, 1422519.00);
+INSERT INTO GOITIEM VALUES ('G0006', N'Gói Vaccine 6 Xanh dương nhạt', N'2 năm', 10.0, 1222025.00);
+INSERT INTO GOITIEM VALUES ('G0007', N'Gói Vaccine 7 Xám xỉn', N'1 năm', 10.0, 667700.00);
+INSERT INTO GOITIEM VALUES ('G0008', N'Gói Vaccine 8 Xanh hải quân', N'1 năm', 15.0, 746073.00);
+INSERT INTO GOITIEM VALUES ('G0009', N'Gói Vaccine 9 Sô cô la', N'1 năm', 10.0, 1210003.00);
+INSERT INTO GOITIEM VALUES ('G0010', N'Gói Vaccine 10 Đỏ', N'1 năm', 15.0, 1495704.00);
+INSERT INTO GOITIEM VALUES ('G0011', N'Gói Vaccine 11 Hồng lavender', N'1 năm', 15.0, 760756.00);
+INSERT INTO GOITIEM VALUES ('G0012', N'Gói Vaccine 12 Bạc', N'1 năm', 10.0, 1347447.00);
+INSERT INTO GOITIEM VALUES ('G0013', N'Gói Vaccine 13 Đỏ đậm', N'2 năm', 5.0, 802787.00);
+INSERT INTO GOITIEM VALUES ('G0014', N'Gói Vaccine 14 Tím violet', N'1 năm', 5.0, 832200.00);
+INSERT INTO GOITIEM VALUES ('G0015', N'Gói Vaccine 15 Cam đậm', N'1 năm', 10.0, 1798338.00);
+INSERT INTO GOITIEM VALUES ('G0016', N'Gói Vaccine 16 Xanh biển đậm', N'6 tháng', 15.0, 1211062.00);
+INSERT INTO GOITIEM VALUES ('G0017', N'Gói Vaccine 17 Hồng đậm', N'6 tháng', 15.0, 1969909.00);
+INSERT INTO GOITIEM VALUES ('G0018', N'Gói Vaccine 18 Tím', N'6 tháng', 5.0, 537896.00);
+INSERT INTO GOITIEM VALUES ('G0019', N'Gói Vaccine 19 Xanh biển đậm', N'6 tháng', 10.0, 1403860.00);
+INSERT INTO GOITIEM VALUES ('G0020', N'Gói Vaccine 20 Xanh lá cây', N'6 tháng', 10.0, 846011.00);
+INSERT INTO GOITIEM VALUES ('G0021', N'Gói Vaccine 21 Rêu đậm', N'1 năm', 5.0, 1594663.00);
+INSERT INTO GOITIEM VALUES ('G0022', N'Gói Vaccine 22 Cam', N'2 năm', 10.0, 533415.00);
+INSERT INTO GOITIEM VALUES ('G0023', N'Gói Vaccine 23 Xanh biển đậm', N'2 năm', 10.0, 531771.00);
+INSERT INTO GOITIEM VALUES ('G0024', N'Gói Vaccine 24 Indigo', N'1 năm', 10.0, 673845.00);
+INSERT INTO GOITIEM VALUES ('G0025', N'Gói Vaccine 25 Trắng Antique', N'6 tháng', 5.0, 1294656.00);
+INSERT INTO GOITIEM VALUES ('G0026', N'Gói Vaccine 26 Xanh ngọc đậm', N'1 năm', 15.0, 1097956.00);
+INSERT INTO GOITIEM VALUES ('G0027', N'Gói Vaccine 27 Xanh ngọc đậm', N'1 năm', 10.0, 680959.00);
+INSERT INTO GOITIEM VALUES ('G0028', N'Gói Vaccine 28 Xám xỉn', N'2 năm', 5.0, 1565133.00);
+INSERT INTO GOITIEM VALUES ('G0029', N'Gói Vaccine 29 Xám đậm', N'2 năm', 5.0, 1451968.00);
+INSERT INTO GOITIEM VALUES ('G0030', N'Gói Vaccine 30 Xanh lá cây vàng', N'2 năm', 5.0, 1272731.00);
+INSERT INTO GOITIEM VALUES ('G0031', N'Gói Vaccine 31 Xanh lá cây', N'6 tháng', 5.0, 1154164.00);
+INSERT INTO GOITIEM VALUES ('G0032', N'Gói Vaccine 32 Rêu đậm', N'1 năm', 10.0, 1003220.00);
+INSERT INTO GOITIEM VALUES ('G0033', N'Gói Vaccine 33 Trắng', N'6 tháng', 10.0, 1405847.00);
+INSERT INTO GOITIEM VALUES ('G0034', N'Gói Vaccine 34 Xanh lục bảo', N'1 năm', 10.0, 1736174.00);
+INSERT INTO GOITIEM VALUES ('G0035', N'Gói Vaccine 35 Trắng Antique', N'2 năm', 10.0, 1078729.00);
+INSERT INTO GOITIEM VALUES ('G0036', N'Gói Vaccine 36 Xanh dương nhạt', N'2 năm', 5.0, 1167658.00);
+INSERT INTO GOITIEM VALUES ('G0037', N'Gói Vaccine 37 Xanh đậm', N'2 năm', 10.0, 1920206.00);
+INSERT INTO GOITIEM VALUES ('G0038', N'Gói Vaccine 38 Đỏ đậm', N'2 năm', 10.0, 1475643.00);
+INSERT INTO GOITIEM VALUES ('G0039', N'Gói Vaccine 39 Rêu đậm', N'2 năm', 15.0, 600963.00);
+INSERT INTO GOITIEM VALUES ('G0040', N'Gói Vaccine 40 Tím đậm', N'1 năm', 15.0, 1882764.00);
+INSERT INTO GOITIEM VALUES ('G0041', N'Gói Vaccine 41 Trắng Antique', N'6 tháng', 15.0, 1480284.00);
+INSERT INTO GOITIEM VALUES ('G0042', N'Gói Vaccine 42 Hồng', N'6 tháng', 5.0, 994935.00);
+INSERT INTO GOITIEM VALUES ('G0043', N'Gói Vaccine 43 Hồng fuchsia', N'1 năm', 10.0, 1715026.00);
+INSERT INTO GOITIEM VALUES ('G0044', N'Gói Vaccine 44 Tím', N'2 năm', 5.0, 1852817.00);
+INSERT INTO GOITIEM VALUES ('G0045', N'Gói Vaccine 45 Sô cô la', N'2 năm', 15.0, 825651.00);
+INSERT INTO GOITIEM VALUES ('G0046', N'Gói Vaccine 46 Xanh biển sáng', N'1 năm', 10.0, 1763959.00);
+INSERT INTO GOITIEM VALUES ('G0047', N'Gói Vaccine 47 Xám xỉn', N'1 năm', 5.0, 1550097.00);
+INSERT INTO GOITIEM VALUES ('G0048', N'Gói Vaccine 48 San hô', N'2 năm', 10.0, 1275359.00);
+INSERT INTO GOITIEM VALUES ('G0049', N'Gói Vaccine 49 Đỏ đậm', N'2 năm', 10.0, 1567537.00);
+INSERT INTO GOITIEM VALUES ('G0050', N'Gói Vaccine 50 Xanh lá đậm', N'1 năm', 15.0, 1910059.00);
