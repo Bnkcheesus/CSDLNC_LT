@@ -341,3 +341,119 @@ export const saveServiceRatingByID = async (maSDDV, rating) => {
         throw err;
     }
 };
+
+export const getCustomerPetsByID = async (maTKKH, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+
+        const query = `
+            SELECT 
+                TC.MaTC,
+                TC.TenTC,
+                TC.Loai,
+                TC.Giong
+            FROM THUCUNG TC
+            WHERE TC.MaTKKH = @maTKKH
+            ORDER BY TC.MaTC
+            OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM THUCUNG TC
+            WHERE TC.MaTKKH = @maTKKH;
+        `;
+
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+        
+        const pets = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: pets,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting customer pets by ID:', err);
+        throw err;
+    }
+};
+
+export const getCustomerPetProfileByID = async (maTC) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTC', maTC)
+            .query('SELECT * FROM THUCUNG WHERE MaTC = @maTC');
+        return result.recordset[0] || null;
+    } catch (err) {
+        console.error('Error getting customer pet profile by ID:', err);
+        throw err;
+    }
+};
+
+export const getCustomerPetHistoryByID = async (maTC, type, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        let typeFilter = '';
+        if (type != 'all') {
+            typeFilter = 'AND SDV.LoaiDV = @type';
+        }
+        const query = `
+            SELECT 
+                SDV.MaSDDV, 
+                SDV.LoaiDV,
+                HD.NgayLap AS NgaySuDung,
+                CN.TenCN,
+                NV.HoTen AS TenBS
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            JOIN NHANVIEN NV ON 
+                (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV) OR 
+                (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV)
+            WHERE 
+                (KB.MaTC = @maTC OR TP.MaTC = @maTC)
+                ${typeFilter}
+            ORDER BY HD.NgayLap DESC
+            OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            WHERE 
+                (KB.MaTC = @maTC OR TP.MaTC = @maTC)
+                ${type !== "all" ? "AND SDV.LoaiDV = @type" : ""}
+        `;
+
+        const result = await pool.request()
+            .input('maTC', maTC)
+            .input('type', type)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+
+        const history = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: history,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting customer pet history by ID:', err);
+        throw err;
+    }
+};

@@ -7,7 +7,10 @@ import {
     getCustomerVaccinationDetailByID,
     getCustomerPurchaseDetailByID,
     getServiceRatingByID,
-    saveServiceRatingByID
+    saveServiceRatingByID,
+    getCustomerPetsByID,
+    getCustomerPetProfileByID,
+    getCustomerPetHistoryByID
 } from "../models/CustomerModel.js";
 
 export const getCustomerName = async (req, res) => {
@@ -191,6 +194,69 @@ export const saveServiceRating = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in saveServiceRating controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerPets = async (req, res) => {
+    try {
+        const { maTK } = req.params;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const pets = await getCustomerPetsByID(maTK, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: pets
+        });
+    } catch (err) {
+        console.error('Error in getCustomerPets controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerPetProfile = async (req, res) => {
+    try {
+        const { maTC } = req.params;
+        if (!maTC) {
+            return res.status(400).json({ message: 'MaTC is required' });
+        }
+
+        const petProfile = await getCustomerPetProfileByID(maTC);
+        if (!petProfile) {
+            return res.status(404).json({ message: 'Pet profile not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: petProfile
+        });
+    } catch (err) {
+        console.error('Error in getCustomerPetProfile controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerPetHistory = async (req, res) => {
+    try {
+        const { maTC } = req.params;
+        if (!maTC) {
+            return res.status(400).json({ message: 'MaTC is required' });
+        }
+        const type = req.query.type || 'all';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const petHistory = await getCustomerPetHistoryByID(maTC, type, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: petHistory
+        });
+    } catch (err) {
+        console.error('Error in getCustomerPetHistory controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

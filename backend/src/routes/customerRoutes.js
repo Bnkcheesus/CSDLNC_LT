@@ -8,7 +8,10 @@ import {
     getCustomerVaccinationDetail,
     getCustomerPurchaseDetail,
     getServiceRating,
-    saveServiceRating
+    saveServiceRating,
+    getCustomerPets,
+    getCustomerPetProfile,
+    getCustomerPetHistory
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -23,5 +26,9 @@ router.get('/tiemphong/:maSDDV', authMiddleware, getCustomerVaccinationDetail);
 router.get('/muahang/:maSDDV', authMiddleware, getCustomerPurchaseDetail);
 router.get('/rating/:maSDDV', authMiddleware, getServiceRating);
 router.post('/rating/:maSDDV', authMiddleware, saveServiceRating);
+
+router.get('/:maTK/pets', authMiddleware, getCustomerPets);
+router.get('/pets/:maTC', authMiddleware, getCustomerPetProfile);
+router.get('/pets/:maTC/history', authMiddleware, getCustomerPetHistory);
 
 export default router;

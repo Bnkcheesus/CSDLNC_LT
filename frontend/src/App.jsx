@@ -7,6 +7,8 @@ import CustomerServiceHistory from './pages/customer/CustomerServiceHistory.jsx'
 import CustomerExaminationDetail from './pages/customer/CustomerExaminationDetail.jsx';
 import CustomerVaccinationDetail from './pages/customer/CustomerVaccinationDetail.jsx';
 import CustomerPurchaseDetail from './pages/customer/CustomerPurchaseDetail.jsx';
+import CustomerPets from './pages/customer/CustomerPets.jsx';
+import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 
 export default function App() {
@@ -76,6 +78,23 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerPurchaseDetail />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/pets"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerPets />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/customer/pets/:maTC/history"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerPetHistory />
             </ProtectedRoute>
           }
         />
