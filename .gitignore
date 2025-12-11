@@ -18,3 +18,4 @@ logs/
 
 # IDE stuff
 .vscode/
+.vs/
