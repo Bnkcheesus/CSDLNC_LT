@@ -13,8 +13,20 @@ const MENU_CONFIG = [
             "/customer/muahang"
         ]
     },
-    { label: "Vaccine", to: "/customer/vaccines", roles: ["customer"] },
-    { label: "Thú cưng", to: "/customer/pets", roles: ["customer"] },
+    {
+        label: "Gói tiêm",
+        to: "/customer/packages",
+        roles: ["customer"],
+        relatedPaths: ["/customer/packages"]
+    },
+    {
+        label: "Thú cưng",
+        to: "/customer/pets",
+        roles: ["customer"],
+        relatedPaths: [
+            "/customer/pets/"
+        ]
+    },
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
     { label: "Hoá đơn dịch vụ", to: "/staff/service-invoices", roles: ["receptionist"] },
     { label: "Hoá đơn mua hàng", to: "/staff/sales-invoices", roles: ["sales"] },

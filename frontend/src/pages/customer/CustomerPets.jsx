@@ -90,7 +90,7 @@ export default function CustomerPets() {
                   <tbody>
                     {rows.map((r) => (
                       <tr
-                        key={r.MaSDDV}
+                        key={r.MaTC}
                         className="border-t hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-3 py-3 text-sm">{r.MaTC}</td>

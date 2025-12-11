@@ -10,7 +10,8 @@ import {
     saveServiceRatingByID,
     getCustomerPetsByID,
     getCustomerPetProfileByID,
-    getCustomerPetHistoryByID
+    getCustomerPetHistoryByID,
+    getCustomerPackagesByID
 } from "../models/CustomerModel.js";
 
 export const getCustomerName = async (req, res) => {
@@ -257,6 +258,27 @@ export const getCustomerPetHistory = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getCustomerPetHistory controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerPackages = async (req, res) => {
+    try {
+        const { maTK } = req.params;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const packages = await getCustomerPackagesByID(maTK, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: packages
+        });
+    } catch (err) {
+        console.error('Error in getCustomerPackages controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

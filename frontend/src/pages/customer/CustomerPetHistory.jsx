@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
-import ServiceTypeBar from "../../components/ui/ServiceTypeBar.jsx";
+import CategoryBar from "../../components/ui/CategoryBar.jsx";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CustomerPetHistory() {
@@ -143,7 +143,7 @@ export default function CustomerPetHistory() {
             </div>
 
             {/* ---------------- SERVICE TYPE BAR ---------------- */}
-            <ServiceTypeBar
+            <CategoryBar
                 active={type}
                 onChange={(t) => {
                     setType(t);

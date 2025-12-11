@@ -3,7 +3,7 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
-import ServiceTypeBar from "../../components/ui/ServiceTypeBar.jsx";
+import CategoryBar from "../../components/ui/CategoryBar.jsx";
 import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -78,7 +78,7 @@ export default function CustomerServiceHistory() {
       <Navbar />
       <PageTitle title="Dịch vụ" />
 
-      <ServiceTypeBar active={type} onChange={handleTypeChange} />
+      <CategoryBar active={type} onChange={handleTypeChange} />
 
       <div className="max-w-[1200px] mx-auto px-4 py-6">
         <div className="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">

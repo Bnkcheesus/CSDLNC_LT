@@ -1,4 +1,4 @@
-export default function ServiceTypeBar({
+export default function CategoryBar({
     active = "all",
     onChange,
     types = [

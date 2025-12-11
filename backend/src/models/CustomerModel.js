@@ -457,3 +457,49 @@ export const getCustomerPetHistoryByID = async (maTC, type, page, limit) => {
         throw err;
     }
 };
+
+export const getCustomerPackagesByID = async (maTKKH, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        const query = `
+        SELECT 
+            DK.MaDK,
+            DK.NgayDK,
+            G.TenGoi,
+            TC.TenTC
+        FROM DANGKYGOITIEM DK
+        INNER JOIN GOITIEM G ON DK.MaGoi = G.MaGoi
+        INNER JOIN THUCUNG TC ON DK.MaTC = TC.MaTC
+        INNER JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+        WHERE KH.MaTKKH = @MaTKKH
+        ORDER BY DK.NgayDK DESC
+        OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+        SELECT COUNT(*) AS Total
+        FROM DANGKYGOITIEM DK
+        INNER JOIN THUCUNG TC ON DK.MaTC = TC.MaTC
+        INNER JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+        WHERE KH.MaTKKH = @MaTKKH;
+        `;
+
+        const result = await pool.request()
+            .input('MaTKKH', maTKKH)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+        
+        const packages = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: packages,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting customer packages by ID:', err);
+        throw err;
+    }
+};

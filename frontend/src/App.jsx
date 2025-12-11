@@ -9,6 +9,7 @@ import CustomerVaccinationDetail from './pages/customer/CustomerVaccinationDetai
 import CustomerPurchaseDetail from './pages/customer/CustomerPurchaseDetail.jsx';
 import CustomerPets from './pages/customer/CustomerPets.jsx';
 import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
+import CustomerVaccinationPackages from './pages/customer/CustomerVaccinationPackages.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 
 export default function App() {
@@ -95,6 +96,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerPetHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/packages"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerVaccinationPackages />
             </ProtectedRoute>
           }
         />

@@ -11,7 +11,8 @@ import {
     saveServiceRating,
     getCustomerPets,
     getCustomerPetProfile,
-    getCustomerPetHistory
+    getCustomerPetHistory,
+    getCustomerPackages
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -30,5 +31,7 @@ router.post('/rating/:maSDDV', authMiddleware, saveServiceRating);
 router.get('/:maTK/pets', authMiddleware, getCustomerPets);
 router.get('/pets/:maTC', authMiddleware, getCustomerPetProfile);
 router.get('/pets/:maTC/history', authMiddleware, getCustomerPetHistory);
+
+router.get('/:maTK/packages', authMiddleware, getCustomerPackages);
 
 export default router;
