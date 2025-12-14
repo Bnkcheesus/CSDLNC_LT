@@ -135,3 +135,19 @@ BEGIN
 END
 GO
 --CREATE OR ALTER PROCEDURE sp_ThemSDDV @maHD CHAR(8),
+
+EXEC sp_Tim_Thu_Cung @thang = 1, @nam = 2025;
+
+EXEC sp_Tinh_Doanh_Thu_CN_theo_thang @tencn = N'Chi nhánh JohnHuyện', @thang = 1, @nam = 2025;
+
+EXEC sp_Tinh_Doanh_Thu_CN_theo_nam @tencn = N'Chi nhánh JohnHuyện', @nam = 2025;
+
+EXEC sp_Tinh_Doanh_Thu_CT_theo_thang @thang = 1, @nam = 2025;
+
+EXEC sp_Tinh_Doanh_Thu_CT_theo_nam @nam = 2025;
+
+EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
+
+
+
+
