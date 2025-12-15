@@ -129,7 +129,7 @@ BEGIN
     PRINT N'Thêm hóa đơn thành công. Mã hoá đơn = ' + @newMaHD;
 END
 GO
-<<<<<<< HEAD
+
 CREATE OR ALTER PROCEDURE sp_ThemSDDV 
     @maHD CHAR(8),
     @Loai CHAR(2),
@@ -227,4 +227,4 @@ EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
 
 
 
->>>>>>> e35d3c9213fcc9157cdef37e484fa3740834e48b
+
