@@ -1,7 +1,9 @@
 USE PETCAREDB
 GO
 
---1 Kịch bản: Tra cứu thông tin khách hàng + thú cưng + lịch sử dịch vụ
+
+
+--5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
 	@thang INT,
 	@nam INT
@@ -15,7 +17,9 @@ BEGIN
 END
 GO
 
---2 Kịch bản: Tạo hóa đơn & cập nhật tổng tiền theo dịch vụ
+
+
+-- 6 Kịch bản Tìm doanh thu theo chi nhánh/công ty theo tháng/năm
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_thang
 	@tencn NVARCHAR(50),
 	@thang INT,
@@ -28,7 +32,7 @@ BEGIN
 END
 GO
 
---3 Kịch bản: Quản lý tồn kho & truy vấn lượng tồn theo chi nhánh
+
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_nam
 	@tencn NVARCHAR(50),
 	@nam INT
@@ -40,7 +44,7 @@ BEGIN
 END
 GO
 
---4 Kịch bản: Thống kê vaccine được sử dụng nhiều nhất trong năm
+
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_thang
 	@thang INT,
 	@nam INT
@@ -51,7 +55,7 @@ BEGIN
 END
 GO
 
---5 Kịch bản: Tìm thú cưng có lịch tiêm trong tháng
+
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_nam
 	@nam INT
 AS
@@ -59,17 +63,7 @@ BEGIN
 	SELECT SUM(TongTien) FROM HOADON
 	WHERE YEAR(NgayLap) = @nam
 END
-GO
 
---6 Kịch bản: Tính doanh thu chi nhánh / toàn công ty
-CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_thang
-	@thang INT,
-	@nam INT
-AS
-BEGIN
-	SELECT SUM(TongTien) FROM HOADON
-	WHERE MONTH(NgayLap) = @thang AND YEAR(NgayLap) = @nam
-END
 
 GO
 
@@ -103,6 +97,7 @@ BEGIN
     DECLARE @maxMaHD CHAR(8);
     DECLARE @num INT;
     DECLARE @maCN CHAR(5);
+	
 
     SELECT @maxMaHD = MAX(MaHD)
     FROM HOADON;
@@ -126,7 +121,7 @@ BEGIN
 
     SELECT @maCN = MaCN
     FROM LICHSULAMVIEC
-    WHERE MaTKNV = @maTKNV AND NgayKetThuc IS NULL AND NgayBatDau = @latestStartCurrent;
+    WHERE MaTKNV = @maTKNV AND (NgayKetThuc IS NULL OR NgayKetThuc > GETDATE()) AND NgayBatDau = @latestStartCurrent;
 
     INSERT INTO HOADON (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
     VALUES (@newMaHD, GETDATE(), 0, 0, NULL, @maCN, @maTKKH, @maTKNV)
@@ -134,4 +129,82 @@ BEGIN
     PRINT N'Thêm hóa đơn thành công. Mã hoá đơn = ' + @newMaHD;
 END
 GO
---CREATE OR ALTER PROCEDURE sp_ThemSDDV @maHD CHAR(8),
+CREATE OR ALTER PROCEDURE sp_ThemSDDV 
+    @maHD CHAR(8),
+    @Loai CHAR(2),
+    @MaThuCung CHAR(8) = NULL,
+    @MaNV CHAR(8)
+AS
+BEGIN
+    IF (@maHD NOT IN (SELECT MaHD FROM HOADON))
+        RETURN;
+
+    IF (@MaNV NOT IN (SELECT MaTKNV FROM NHANVIEN))
+        RETURN;
+
+    IF (@MaThuCung IS NOT NULL AND @MaThuCung NOT IN (SELECT MaTC FROM THUCUNG))
+        RETURN;
+
+    IF (@Loai NOT IN ('KB', 'TP', 'MH'))
+        RETURN;
+
+    DECLARE @newMaSDDV CHAR(10);
+    DECLARE @maxMaSDDV CHAR(10);
+    DECLARE @num INT;
+
+    SELECT @maxMaSDDV = MAX(MaSDDV)
+    FROM SUDUNGDICHVU;
+
+    IF (@maxMaSDDV IS NULL)
+        SET @newMaSDDV = 'SDDV000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaSDDV, 5, 6) AS INT) + 1;
+        SET @newMaSDDV = 'SDDV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO SUDUNGDICHVU
+    VALUES (@newMaSDDV, @Loai, 0, @maHD);
+
+    IF (@Loai = 'KB')
+        INSERT INTO KHAMBENH VALUES (@newMaSDDV, NULL, NULL, NULL, @MaThuCung, @MaNV);
+
+    IF (@Loai = 'TP')
+        INSERT INTO TIEMPHONG VALUES (@newMaSDDV, @MaThuCung, @MaNV);
+
+    IF (@Loai = 'MH')
+        INSERT INTO MUAHANG VALUES (@newMaSDDV, @MaNV);
+
+    PRINT N'Thêm sử dụng dịch vụ thành công. Mã SDDV = ' + @newMaSDDV;
+END
+GO
+CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
+	@MaThuCung CHAR(8),
+	@MaGoi CHAR(5),
+	@NgayBatDau DATE
+AS
+BEGIN
+	IF (@MaThuCung NOT IN (SELECT THUCUNG.MaTC FROM THUCUNG))
+		RETURN
+	IF (@MaGoi NOT IN (SELECT GOITIEM.MaGoi FROM GOITIEM))
+		RETURN
+	IF (@NgayBatDau < CAST(GETDATE() AS DATE))
+		RETURN
+	DECLARE @newMaDK CHAR(8);
+    DECLARE @maxMaDK CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaDK = MAX(MaDK)
+    FROM DANGKYGOITIEM;
+
+    IF (@maxMaDK IS NULL)
+        SET @newMaDK = 'DK000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaDK, 3, 6) AS INT) + 1;
+        SET @newMaDK = 'DK' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+	
+	INSERT DANGKYGOITIEM VALUES (@newMaDK, GETDATE(), @NgayBatDau, @MaGoi, @MaThuCung)
+	PRINT  N'Thêm đăng ký thành công. Mã DK = ' + @newMaDK;
+END
