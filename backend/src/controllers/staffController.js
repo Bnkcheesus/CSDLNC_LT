@@ -5,7 +5,12 @@ import {
     getPetsByCustomer,
     addServiceInvoice,
     getServiceInvoiceHistory,
-    addSDDV
+    addSDDV,
+    getServiceInvoiceInfo,
+    getServiceInvoiceDetail,
+    getExaminationDetail,
+    getVaccinationDetail,
+    getPurchaseDetail
 } from '../models/StaffModel.js';
 
 export const getStaffProfileController = async (req, res) => {
@@ -140,6 +145,91 @@ export const addSDDVController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in addSDDV controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getServiceInvoiceInfoController = async (req, res) => {
+    try {
+        const { maHD } = req.params;
+        if (!maHD) {
+            return res.status(400).json({ message: 'MaHD is required' });
+        }
+        const info = await getServiceInvoiceInfo(maHD);
+        return res.status(200).json({
+            success: true,
+            data: info
+        });
+    } catch (err) {
+        console.error('Error in getServiceInvoiceInfo controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getServiceInvoiceDetailController = async (req, res) => {
+    try {
+        const { maHD } = req.params;
+        if (!maHD) {
+            return res.status(400).json({ message: 'MaHD is required' });
+        }
+        const detail = await getServiceInvoiceDetail(maHD);
+        return res.status(200).json({
+            success: true,
+            data: detail
+        });
+    } catch (err) {
+        console.error('Error in getServiceInvoiceDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getExaminationDetailController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const detail = await getExaminationDetail(maSDDV);
+        return res.status(200).json({
+            success: true,
+            data: detail
+        });
+    } catch (err) {
+        console.error('Error in getExaminationDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getVaccinationDetailController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const detail = await getVaccinationDetail(maSDDV);
+        return res.status(200).json({
+            success: true,
+            data: detail
+        });
+    } catch (err) {
+        console.error('Error in getVaccinationDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getPurchaseDetailController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const detail = await getPurchaseDetail(maSDDV);
+        return res.status(200).json({
+            success: true,
+            data: detail
+        });
+    } catch (err) {
+        console.error('Error in getPurchaseDetail controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

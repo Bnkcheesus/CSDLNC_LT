@@ -263,7 +263,7 @@ export default function CustomerPetHistory() {
                                                                             <tr key={d.MaSP} className="border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.LieuLuong}</td>
-                                                                                <td className="px-2 py-1">{d.MaDK || "-"}</td>
+                                                                                <td className="px-2 py-1">{d.MaGoi || "-"}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
