@@ -99,6 +99,49 @@ export const addServiceInvoice = async (maTKKH, maTKNV, maCN) => {
     }
 };
 
+export const getServiceInvoiceHistory = async (maTKNV, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        const result = await pool.request()
+            .input('maTKNV', maTKNV)
+            .input('limit', limit)
+            .input('offset', offset)
+            .query(`
+                SELECT
+                    HD.MaHD,
+                    HD.NgayLap,
+                    HD.MaTKKH,
+                    KH.HoTen AS TenKH,
+                    CN.TenCN
+                FROM HOADON HD
+                JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
+                JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+                WHERE HD.MaTKNV = @maTKNV
+                ORDER BY HD.NgayLap DESC
+                OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+                SELECT COUNT(*) AS TotalCount
+                FROM HOADON
+                WHERE MaTKNV = @maTKNV;
+            `);
+
+        const invoices = result.recordsets[0];
+        const totalCount = result.recordsets[1][0].TotalCount;
+        const totalPages = Math.ceil(totalCount / limit);
+        return {
+            rows: invoices,
+            total: totalCount,
+            totalPages: totalPages,
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting service invoice history:', err);
+        throw err;
+    }
+};
+
+
 export const addSDDV = async (maHD, loaiDV, maBS, maTC) => {
     try {
         const pool = await getPool();
