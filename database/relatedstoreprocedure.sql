@@ -92,7 +92,9 @@ GO
 GO
 CREATE OR ALTER PROCEDURE sp_ThemHoaDon
     @maTKNV CHAR(8),
-    @maTKKH CHAR(8)
+    @maTKKH CHAR(8),
+	@maCN CHAR(5),
+	@newMaHD CHAR(8) OUTPUT
 AS
 BEGIN
     IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
@@ -103,11 +105,8 @@ BEGIN
     FROM NHANVIEN
     WHERE MaTKNV = @maTKNV))
 		RETURN
-    DECLARE @newMaHD CHAR(8);
     DECLARE @maxMaHD CHAR(8);
     DECLARE @num INT;
-    DECLARE @maCN CHAR(5);
-
 
     SELECT @maxMaHD = MAX(MaHD)
     FROM HOADON;
@@ -119,19 +118,6 @@ BEGIN
         SET @num = CAST(SUBSTRING(@maxMaHD, 3, 6) AS INT) + 1;
         SET @newMaHD = 'HD' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
     END
-
-    DECLARE @latestStartCurrent DATE;
-
-    SELECT @latestStartCurrent = MAX(NgayBatDau)
-    FROM LICHSULAMVIEC
-    WHERE MaTKNV = @maTKNV AND (NgayKetThuc IS NULL OR NgayKetThuc > GETDATE())
-
-    IF (@latestStartCurrent IS NULL)
-		RETURN;
-
-    SELECT @maCN = MaCN
-    FROM LICHSULAMVIEC
-    WHERE MaTKNV = @maTKNV AND (NgayKetThuc IS NULL OR NgayKetThuc > GETDATE()) AND NgayBatDau = @latestStartCurrent;
 
     INSERT INTO HOADON
         (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)

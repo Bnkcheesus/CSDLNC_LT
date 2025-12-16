@@ -7,7 +7,7 @@ const MENU_CONFIG = [
     { label: "Gói tiêm", to: "/customer/packages", roles: ["customer"], relatedPaths: ["/customer/packages"] },
     { label: "Thú cưng", to: "/customer/pets", roles: ["customer"], relatedPaths: ["/customer/pets/"]},
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
-    { label: "Hoá đơn dịch vụ", to: "/staff/hddv", roles: ["receptionist"] },
+    { label: "Hoá đơn dịch vụ", to: "/staff/add-service-invoice", roles: ["receptionist"] },
     { label: "Hoá đơn mua hàng", to: "/staff/hdmh", roles: ["sales"] },
     { label: "Thông tin cá nhân", to: "/staff/profile", roles: ["doctor", "manager", "receptionist", "sales"] },
 ];
