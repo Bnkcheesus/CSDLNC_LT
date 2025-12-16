@@ -4,6 +4,7 @@ import {
     getCustomersByKeyword,
     getPetsByCustomer,
     addServiceInvoice,
+    getServiceInvoiceHistory,
     addSDDV
 } from '../models/StaffModel.js';
 
@@ -96,6 +97,27 @@ export const addServiceInvoiceController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in addServiceInvoice controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getServiceInvoiceHistoryController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKNV is required' });
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        
+        const history = await getServiceInvoiceHistory(maTK, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: history
+        });
+    } catch (err) {
+        console.error('Error in getServiceInvoiceHistory controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
