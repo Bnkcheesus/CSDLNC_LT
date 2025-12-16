@@ -11,6 +11,7 @@ import CustomerPets from './pages/customer/CustomerPets.jsx';
 import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
 import CustomerVaccinationPackages from './pages/customer/CustomerVaccinationPackages.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
+import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
 
 export default function App() {
   return (
@@ -25,6 +26,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["manager", "receptionist", "sales", "doctor"]}>
               <StaffHome />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/add-service-invoice"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffAddServiceInvoice />
             </ProtectedRoute>
           }
         />
