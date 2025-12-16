@@ -5,13 +5,13 @@ from faker import Faker
 
 # --- CẤU HÌNH ĐỂ TẠO DỮ LIỆU LỚN VƯỢT 70K DÒNG ---
 NUM_CUSTOMERS = 20000
-NUM_STAFF = 30000
+NUM_STAFF = 1000
 NUM_TRANSACTIONS = 70000
 NUM_PETS = 30000
-NUM_BRANCHES = 20
+NUM_BRANCHES = 10
 NUM_PRODUCTS = 100
 NUM_VACCINE_PACKAGES = 50
-START_DATE = datetime(2020, 1, 1)
+START_DATE = datetime(2015, 1, 1)
 END_DATE = datetime(2025, 12, 31)
 
 # Khởi tạo Faker với locale Việt Nam
@@ -63,14 +63,14 @@ print("--- 1. Generating TAIKHOAN & NHANVIEN...")
 for i in range(1, NUM_STAFF + 1):
     nv_id = generate_id('NV', i, 8)
     staff_ids.append(nv_id)
-    taikhoan_inserts.append(f"INSERT INTO TAIKHOAN VALUES ('{nv_id}', '123', N'NV');")
+    taikhoan_inserts.append(f"INSERT INTO TAIKHOAN VALUES ('{nv_id}', '123', N'NV');\nGO")
     gender = random.choice(['Nam', 'Nữ'])
     chucvu = random.choice(STAFF_CHUCVU)
     luongcoban = random.randint(5000000, 25000000)
     ngaysinh = random_date_range(datetime(1980, 1, 1), datetime(2000, 1, 1))
     ngayvaolam = random_date_range(datetime(2020, 1, 1), datetime(2024, 1, 1))
     nhanvien_inserts.append(
-        f"INSERT INTO NHANVIEN VALUES ('{nv_id}', N'{fake.name()}', N'{gender}', '{ngaysinh}', '{ngayvaolam}', '{chucvu}', {luongcoban}.00);"
+        f"INSERT INTO NHANVIEN VALUES ('{nv_id}', N'{fake.name()}', N'{gender}', '{ngaysinh}', '{ngayvaolam}', '{chucvu}', {luongcoban}.00); \nGO"
     )
 
 # --- 2. TAIKHOAN & KHACHHANG (Customers) ---
@@ -78,13 +78,13 @@ print("--- 2. Generating TAIKHOAN & KHACHHANG...")
 for i in range(1, NUM_CUSTOMERS + 1):
     kh_id = generate_id('KH', i, 8)
     customer_ids.append(kh_id)
-    taikhoan_inserts.append(f"INSERT INTO TAIKHOAN VALUES ('{kh_id}', '123', N'KH');")
+    taikhoan_inserts.append(f"INSERT INTO TAIKHOAN VALUES ('{kh_id}', '123', N'KH'); \nGO")
     gender = random.choice(['Nam', 'Nữ'])
     rank = random.choice(['CB', 'TT', 'VIP'])
     total_spend = random.randint(0, 50000000)
     loyalty_points = total_spend // 100000
     khachhang_inserts.append(
-        f"INSERT INTO KHACHHANG VALUES ('{kh_id}', N'{fake.name()}', '{fake.phone_number().replace('+', '')[:10]}', '{fake.email()}', '{fake.unique.ssn()[:12]}', N'{gender}', '{random_date_range(datetime(1980, 1, 1), datetime(2005, 1, 1))}', {total_spend}.00, {loyalty_points}, '{rank}');"
+        f"INSERT INTO KHACHHANG VALUES ('{kh_id}', N'{fake.name()}', '{fake.phone_number().replace('+', '')[:10]}', '{fake.email()}', '{fake.unique.ssn()[:12]}', N'{gender}', '{random_date_range(datetime(1980, 1, 1), datetime(2005, 1, 1))}', {total_spend}.00, {loyalty_points}, '{rank}'); \nGO"
     )
 
 # --- 3. THUCUNG (Pets) ---
@@ -99,7 +99,7 @@ for i in range(1, NUM_PETS + 1):
     health_status = random.choice(['Khỏe mạnh', 'Sổ mũi', 'Sốt nhẹ', 'Đang điều trị'])
     pet_gender = random.choice(['Đực', 'Cái'])
     thucung_inserts.append(
-        f"INSERT INTO THUCUNG VALUES ('{tc_id}', N'{fake.first_name()}', N'{pet_type}', N'{breed}', '{random_date_range(datetime(2018, 1, 1), datetime(2024, 1, 1))}', N'{pet_gender}', N'{health_status}', '{owner_id}');"
+        f"INSERT INTO THUCUNG VALUES ('{tc_id}', N'{fake.first_name()}', N'{pet_type}', N'{breed}', '{random_date_range(datetime(2018, 1, 1), datetime(2024, 1, 1))}', N'{pet_gender}', N'{health_status}', '{owner_id}'); \nGO"
     )
 
 # --- 4. CHINHANH (Branches) ---
@@ -108,7 +108,7 @@ chinhanh_inserts = []
 for i in range(1, NUM_BRANCHES + 1):
     cn_id = generate_id('CN', i, 5)
     chinhanh_inserts.append(
-        f"INSERT INTO CHINHANH VALUES ('{cn_id}', N'Chi nhánh {fake.city()}', N'{fake.address()}', '{fake.phone_number().replace('+', '')[:10]}', '08:00:00', '21:00:00');"
+        f"INSERT INTO CHINHANH VALUES ('{cn_id}', N'Chi nhánh {fake.city()}', N'{fake.address()}', '{fake.phone_number().replace('+', '')[:10]}', '08:00:00', '21:00:00'); \nGO"
     )
 
 # --- 5. LICHSULAMVIEC ---
@@ -120,7 +120,7 @@ for nv_id in staff_ids:
         start_date = random_date_range(datetime(2020, 1, 1), datetime(2023, 1, 1))
         end_date = 'NULL' if random.random() < 0.8 else f"'{random_date_range(datetime(2023, 1, 2), datetime(2024, 12, 31))}'"
         lichsulamviec_inserts.append(
-            f"INSERT INTO LICHSULAMVIEC VALUES ('{nv_id}', '{cn_id}', '{start_date}', {end_date});"
+            f"INSERT INTO LICHSULAMVIEC VALUES ('{nv_id}', '{cn_id}', '{start_date}', {end_date}); \nGO"
         )
 
 # --- 6. SANPHAM (Products) ---
@@ -132,7 +132,7 @@ for i in range(1, NUM_PRODUCTS + 1):
     sp_type = random.choice(product_types)
     gia = random.randint(30000, 500000)
     sanpham_inserts.append(
-        f"INSERT INTO SANPHAM VALUES ('{sp_id}', N'{fake.word().capitalize()} ({sp_type})', N'{sp_type}', {gia}.00);"
+        f"INSERT INTO SANPHAM VALUES ('{sp_id}', N'{fake.word().capitalize()} ({sp_type})', N'{sp_type}', {gia}.00); \nGO"
     )
 
 # --- 7. LOSANPHAM (Product Batches) ---
@@ -146,7 +146,7 @@ for cn_id in BRANCH_IDS:
         date_in = random_date_range(datetime(2023, 1, 1), datetime(2024, 1, 1))
         date_exp = random_date_range(datetime(2025, 1, 1), datetime(2026, 1, 1))
         losanpham_inserts.append(
-            f"INSERT INTO LOSANPHAM VALUES ('{lo_id}', {qty_in}, {qty_remain}, '{date_in}', '{date_exp}', '{sp_id}', '{cn_id}');"
+            f"INSERT INTO LOSANPHAM VALUES ('{lo_id}', {qty_in}, {qty_remain}, '{date_in}', '{date_exp}', '{sp_id}', '{cn_id}'); \nGO"
         )
 
 # --- 8. GOITIEM (Packages) & CHITIETGOITIEM ---
@@ -159,7 +159,7 @@ for i in range(1, NUM_VACCINE_PACKAGES + 1):
     discount = random.choice([5.00, 10.00, 15.00])
     price = random.randint(500000, 2000000)
     goitiem_inserts.append(
-        f"INSERT INTO GOITIEM VALUES ('{gt_id}', N'Gói Vaccine {i} {fake.color_name()}', N'{duration}', {discount}, {price}.00);"
+        f"INSERT INTO GOITIEM VALUES ('{gt_id}', N'Gói Vaccine {i} {fake.color_name()}', N'{duration}', {discount}, {price}.00); \nGO"
     )
     
     num_shots = random.randint(1, 4)
@@ -167,7 +167,7 @@ for i in range(1, NUM_VACCINE_PACKAGES + 1):
         sp_id = random.choice(VACCINE_PRODUCTS)
         time_point = f"Tháng {j * 2}"
         chitietgoitiem_inserts.append(
-            f"INSERT INTO CHITIETGOITIEM VALUES ('{sp_id}', '{gt_id}', N'{time_point}', 1);"
+            f"INSERT INTO CHITIETGOITIEM VALUES ('{sp_id}', '{gt_id}', N'{time_point}', 1); \nGO"
         )
 
 # --- 9. Dữ liệu Giao dịch ---
@@ -201,7 +201,7 @@ for i in range(1, NUM_TRANSACTIONS + 1):
     # HOADON
     total_amount = random.randint(100000, 5000000) // 1000 * 1000
     hoadon_inserts.append(
-        f"INSERT INTO HOADON VALUES ('{hd_id}', '{random_date_range(START_DATE, END_DATE)}', {total_amount}.00, 0.00, '{payment_method}', '{ma_cn}', '{ma_kh}', '{ma_nv}');"
+        f"INSERT INTO HOADON VALUES ('{hd_id}', '{random_date_range(START_DATE, END_DATE)}', {total_amount}.00, 0.00, '{payment_method}', '{ma_cn}', '{ma_kh}', '{ma_nv}'); \nGO"
     )
 
     # SUDUNGDICHVU & Chi tiết
@@ -214,7 +214,7 @@ for i in range(1, NUM_TRANSACTIONS + 1):
         sddv_id = generate_id('SDDV', sddv_counter, 10)
         service_price = random.randint(50000, 2000000) // 1000 * 1000
         suddv_inserts.append(
-            f"INSERT INTO SUDUNGDICHVU VALUES ('{sddv_id}', '{service_type}', {service_price}.00, '{hd_id}');"
+            f"INSERT INTO SUDUNGDICHVU VALUES ('{sddv_id}', '{service_type}', {service_price}.00, '{hd_id}'); \nGO"
         )
         
         # DANHGIA (60% chance of a review)
@@ -222,14 +222,14 @@ for i in range(1, NUM_TRANSACTIONS + 1):
             score = random.randint(3, 5)
             content = 'Rất hài lòng' if score == 5 else ('Ổn' if score == 4 else 'Bình thường')
             danhgia_inserts.append(
-                f"INSERT INTO DANHGIA VALUES ('{sddv_id}', {score}, {score}, {score}, N'{content}');"
+                f"INSERT INTO DANHGIA VALUES ('{sddv_id}', {score}, {score}, {score}, N'{content}'); \nGO"
             )
 
         # Service-Specific Tables
         if service_type == 'KB': # KHAMBENH
             ma_bs = random.choice(staff_ids)
             khambenh_inserts.append(
-                f"INSERT INTO KHAMBENH VALUES ('{sddv_id}', N'{fake.sentence(nb_words=5)}', N'{fake.sentence(nb_words=4)}', '{random_date_range(datetime.now(), datetime(2026, 1, 1))}', '{ma_tc}', '{ma_bs}');"
+                f"INSERT INTO KHAMBENH VALUES ('{sddv_id}', N'{fake.sentence(nb_words=5)}', N'{fake.sentence(nb_words=4)}', '{random_date_range(datetime.now(), datetime(2026, 1, 1))}', '{ma_tc}', '{ma_bs}'); \nGO"
             )
             
             # CHITIETTOATHUOC (Tăng xác suất và số lượng item)
@@ -238,13 +238,13 @@ for i in range(1, NUM_TRANSACTIONS + 1):
                 med_products = random.sample(PRODUCT_IDS, num_meds) 
                 for med_sp in med_products:
                     chitiettoathuoc_inserts.append(
-                        f"INSERT INTO CHITIETTOATHUOC VALUES ('{med_sp}', '{sddv_id}', {random.randint(1, 10)}, N'1 viên/ngày', N'Uống sau ăn');"
+                        f"INSERT INTO CHITIETTOATHUOC VALUES ('{med_sp}', '{sddv_id}', {random.randint(1, 10)}, N'1 viên/ngày', N'Uống sau ăn'); \nGO"
                     )
 
         elif service_type == 'TP': # TIEMPHONG
             ma_bs = random.choice(staff_ids)
             tiemphong_inserts.append(
-                f"INSERT INTO TIEMPHONG VALUES ('{sddv_id}', '{ma_tc}', '{ma_bs}');"
+                f"INSERT INTO TIEMPHONG VALUES ('{sddv_id}', '{ma_tc}', '{ma_bs}'); \nGO"
             )
 
             # DANGKYGOITIEM & CHITIETTIEMPHONG
@@ -256,20 +256,20 @@ for i in range(1, NUM_TRANSACTIONS + 1):
                 ma_dk_ref = f"'{dkgt_id}'"
                 
                 dangkygoitiem_inserts.append(
-                    f"INSERT INTO DANGKYGOITIEM VALUES ('{dkgt_id}', GETDATE(), '{random_date_range(datetime.now() + timedelta(days=365), datetime(2027, 1, 1))}', '{ma_gt}', '{ma_tc}');"
+                    f"INSERT INTO DANGKYGOITIEM VALUES ('{dkgt_id}', GETDATE(), '{random_date_range(datetime.now() + timedelta(days=365), datetime(2027, 1, 1))}', '{ma_gt}', '{ma_tc}'); \nGO"
                 )
             
             # Assume one vaccine shot is given
             if VACCINE_PRODUCTS:
                 vaccine_sp = random.choice(VACCINE_PRODUCTS)
                 chitettiemphong_inserts.append(
-                    f"INSERT INTO CHITIETTIEMPHONG VALUES ('{vaccine_sp}', '{sddv_id}', 1, {ma_dk_ref});"
+                    f"INSERT INTO CHITIETTIEMPHONG VALUES ('{vaccine_sp}', '{sddv_id}', 1, {ma_dk_ref}); \nGO"
                 )
 
         elif service_type == 'MH': # MUAHANG
             ma_nvbh = random.choice(staff_ids)
             muahang_inserts.append(
-                f"INSERT INTO MUAHANG VALUES ('{sddv_id}', '{ma_nvbh}');"
+                f"INSERT INTO MUAHANG VALUES ('{sddv_id}', '{ma_nvbh}'); \nGO"
             )
             
             # CHITIETMUAHANG (Tăng số lượng item/mua hàng)
@@ -277,7 +277,7 @@ for i in range(1, NUM_TRANSACTIONS + 1):
             for k in range(num_items):
                 item_sp = random.choice(PRODUCT_IDS)
                 chitietmuahang_inserts.append(
-                    f"INSERT INTO CHITIETMUAHANG VALUES ('{item_sp}', '{sddv_id}', {random.randint(1, 5)});")
+                    f"INSERT INTO CHITIETMUAHANG VALUES ('{item_sp}', '{sddv_id}', {random.randint(1, 5)}); \nGO")
 
 # --- Ghi dữ liệu ra file ---
 # Đã sắp xếp lại theo thứ tự tối ưu để tạo file, giúp bạn dễ dàng sử dụng
