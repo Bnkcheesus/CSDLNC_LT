@@ -159,6 +159,7 @@ export default function CustomerPetHistory() {
                                         <th className="px-3 py-2">Mã SDDV</th>
                                         <th className="px-3 py-2">Loại dịch vụ</th>
                                         <th className="px-3 py-2">Bác sĩ/Nhân viên bán hàng</th>
+                                        <th className="px-3 py-2">Thành tiền</th>
                                         <th className="px-3 py-2"></th>
                                     </tr>
                                 </thead>
@@ -173,6 +174,7 @@ export default function CustomerPetHistory() {
                                                 <td className="px-3 py-3">{r.MaSDDV}</td>
                                                 <td className="px-3 py-3">{r.LoaiDV}</td>
                                                 <td className="px-3 py-3">{r.TenNV}</td>
+                                                <td className="px-3 py-3">{r.TongTienDV ? r.TongTienDV.toLocaleString() : "-"}</td>
 
                                                 <td className="px-3 py-3 text-right">
                                                     <button

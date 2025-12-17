@@ -166,7 +166,8 @@ export const getServiceInvoiceInfo = async (maHD) => {
                 HD.NgayLap,
                 CN.TenCN,
                 HD.MaTKNV,
-                HD.MaTKKH
+                HD.MaTKKH,
+                HD.TongTien
             FROM HOADON HD
             JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
             WHERE HD.MaHD = @maHD
@@ -189,7 +190,8 @@ export const getServiceInvoiceDetail = async (maHD) => {
             SELECT 
                 SDV.MaSDDV, 
                 SDV.LoaiDV,
-                NV.HoTen AS TenNV
+                NV.HoTen AS TenNV,
+                SDV.TongTienDV
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
