@@ -77,6 +77,8 @@ export default function StaffAddServiceInvoice() {
     const handleCustomerSearchChange = (e) => {
         setCustomerKeyword(e.target.value);
         setSelectedCustomer(null);
+        setServices([]);
+        setPets([]);
 
         if (!e.target.value.trim()) {
             setCustomerResults([]);
