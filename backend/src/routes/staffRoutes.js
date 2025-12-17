@@ -6,7 +6,12 @@ import {
     getPetsByCustomerController,
     addServiceInvoiceController,
     getServiceInvoiceHistoryController,
-    addSDDVController
+    addSDDVController,
+    getServiceInvoiceInfoController,
+    getServiceInvoiceDetailController,
+    getExaminationDetailController,
+    getVaccinationDetailController,
+    getPurchaseDetailController
 } from '../controllers/staffController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -19,5 +24,10 @@ router.get('/pets/:maTKKH', authMiddleware, getPetsByCustomerController);
 router.post('/hddv', authMiddleware, addServiceInvoiceController);
 router.get('/hddv', authMiddleware, getServiceInvoiceHistoryController);
 router.post('/sddv', authMiddleware, addSDDVController);
+router.get('/invoices/:maHD', authMiddleware, getServiceInvoiceInfoController);
+router.get('/invoices/:maHD/details', authMiddleware, getServiceInvoiceDetailController);
+router.get('/khambenh/:maSDDV', authMiddleware, getExaminationDetailController);
+router.get('/tiemphong/:maSDDV', authMiddleware, getVaccinationDetailController);
+router.get('/muahang/:maSDDV', authMiddleware, getPurchaseDetailController);
 
 export default router;

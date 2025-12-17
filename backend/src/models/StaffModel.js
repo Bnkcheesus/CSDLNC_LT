@@ -141,7 +141,6 @@ export const getServiceInvoiceHistory = async (maTKNV, page, limit) => {
     }
 };
 
-
 export const addSDDV = async (maHD, loaiDV, maBS, maTC) => {
     try {
         const pool = await getPool();
@@ -154,6 +153,128 @@ export const addSDDV = async (maHD, loaiDV, maBS, maTC) => {
         return result.rowsAffected[0] > 0;
     } catch (err) {
         console.error('Error adding SDDV:', err);
+        throw err;
+    }
+};
+
+export const getServiceInvoiceInfo = async (maHD) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT
+                HD.MaHD,
+                HD.NgayLap,
+                CN.TenCN,
+                HD.MaTKNV,
+                HD.MaTKKH
+            FROM HOADON HD
+            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            WHERE HD.MaHD = @maHD
+        `;
+            
+        const result = await pool.request()
+            .input('maHD', maHD)
+            .query(query);
+        return result.recordset[0] || null;
+    } catch (err) {
+        console.error('Error getting service invoice info:', err);
+        throw err;
+    }
+};
+
+export const getServiceInvoiceDetail = async (maHD) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                SDV.MaSDDV, 
+                SDV.LoaiDV,
+                NV.HoTen AS TenNV
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
+            JOIN NHANVIEN NV ON 
+                (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV) OR 
+                (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV) OR
+                (SDV.LoaiDV = 'MH' AND MH.MaNVBH = NV.MaTKNV)
+            WHERE HD.MaHD = @maHD
+        `;
+        const result = await pool.request()
+            .input('maHD', maHD)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting service invoice detail:', err);
+        throw err;
+    }
+};
+
+export const getExaminationDetail = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                SP.MaSP,
+                SP.TenSP,
+                CT.SoLuong
+            FROM CHITIETTOATHUOC CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            WHERE CT.MaSDDV = @maSDDV
+        `;
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting examination detail:', err);
+        throw err;
+    }
+};
+
+export const getVaccinationDetail = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                SP.MaSP,
+                SP.TenSP,
+                CT.LieuLuong,
+                DG.MaGoi
+            FROM CHITIETTIEMPHONG CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            LEFT JOIN DANGKYGOITIEM DG ON CT.MaDK = DG.MaDK
+            WHERE CT.MaSDDV = @maSDDV
+        `;
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting vaccination detail:', err);
+        throw err;
+    }
+};
+
+export const getPurchaseDetail = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT 
+                SP.MaSP,
+                SP.TenSP,
+                CT.SoLuong
+            FROM CHITIETMUAHANG CT
+            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+            WHERE CT.MaSDDV = @maSDDV
+        `;
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting purchase detail:', err);
         throw err;
     }
 };
