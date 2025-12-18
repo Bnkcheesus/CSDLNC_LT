@@ -3,7 +3,6 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
-import CategoryBar from "../../components/ui/CategoryBar.jsx";
 import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

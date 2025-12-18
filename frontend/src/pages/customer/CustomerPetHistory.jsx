@@ -5,6 +5,7 @@ import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
 import CategoryBar from "../../components/ui/CategoryBar.jsx";
+import PetInfoCard from "../../components/ui/PetInfoCard.jsx";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CustomerPetHistory() {
@@ -126,20 +127,7 @@ export default function CustomerPetHistory() {
 
             {/* ---------------- PET INFORMATION ---------------- */}
             <div className="max-w-[1200px] mx-auto px-4 mt-6">
-                {pet && (
-                    <div className="bg-white border rounded-md shadow-sm p-4 mb-6">
-                        <h3 className="text-base font-semibold mb-3">Thông tin thú cưng</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-sm">
-                            <p><strong>Mã thú cưng:</strong> {pet.MaTC}</p>
-                            <p><strong>Tên thú cưng:</strong> {pet.TenTC}</p>
-                            <p><strong>Loài:</strong> {pet.Loai}</p>
-                            <p><strong>Giống:</strong> {pet.Giong}</p>
-                            <p><strong>Ngày sinh:</strong> {pet.NgaySinh ? new Date(pet.NgaySinh).toLocaleDateString() : "-"}</p>
-                            <p><strong>Giới tính:</strong> {pet.GioiTinh}</p>
-                            <p><strong>Tình trạng sức khoẻ:</strong> {pet.TinhTrangSucKhoe}</p>
-                        </div>
-                    </div>
-                )}
+                <PetInfoCard pet={pet} />
             </div>
 
             {/* ---------------- SERVICE TYPE BAR ---------------- */}
@@ -237,7 +225,7 @@ export default function CustomerPetHistory() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].toaThuoc.map((d) => (
-                                                                            <tr key={d.MaSP} className="border-t">
+                                                                            <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.SoLuong}</td>
                                                                                 <td className="px-2 py-1">{d.LieuLuong}</td>
@@ -260,7 +248,7 @@ export default function CustomerPetHistory() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].toaTiem.map((d) => (
-                                                                            <tr key={d.MaSP} className="border-t">
+                                                                            <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.LieuLuong}</td>
                                                                                 <td className="px-2 py-1">{d.MaGoi || "-"}</td>
