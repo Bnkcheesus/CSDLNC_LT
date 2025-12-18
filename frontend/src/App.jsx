@@ -14,6 +14,8 @@ import StaffHome from './pages/staff/StaffHome.jsx';
 import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
 import StaffServiceInvoiceDetail from './pages/staff/StaffServiceInvoiceDetail.jsx';
 import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
+import DocServiceHistory from './pages/staff/DocServiceHistory.jsx';
+import DocExamination from './pages/staff/DocExamination.jsx';
 
 export default function App() {
   return (
@@ -55,6 +57,24 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["receptionist"]}>
               <StaffAddServiceInvoice />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/doctor/history"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DocServiceHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/doctor/khambenh/:maSDDV"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DocExamination />
             </ProtectedRoute>
           }
         />

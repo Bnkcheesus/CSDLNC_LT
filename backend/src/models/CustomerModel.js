@@ -85,7 +85,7 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             WHERE HD.MaTKKH = @maTK
-            ${type !== "all" ? "AND SDV.LoaiDV = @type" : ""}
+            ${typeFilter}
         `;
 
         const result = await pool.request()

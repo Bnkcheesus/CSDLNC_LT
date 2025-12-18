@@ -208,7 +208,7 @@ export default function CustomerPetHistory() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].map((d) => (
-                                                                            <tr key={d.MaSP} className="border-t">
+                                                                            <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.SoLuong}</td>
                                                                             </tr>
@@ -229,7 +229,7 @@ export default function CustomerPetHistory() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].map((d) => (
-                                                                            <tr key={d.MaSP} className="border-t">
+                                                                            <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.LieuLuong}</td>
                                                                                 <td className="px-2 py-1">{d.MaGoi || "-"}</td>
@@ -250,7 +250,7 @@ export default function CustomerPetHistory() {
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].map((d) => (
-                                                                            <tr key={d.MaSP} className="border-t">
+                                                                            <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.SoLuong}</td>
                                                                             </tr>
