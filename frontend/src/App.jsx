@@ -11,6 +11,9 @@ import CustomerPets from './pages/customer/CustomerPets.jsx';
 import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
 import CustomerVaccinationPackages from './pages/customer/CustomerVaccinationPackages.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
+import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
+import StaffServiceInvoiceDetail from './pages/staff/StaffServiceInvoiceDetail.jsx';
+import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
 
 export default function App() {
   return (
@@ -25,6 +28,33 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["manager", "receptionist", "sales", "doctor"]}>
               <StaffHome />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="staff/invoices"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffInvoiceHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/invoices/:maHD"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffServiceInvoiceDetail />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/invoices/new"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffAddServiceInvoice />
             </ProtectedRoute>
           }
         />

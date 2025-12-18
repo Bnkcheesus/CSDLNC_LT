@@ -3,33 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 const MENU_CONFIG = [
     { label: "Trang chủ", to: "/customer/home", roles: ["customer"] },
     { label: "Trang chủ", to: "/staff/home", roles: ["manager", "receptionist", "sales", "doctor"] },
-    {
-        label: "Dịch vụ",
-        to: "/customer/history",
-        roles: ["customer"],
-        relatedPaths: [
-            "/customer/khambenh",
-            "/customer/tiemphong",
-            "/customer/muahang"
-        ]
-    },
-    {
-        label: "Gói tiêm",
-        to: "/customer/packages",
-        roles: ["customer"],
-        relatedPaths: ["/customer/packages"]
-    },
-    {
-        label: "Thú cưng",
-        to: "/customer/pets",
-        roles: ["customer"],
-        relatedPaths: [
-            "/customer/pets/"
-        ]
-    },
+    { label: "Dịch vụ", to: "/customer/history", roles: ["customer"], relatedPaths: ["/customer/khambenh", "/customer/tiemphong", "/customer/muahang"] },
+    { label: "Gói tiêm", to: "/customer/packages", roles: ["customer"], relatedPaths: ["/customer/packages"] },
+    { label: "Thú cưng", to: "/customer/pets", roles: ["customer"], relatedPaths: ["/customer/pets/"]},
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
-    { label: "Hoá đơn dịch vụ", to: "/staff/service-invoices", roles: ["receptionist"] },
-    { label: "Hoá đơn mua hàng", to: "/staff/sales-invoices", roles: ["sales"] },
+    { label: "Hoá đơn dịch vụ", to: "/staff/invoices", roles: ["receptionist"], relatedPaths: ["/staff/invoices/"] },
+    { label: "Hoá đơn mua hàng", to: "/staff/hdmh", roles: ["sales"] },
+    { label: "Thông tin cá nhân", to: "/staff/profile", roles: ["doctor", "manager", "receptionist", "sales"] },
 ];
 
 export default function Navbar() {
@@ -37,7 +17,7 @@ export default function Navbar() {
     const location = useLocation();
 
     if (!role) {
-        return <div className="h-2 bg-blue-400" />;
+        return <div className="h-2 bg-blue-500" />;
     }
 
     const filteredMenu = MENU_CONFIG.filter((item) => item.roles.includes(role));
