@@ -1,6 +1,310 @@
 USE PETCAREDB
 GO
 
+--1: Tra cứu lịch sử hoá đơn và SDDV của khách hàng + danh sách thú cưng của khách hàng + lịch sử khám và tiêm của thú cưng
+
+--1a: Tra cứu lịch sử hoá đơn của 1 khách hàng
+CREATE OR ALTER PROCEDURE sp_TraCuuLichSuHoaDonKH
+	@maTKKH CHAR(8),
+	@maCN CHAR(5) = NULL
+AS
+BEGIN
+	SELECT
+		HD.MaHD,
+		HD.NgayLap,
+		HD.TongTien,
+		HD.KhuyenMai,
+		HD.HinhThucThanhToan,
+		HD.MaCN,
+		CN.TenCN,
+		HD.MaTKKH,
+		KH.HoTen,
+		HD.MaTKNV,
+		NV.HoTen
+	FROM HOADON HD
+	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+	JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
+	JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
+	WHERE
+		HD.MaTKKH = @maTKKH
+		AND (@maCN IS NULL OR HD.MaCN = @maCN)
+	ORDER BY HD.NgayLap DESC;
+END
+GO
+
+--1b: Tra cứu danh sách thú cưng của khách hàng
+CREATE OR ALTER PROCEDURE sp_TraCuuDanhSachThuCungKH
+	@maTKKH CHAR(8)
+AS
+BEGIN
+	SELECT 
+		TC.MaTC,
+        TC.TenTC,
+        TC.Loai,
+        TC.Giong,
+		TC.MATKKH,
+		KH.HoTen
+	FROM THUCUNG TC
+	JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+	WHERE TC.MaTKKH = @maTKKH
+	ORDER BY TC.MaTC
+END
+GO
+
+--1c: Tra cứu lịch sử SDDV của khách hàng
+CREATE OR ALTER PROCEDURE sp_TraCuuLichSuSDDVKH
+	@maTKKH CHAR(8),
+	@maCN CHAR(5) = NULL
+AS
+BEGIN
+	SELECT 
+		SDV.MaSDDV, 
+		SDV.LoaiDV,
+		SDV.MaHD,
+		HD.NgayLap AS NgaySuDung,
+		CN.TenCN,
+		TC.TenTC
+	FROM SUDUNGDICHVU SDV
+	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+    LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+	LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+	WHERE
+		HD.MaTKKH = @maTKKH
+		AND (@maCN IS NULL OR HD.MaCN = @maCN)
+	ORDER BY HD.NgayLap DESC;
+END
+GO
+
+--1d: Tra cứu lịch sử khám và tiêm của thú cưng
+CREATE OR ALTER PROCEDURE sp_TraCuuLichSuKhamTiemTC
+	@maTC CHAR(8),
+	@maCN CHAR(5) = NULL
+AS
+BEGIN
+	SELECT 
+		SDV.MaSDDV, 
+		SDV.LoaiDV,
+		HD.NgayLap AS NgaySuDung,
+		CN.TenCN,
+		NV.MaTKNV AS MaBS,
+		NV.HoTen AS TenBS
+	FROM SUDUNGDICHVU SDV
+	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+	LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+	JOIN NHANVIEN NV
+		ON (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV)
+		OR (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV)
+	WHERE 
+		(KB.MaTC = @maTC OR TP.MaTC = @maTC)
+		AND (@maCN IS NULL OR HD.MaCN = @maCN)
+	ORDER BY HD.NgayLap DESC;
+END
+GO
+
+
+
+--2: Bác sĩ tra cứu lịch sử khám và tiêm của mình + lấy thông tin khám bệnh, tiêm phòng + cập nhật chi tiết toa thuốc, chi tiết tiêm phòng.
+--   Nhân viên tạo hoá đơn, thêm dịch vụ vào hoá đơn.
+
+ --2a: Bác sĩ tra cứu lịch sử khám/tiêm của mình
+CREATE OR ALTER PROCEDURE sp_TraCuuLichSuKhamTiemBS
+	@maTKNV CHAR(8)
+AS
+BEGIN
+	SELECT
+		SDV.MaSDDV,
+		HD.NgayLap AS NgaySuDung,
+		SDV.LoaiDV,
+		KH.MaTKKH,
+		KH.HoTen,
+		TC.TenTC
+	FROM SUDUNGDICHVU SDV
+	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+
+	LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+	LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+	LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+
+	WHERE
+	(
+		EXISTS (
+			SELECT 1
+			FROM KHAMBENH
+			WHERE MaSDDV = SDV.MaSDDV
+			AND MaBS = @maTKNV
+		)
+		OR
+		EXISTS (
+			SELECT 1
+			FROM TIEMPHONG
+			WHERE MaSDDV = SDV.MaSDDV
+			AND MaBS = @maTKNV
+		)
+	)
+	ORDER BY NgaySuDung DESC;
+END
+GO
+
+--2b: Tra cứu toa thuốc của một lần khám bệnh
+CREATE OR ALTER PROCEDURE sp_TraCuuToaThuoc
+	@maSDDV CHAR(10)
+AS
+BEGIN
+	SELECT
+		CT.MaSP AS MaThuoc,
+		SP.TenSP AS TenThuoc,
+		CT.SoLuong,
+		CT.LieuLuong,
+		CT.CachDung,
+		(SP.Gia * CT.SoLuong) AS Gia
+	FROM CHITIETTOATHUOC CT
+	JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+	WHERE CT.MaSDDV = @maSDDV
+END
+GO
+
+--2c: Thêm thuốc vào toa thuốc
+CREATE OR ALTER PROCEDURE sp_ThemThuocToaThuoc
+	@maSP CHAR(8), 
+	@maSDDV	CHAR(10),
+	@soLuong INT,
+	@lieuLuong NVARCHAR(50),
+	@cachDung NVARCHAR(50)
+AS
+BEGIN
+	INSERT INTO CHITIETTOATHUOC (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
+    VALUES (@maSP, @maSDDV, @soLuong, @lieuLuong, @cachDung);
+
+	DECLARE
+		@donGia DECIMAL(19,2),
+		@tienThuoc DECIMAL(19,2),
+		@maHD CHAR(8)
+	
+	SELECT @donGia = Gia
+	FROM SANPHAM
+	WHERE MaSP = @maSP;
+
+	SET @tienThuoc = @donGia * @soLuong;
+
+	UPDATE SUDUNGDICHVU
+	SET TongTienDV = TongTienDV + @tienThuoc
+	WHERE MaSDDV = @maSDDV;
+	
+	SELECT @maHD = MaHD 
+	FROM SUDUNGDICHVU
+	WHERE MaSDDV = @maSDDV;
+
+	UPDATE HOADON
+	SET TongTien = TongTien + @tienThuoc
+	WHERE MaHD = @maHD;
+END
+GO
+
+-- chưa có tiêm phòng
+
+
+--2d: Tạo hoá đơn mới
+CREATE OR ALTER PROCEDURE sp_ThemHoaDon
+    @maTKNV CHAR(8),
+    @maTKKH CHAR(8),
+	@maCN CHAR(5),
+	@newMaHD CHAR(8) OUTPUT
+AS
+BEGIN
+    IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
+    FROM KHACHHANG
+    WHERE MaTKKH = @maTKKH))
+		RETURN
+    IF (NOT EXISTS (SELECT NHANVIEN.MaTKNV
+    FROM NHANVIEN
+    WHERE MaTKNV = @maTKNV))
+		RETURN
+    DECLARE @maxMaHD CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaHD = MAX(MaHD)
+    FROM HOADON;
+
+    IF (@maxMaHD IS NULL)
+        SET @newMaHD = 'HD000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaHD, 3, 6) AS INT) + 1;
+        SET @newMaHD = 'HD' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO HOADON
+        (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
+    VALUES
+        (@newMaHD, GETDATE(), 0, 0, NULL, @maCN, @maTKKH, @maTKNV)
+END
+GO
+
+--2e: Thêm dịch vụ vào hoá đơn
+CREATE OR ALTER PROCEDURE sp_ThemSDDV
+    @maHD CHAR(8),
+    @Loai CHAR(2),
+    @MaThuCung CHAR(8) = NULL,
+    @MaNV CHAR(8)
+AS
+BEGIN
+    IF (@maHD NOT IN (SELECT MaHD
+    FROM HOADON))
+        RETURN;
+
+    IF (@MaNV NOT IN (SELECT MaTKNV
+    FROM NHANVIEN))
+        RETURN;
+
+    IF (@MaThuCung IS NOT NULL AND @MaThuCung NOT IN (SELECT MaTC
+        FROM THUCUNG))
+        RETURN;
+
+    IF (@Loai NOT IN ('KB', 'TP', 'MH'))
+        RETURN;
+
+    DECLARE @newMaSDDV CHAR(10);
+    DECLARE @maxMaSDDV CHAR(10);
+    DECLARE @num INT;
+
+    SELECT @maxMaSDDV = MAX(MaSDDV)
+    FROM SUDUNGDICHVU;
+
+    IF (@maxMaSDDV IS NULL)
+        SET @newMaSDDV = 'SDDV000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaSDDV, 5, 6) AS INT) + 1;
+        SET @newMaSDDV = 'SDDV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO SUDUNGDICHVU
+    VALUES
+        (@newMaSDDV, @Loai, 0, @maHD);
+
+    IF (@Loai = 'KB')
+        INSERT INTO KHAMBENH
+    VALUES
+        (@newMaSDDV, NULL, NULL, NULL, @MaThuCung, @MaNV);
+
+    IF (@Loai = 'TP')
+        INSERT INTO TIEMPHONG
+    VALUES
+        (@newMaSDDV, @MaThuCung, @MaNV);
+
+    IF (@Loai = 'MH')
+        INSERT INTO MUAHANG
+    VALUES
+        (@newMaSDDV, @MaNV);
+END
+GO
+
+
 
 
 --5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong năm
@@ -88,105 +392,12 @@ BEGIN
 END
 GO
 
--- Thêm hóa đơn mới
-GO
-CREATE OR ALTER PROCEDURE sp_ThemHoaDon
-    @maTKNV CHAR(8),
-    @maTKKH CHAR(8),
-	@maCN CHAR(5),
-	@newMaHD CHAR(8) OUTPUT
-AS
-BEGIN
-    IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
-    FROM KHACHHANG
-    WHERE MaTKKH = @maTKKH))
-		RETURN
-    IF (NOT EXISTS (SELECT NHANVIEN.MaTKNV
-    FROM NHANVIEN
-    WHERE MaTKNV = @maTKNV))
-		RETURN
-    DECLARE @maxMaHD CHAR(8);
-    DECLARE @num INT;
+--Procedure thêm:
 
-    SELECT @maxMaHD = MAX(MaHD)
-    FROM HOADON;
 
-    IF (@maxMaHD IS NULL)
-        SET @newMaHD = 'HD000001';
-    ELSE
-    BEGIN
-        SET @num = CAST(SUBSTRING(@maxMaHD, 3, 6) AS INT) + 1;
-        SET @newMaHD = 'HD' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
-    END
 
-    INSERT INTO HOADON
-        (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
-    VALUES
-        (@newMaHD, GETDATE(), 0, 0, NULL, @maCN, @maTKKH, @maTKNV)
 
-    PRINT N'Thêm hóa đơn thành công. Mã hoá đơn = ' + @newMaHD;
-END
-GO
 
-CREATE OR ALTER PROCEDURE sp_ThemSDDV
-    @maHD CHAR(8),
-    @Loai CHAR(2),
-    @MaThuCung CHAR(8) = NULL,
-    @MaNV CHAR(8)
-AS
-BEGIN
-    IF (@maHD NOT IN (SELECT MaHD
-    FROM HOADON))
-        RETURN;
-
-    IF (@MaNV NOT IN (SELECT MaTKNV
-    FROM NHANVIEN))
-        RETURN;
-
-    IF (@MaThuCung IS NOT NULL AND @MaThuCung NOT IN (SELECT MaTC
-        FROM THUCUNG))
-        RETURN;
-
-    IF (@Loai NOT IN ('KB', 'TP', 'MH'))
-        RETURN;
-
-    DECLARE @newMaSDDV CHAR(10);
-    DECLARE @maxMaSDDV CHAR(10);
-    DECLARE @num INT;
-
-    SELECT @maxMaSDDV = MAX(MaSDDV)
-    FROM SUDUNGDICHVU;
-
-    IF (@maxMaSDDV IS NULL)
-        SET @newMaSDDV = 'SDDV000001';
-    ELSE
-    BEGIN
-        SET @num = CAST(SUBSTRING(@maxMaSDDV, 5, 6) AS INT) + 1;
-        SET @newMaSDDV = 'SDDV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
-    END
-
-    INSERT INTO SUDUNGDICHVU
-    VALUES
-        (@newMaSDDV, @Loai, 0, @maHD);
-
-    IF (@Loai = 'KB')
-        INSERT INTO KHAMBENH
-    VALUES
-        (@newMaSDDV, NULL, NULL, NULL, @MaThuCung, @MaNV);
-
-    IF (@Loai = 'TP')
-        INSERT INTO TIEMPHONG
-    VALUES
-        (@newMaSDDV, @MaThuCung, @MaNV);
-
-    IF (@Loai = 'MH')
-        INSERT INTO MUAHANG
-    VALUES
-        (@newMaSDDV, @MaNV);
-
-    PRINT N'Thêm sử dụng dịch vụ thành công. Mã SDDV = ' + @newMaSDDV;
-END
-GO
 CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
     @MaThuCung CHAR(8),
     @MaGoi CHAR(5),
