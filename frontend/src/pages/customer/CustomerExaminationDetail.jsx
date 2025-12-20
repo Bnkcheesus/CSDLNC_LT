@@ -58,8 +58,8 @@ export default function CustomerExaminationDetail() {
                     <div className="p-6 space-y-3">
 
                         {/* General Information */}
-                        <section>
-                            <h4 className="font-semibold text-gray-700 mb-2">Thông tin chung</h4>
+                        <section className="border-b">
+                            <h3 className="text-base font-semibold mb-3">Thông tin chung</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <Info label="Mã khám bệnh" value={detail.MaSDDV} />
                                 <Info label="Mã hoá đơn" value={detail.MaHD} />
@@ -72,30 +72,31 @@ export default function CustomerExaminationDetail() {
                                 <Info label="Ngày tái khám" value={detail.NgayTaiKham} />
                                 <Info label="Tổng tiền" value={`${detail.TongTienDV} VND`} />
                             </div>
+                            <div className="p-4"> </div>
                         </section>
 
                         {/* Prescription Table */}
                         <section className="mt-6">
-                            <h4 className="font-semibold text-gray-700 mb-2">Toa thuốc</h4>
-                            <table className="w-full border text-sm">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="border p-2">Tên thuốc</th>
-                                        <th className="border p-2">Số lượng</th>
-                                        <th className="border p-2">Liều lượng</th>
-                                        <th className="border p-2">Cách dùng</th>
+                            <h3 className="text-base font-semibold mb-3">Toa thuốc</h3>
+                            <table className="w-full text-center border-t">
+                                <thead className="bg-gray-50">
+                                    <tr className="text-xs text-gray-600">
+                                        <th className="px-2 py-1">Tên thuốc</th>
+                                        <th className="px-2 py-1">Số lượng</th>
+                                        <th className="px-2 py-1">Liều lượng</th>
+                                        <th className="px-2 py-1">Cách dùng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {toaThuoc.length === 0 ? (
-                                        <tr><td colSpan="4" className="text-center p-3">Không có toa thuốc</td></tr>
+                                        <tr><td colSpan="4" className="text-center text-xs p-3">Không có toa thuốc</td></tr>
                                     ) : (
                                         toaThuoc.map((item) => (
-                                            <tr key={item.MaSP}>
-                                                <td className="border p-2">{item.TenSP}</td>
-                                                <td className="border p-2">{item.SoLuong}</td>
-                                                <td className="border p-2">{item.LieuLuong}</td>
-                                                <td className="border p-2">{item.CachDung}</td>
+                                            <tr key={item.MaSP} className="text-xs border-t">
+                                                <td className="px-2 py-1">{item.TenSP}</td>
+                                                <td className="px-2 py-1">{item.SoLuong}</td>
+                                                <td className="px-2 py-1">{item.LieuLuong}</td>
+                                                <td className="px-2 py-1">{item.CachDung}</td>
                                             </tr>
                                         ))
                                     )}

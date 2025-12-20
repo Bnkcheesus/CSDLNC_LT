@@ -107,10 +107,9 @@ export default function DocServiceHistory() {
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã SDDV</th>
                       <th className="px-3 py-2">Ngày SDDV</th>
-                      <th className="px-3 py-2">Loại DV</th>
-                      <th className="px-3 py-2">Mã KH</th>
-                      <th className="px-3 py-2">Tên KH</th>
-                      <th className="px-3 py-2">Tên thú cưng</th>
+                      <th className="px-3 py-2">Loại dịch vụ</th>
+                      <th className="px-3 py-2">Khách hàng</th>
+                      <th className="px-3 py-2">Thú cưng</th>
                       <th className="px-3 py-2"></th>
                     </tr>
                   </thead>
@@ -123,9 +122,8 @@ export default function DocServiceHistory() {
                         <td className="px-3 py-3 text-sm">{r.MaSDDV}</td>
                         <td className="px-3 py-3 text-sm">{r.NgaySuDung}</td>
                         <td className="px-3 py-3 text-sm">{r.LoaiDV || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.MaTKKH || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.HoTen || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.TenTC || "-"}</td>
+                        <td className="px-3 py-3 text-sm">{r.MaTKKH + " - " + r.HoTen || "-"}</td>
+                        <td className="px-3 py-3 text-sm">{r.MaTC + " - " + r.TenTC || "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
                           <button
                             onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}

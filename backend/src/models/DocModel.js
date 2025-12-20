@@ -16,6 +16,7 @@ export const getDocServiceHistory = async (maTKNV, type, page, limit) => {
                 SDV.LoaiDV,
                 KH.MaTKKH,
                 KH.HoTen,
+                TC.MaTC,
                 TC.TenTC
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
@@ -136,7 +137,7 @@ export const getDocExaminationInfo = async (maSDDV) => {
 
         return result.recordset[0];
     } catch (err) {
-        console.error('Error getting service info by ID:', err);
+        console.error('Error getting examination info by ID:', err);
         throw err;
     }
 };
@@ -205,6 +206,106 @@ export const updateToaThuoc = async (maSDDV, thuocData) => {
         return { message: 'Prescription item added successfully' };
     } catch (err) {
         console.error('Error adding prescription item by service ID:', err);
+        throw err;
+    }
+};
+
+export const getDocVaccinationInfo = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT
+                SDV.MaSDDV,
+                HD.NgayLap,
+                SDV.LoaiDV,
+                CN.TenCN,
+
+                KH.MaTKKH AS MaKH,
+                KH.HoTen AS TenKH,
+
+                TC.MaTC,
+                TC.TenTC,
+
+                BS.MaTKNV AS MaBS,
+                BS.HoTen  AS TenBS
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD
+                ON SDV.MaHD = HD.MaHD
+            JOIN CHINHANH CN
+                ON HD.MaCN = CN.MaCN
+            JOIN KHACHHANG KH
+                ON HD.MaTKKH = KH.MaTKKH
+
+            LEFT JOIN TIEMPHONG TP
+                ON SDV.MaSDDV = TP.MaSDDV
+
+            LEFT JOIN THUCUNG TC
+                ON TC.MaTC = TP.MaTC
+
+            LEFT JOIN NHANVIEN BS
+                ON BS.MaTKNV = TP.MaBS
+
+            WHERE SDV.MaSDDV = @maSDDV;
+        `;
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+
+        return result.recordset[0];
+    } catch (err) {
+        console.error('Error getting vaccination info by ID:', err);
+        throw err;
+    }
+};
+
+export const getToaTiem = async (maSDDV) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT
+                CTTP.MaSP AS MaVaccine,
+                SP.TenSP AS TenVaccine,
+                CTTP.LieuLuong,
+                CTTP.MaDK,
+                GT.MaGoi,
+                GT.TenGoi
+            FROM CHITIETTIEMPHONG CTTP
+            JOIN SANPHAM SP
+                ON CTTP.MaSP = SP.MaSP
+            LEFT JOIN DANGKYGOITIEM DK
+                ON CTTP.MaDK = DK.MaDK
+            LEFT JOIN GOITIEM GT
+                ON DK.MaGoi = GT.MaGoi
+            WHERE
+                CTTP.MaSDDV = @maSDDV
+        `;
+        const result = await pool.request()
+            .input('maSDDV', maSDDV)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting toa tiem by service ID:', err);
+        throw err;
+    }
+};
+
+export const updateToaTiem = async (maSDDV, tiemData) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            INSERT INTO CHITIETTIEMPHONG (MaSP, MaSDDV, LieuLuong, MaDK)
+            VALUES (@maSP, @maSDDV, @LieuLuong, @maDK)
+        `;
+        console.log(tiemData);
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('maSP', tiemData.MaVaccine)
+            .input('LieuLuong', tiemData.LieuLuong)
+            .input('maDK', tiemData.MaDK || null)
+            .query(query);
+        return { message: 'Toa tiem item added successfully' };
+    } catch (err) {
+        console.error('Error adding toa tiem item by service ID:', err);
         throw err;
     }
 };
@@ -283,6 +384,37 @@ export const getPetHistory = async (maTC, type, page, limit) => {
     }
 };
 
+export const getPetPackages = async (maTC) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT
+                DK.MaDK,
+                DK.NgayDK,
+                DK.NgayBatDau,
+                DK.MaGoi,
+                GT.TenGoi,
+                GT.ThoiHan,
+                GT.MucUuDai,
+                GT.TongTienGoi
+            FROM DANGKYGOITIEM DK
+            JOIN GOITIEM GT
+                ON DK.MaGoi = GT.MaGoi
+            WHERE
+                DK.MaTC = @maTC
+            ORDER BY
+                DK.NgayDK DESC;
+        `;
+        const result = await pool.request()
+            .input('maTC', maTC)
+            .query(query);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting pet packages by pet ID:', err);
+        throw err;
+    }
+};
+
 export const getMedicineByKeyword = async (keyword) => {
     try {
         const pool = await getPool();
@@ -300,6 +432,27 @@ export const getMedicineByKeyword = async (keyword) => {
         return result.recordset;
     } catch (err) {
         console.error('Error getting medicines by keyword:', err);
+        throw err;
+    }
+};
+
+export const getVaccineByKeyword = async (keyword) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            SELECT
+                MaSP AS MaVaccine,
+                TenSP AS TenVaccine
+            FROM SANPHAM
+            WHERE LoaiSP = N'Vaccine' AND
+            (TenSP LIKE '%' + @keyword + '%' OR MaSP LIKE '%' + @keyword + '%')
+        `;
+        const result = await pool.request()
+            .input('keyword', keyword)
+            .query(query);
+        return result.recordset;
+    } catch (err) {
+        console.error('Error getting vaccines by keyword:', err);
         throw err;
     }
 };

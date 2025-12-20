@@ -166,8 +166,8 @@ function TPDetail({ data }) {
                 </thead>
                 <tbody>
                     {data.toaTiem ? data.toaTiem : data.map((d) => (
-                        <tr key={d.MaSP ? d.MaSP : d.MaThuoc} className="text-xs border-t">
-                            <td className="px-2 py-1">{d.TenSP || d.TenThuoc}</td>
+                        <tr key={d.MaSP ? d.MaSP : d.MaVaccine} className="text-xs border-t">
+                            <td className="px-2 py-1">{d.TenSP || d.TenVaccine}</td>
                             <td className="px-2 py-1">{d.LieuLuong}</td>
                             <td className="px-2 py-1">{d.MaGoi || "-"}</td>
                         </tr>

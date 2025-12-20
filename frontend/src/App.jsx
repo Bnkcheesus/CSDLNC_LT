@@ -16,6 +16,7 @@ import StaffServiceInvoiceDetail from './pages/staff/StaffServiceInvoiceDetail.j
 import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
 import DocServiceHistory from './pages/staff/DocServiceHistory.jsx';
 import DocExamination from './pages/staff/DocExamination.jsx';
+import DocVaccination from './pages/staff/DocVaccination.jsx';
 
 export default function App() {
   return (
@@ -75,6 +76,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["doctor"]}>
               <DocExamination />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/doctor/tiemphong/:maSDDV"
+          element={
+            <ProtectedRoute allowedRoles={["doctor"]}>
+              <DocVaccination />
             </ProtectedRoute>
           }
         />

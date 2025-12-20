@@ -58,8 +58,8 @@ export default function CustomerVaccinationDetail() {
                     <div className="p-6 space-y-3">
 
                         {/* General Information */}
-                        <section>
-                            <h4 className="font-semibold text-gray-700 mb-2">Thông tin chung</h4>
+                        <section className="border-b">
+                            <h3 className="text-base font-semibold mb-3">Thông tin chung</h3>
                             <div className="grid grid-cols-2 gap-4">
                                 <Info label="Mã tiêm phòng" value={detail.MaSDDV} />
                                 <Info label="Mã hoá đơn" value={detail.MaHD} />
@@ -69,28 +69,29 @@ export default function CustomerVaccinationDetail() {
                                 <Info label="Bác sĩ" value={detail.TenBS} />
                                 <Info label="Tổng tiền" value={`${detail.TongTienDV} VND`} />
                             </div>
+                            <div className="p-4"> </div>
                         </section>
 
                         {/* Vaccines Table */}
                         <section className="mt-6">
-                            <h4 className="font-semibold text-gray-700 mb-2">Toa tiêm</h4>
-                            <table className="w-full border text-sm">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="border p-2">Tên vaccine</th>
-                                        <th className="border p-2">Liều lượng</th>
-                                        <th className="border p-2">Mã đăng ký gói tiêm</th>
+                            <h3 className="text-base font-semibold mb-3">Toa tiêm</h3>
+                            <table className="w-full text-center border-t">
+                                <thead className="bg-gray-50">
+                                    <tr className="text-xs text-gray-600">
+                                        <th className="px-2 py-1">Tên vaccine</th>
+                                        <th className="px-2 py-1">Liều lượng</th>
+                                        <th className="px-2 py-1">Mã đăng ký gói tiêm</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {toaTiem.length === 0 ? (
-                                        <tr><td colSpan="3" className="text-center p-3">Không có toa tiêm</td></tr>
+                                        <tr><td colSpan="3" className="text-center text-xs p-3">Không có toa tiêm</td></tr>
                                     ) : (
                                         toaTiem.map((item) => (
-                                            <tr key={item.MaSP}>
-                                                <td className="border p-2">{item.TenSP}</td>
-                                                <td className="border p-2">{item.LieuLuong}</td>
-                                                <td className="border p-2">{item.MaDK}</td>
+                                            <tr key={item.MaSP} className="text-xs border-t">
+                                                <td className="px-2 py-1">{item.TenSP}</td>
+                                                <td className="px-2 py-1">{item.LieuLuong}</td>
+                                                <td className="px-2 py-1">{item.MaDK || "-"}</td>
                                             </tr>
                                         ))
                                     )}

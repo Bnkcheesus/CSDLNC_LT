@@ -72,7 +72,7 @@ export default function RatingSection({ maSDDV }) {
 function RatedView({ rating }) {
     return (
         <div className="space-y-2">
-            <Info label="Điểm" value={`${rating.diem} ⭐`} />
+            <Info label="Điểm" value={`${rating.diem}`} />
             <Info label="Thái độ nhân viên" value={rating.thaiDoNhanVien?radioOptionsA[5 - rating.thaiDoNhanVien]:'-'} />
             <Info label="Mức độ hài lòng" value={rating.mucDoHaiLong?radioOptionsB[5 - rating.mucDoHaiLong]:'-'} />
             <Info label="Bình luận" value={rating.binhLuan?rating.binhLuan:'-'} />
@@ -85,7 +85,7 @@ function RateForm({ rating, setRating, handleRating }) {
         <div className="space-y-4">
             {/* Diem */}
             <div>
-                <label className="font-medium">Điểm (1–5 ⭐)</label>
+                <label className="font-medium">Điểm (1–5)</label>
                 <input
                     type="number"
                     min="1"

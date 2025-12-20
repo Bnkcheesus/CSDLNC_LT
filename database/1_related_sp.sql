@@ -207,10 +207,88 @@ BEGIN
 END
 GO
 
--- chưa có tiêm phòng
+--2d: Tra cứu toa tiêm của một lần tiêm phòng
+CREATE OR ALTER PROCEDURE sp_TraCuuToaTiem
+    @maSDDV CHAR(10)
+AS
+BEGIN
+    SELECT
+        CT.MaSP AS MaVaccine,
+        SP.TenSP AS TenVaccine,
+        CT.LieuLuong,
+        CT.MaDK,
+        GT.MaGoi,
+        GT.TenGoi,
+        CASE 
+            WHEN CT.MaDK IS NULL THEN 
+                SP.Gia * CT.LieuLuong
+            ELSE
+                SP.Gia * CT.LieuLuong * ((100 - GT.MucUuDai) / 100.0)
+        END AS Gia
+    FROM CHITIETTIEMPHONG CT
+        JOIN SANPHAM SP
+        ON CT.MaSP = SP.MaSP
+        LEFT JOIN DANGKYGOITIEM DK
+        ON CT.MaDK = DK.MaDK
+        LEFT JOIN GOITIEM GT
+        ON DK.MaGoi = GT.MaGoi
+    WHERE
+        CT.MaSDDV = @maSDDV;
+END
+GO
 
+--2e: Thêm vaccine vào toa tiêm
+CREATE OR ALTER PROCEDURE sp_ThemVaccineToaTiem
+    @maSP CHAR(8),
+    @maSDDV CHAR(10),
+    @LieuLuong INT,
+    @maDK CHAR(8)
+AS
+BEGIN
+    INSERT INTO CHITIETTIEMPHONG
+        (MaSP, MaSDDV, LieuLuong, MaDK)
+    VALUES
+        (@maSP, @maSDDV, @LieuLuong, @maDK);
 
---2d: Tạo hoá đơn mới
+    DECLARE
+		@donGia DECIMAL(19,2),
+		@uuDai DECIMAL(4,2),
+		@tienVaccine DECIMAL(19,2),
+		@maHD CHAR(8)
+
+    SELECT @donGia = Gia
+    FROM SANPHAM
+    WHERE MaSP = @maSP;
+
+    IF (@maDK IS NULL)
+	BEGIN
+        SET @uuDai = 0.00;
+    END
+	ELSE
+	BEGIN
+        SELECT @uuDai = MucUuDai
+        FROM GOITIEM GT
+            JOIN DANGKYGOITIEM DK ON GT.MaGoi = DK.MaGoi
+        WHERE DK.MaDK = @maDK;
+    END
+
+    SET @tienVaccine = @donGia * @lieuLuong * ((100 - @uuDai) / 100.0);
+
+    UPDATE SUDUNGDICHVU
+	SET TongTienDV = TongTienDV + @tienVaccine
+	WHERE MaSDDV = @maSDDV;
+
+    SELECT @maHD = MaHD
+    FROM SUDUNGDICHVU
+    WHERE MaSDDV = @maSDDV;
+
+    UPDATE HOADON
+	SET TongTien = TongTien + @tienVaccine
+	WHERE MaHD = @maHD;
+END
+GO
+
+--2f: Tạo hoá đơn mới
 CREATE OR ALTER PROCEDURE sp_ThemHoaDon
     @maTKNV CHAR(8),
     @maTKKH CHAR(8),
@@ -247,7 +325,7 @@ BEGIN
 END
 GO
 
---2e: Thêm dịch vụ vào hoá đơn
+--2g: Thêm dịch vụ vào hoá đơn
 CREATE OR ALTER PROCEDURE sp_ThemSDDV
     @maHD CHAR(8),
     @Loai CHAR(2),
@@ -374,9 +452,9 @@ BEGIN
     FROM HOADON
     WHERE YEAR(NgayLap) = @nam
 END
-	SELECT SUM(TongTien)
-    FROM HOADON
-    WHERE YEAR(NgayLap) = @nam
+SELECT SUM(TongTien)
+FROM HOADON
+WHERE YEAR(NgayLap) = @nam
 GO
 
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng
@@ -394,45 +472,8 @@ BEGIN
 	)
 END
 GO
-
--- Procedure thêm:
-CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
-    @MaThuCung CHAR(8),
-    @MaGoi CHAR(5),
-    @NgayBatDau DATE
-AS
-BEGIN
-    IF (@MaThuCung NOT IN (SELECT THUCUNG.MaTC
-    FROM THUCUNG))
-		RETURN
-    IF (@MaGoi NOT IN (SELECT GOITIEM.MaGoi
-    FROM GOITIEM))
-		RETURN
-    IF (@NgayBatDau < CAST(GETDATE() AS DATE))
-		RETURN
-    DECLARE @newMaDK CHAR(8);
-    DECLARE @maxMaDK CHAR(8);
-    DECLARE @num INT;
-
-    SELECT @maxMaDK = MAX(MaDK)
-    FROM DANGKYGOITIEM;
-
-    IF (@maxMaDK IS NULL)
-        SET @newMaDK = 'DK000001';
-    ELSE
-    BEGIN
-        SET @num = CAST(SUBSTRING(@maxMaDK, 3, 6) AS INT) + 1;
-        SET @newMaDK = 'DK' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
-    END
-
-    INSERT DANGKYGOITIEM
-    VALUES
-        (@newMaDK, GETDATE(), @NgayBatDau, @MaGoi, @MaThuCung)
-    PRINT  N'Thêm đăng ký thành công. Mã DK = ' + @newMaDK;
-END
-GO
 --CREATE OR ALTER PROCEDURE sp_ThemSDDV @maHD CHAR(8),
-
+/*
 EXEC sp_Tim_Thu_Cung @thang = 1, @nam = 2025;
 
 EXEC sp_Tinh_Doanh_Thu_CN_theo_thang @tencn = N'Chi nhánh JohnHuyện', @thang = 1, @nam = 2025;
@@ -444,8 +485,5 @@ EXEC sp_Tinh_Doanh_Thu_CT_theo_thang @thang = 1, @nam = 2025;
 EXEC sp_Tinh_Doanh_Thu_CT_theo_nam @nam = 2025;
 
 EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
-
-
-
-
+*/
 
