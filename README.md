@@ -1,4 +1,4 @@
-# 🐾 PetCareX – Hệ thống chăm sóc thú cưng
+# PetCareX – Hệ thống chăm sóc thú cưng
 
 PetCareX là hệ thống quản lý dịch vụ chăm sóc thú cưng dành cho **khách hàng**, **nhân viên** và **quản lý**. Hệ thống hỗ trợ khám bệnh, tiêm phòng cho thú cưng, và mua hàng.
 
