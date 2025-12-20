@@ -472,45 +472,8 @@ BEGIN
 	)
 END
 GO
-
--- Procedure thêm:
-CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
-    @MaThuCung CHAR(8),
-    @MaGoi CHAR(5),
-    @NgayBatDau DATE
-AS
-BEGIN
-    IF (@MaThuCung NOT IN (SELECT THUCUNG.MaTC
-    FROM THUCUNG))
-		RETURN
-    IF (@MaGoi NOT IN (SELECT GOITIEM.MaGoi
-    FROM GOITIEM))
-		RETURN
-    IF (@NgayBatDau < CAST(GETDATE() AS DATE))
-		RETURN
-    DECLARE @newMaDK CHAR(8);
-    DECLARE @maxMaDK CHAR(8);
-    DECLARE @num INT;
-
-    SELECT @maxMaDK = MAX(MaDK)
-    FROM DANGKYGOITIEM;
-
-    IF (@maxMaDK IS NULL)
-        SET @newMaDK = 'DK000001';
-    ELSE
-    BEGIN
-        SET @num = CAST(SUBSTRING(@maxMaDK, 3, 6) AS INT) + 1;
-        SET @newMaDK = 'DK' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
-    END
-
-    INSERT DANGKYGOITIEM
-    VALUES
-        (@newMaDK, GETDATE(), @NgayBatDau, @MaGoi, @MaThuCung)
-    PRINT  N'Thêm đăng ký thành công. Mã DK = ' + @newMaDK;
-END
-GO
 --CREATE OR ALTER PROCEDURE sp_ThemSDDV @maHD CHAR(8),
-
+/*
 EXEC sp_Tim_Thu_Cung @thang = 1, @nam = 2025;
 
 EXEC sp_Tinh_Doanh_Thu_CN_theo_thang @tencn = N'Chi nhánh JohnHuyện', @thang = 1, @nam = 2025;
@@ -522,7 +485,5 @@ EXEC sp_Tinh_Doanh_Thu_CT_theo_thang @thang = 1, @nam = 2025;
 EXEC sp_Tinh_Doanh_Thu_CT_theo_nam @nam = 2025;
 
 EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
-
-
-
+*/
 
