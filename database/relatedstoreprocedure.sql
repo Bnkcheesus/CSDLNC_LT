@@ -5,103 +5,103 @@ GO
 
 --1a: Tra cứu lịch sử hoá đơn của 1 khách hàng
 CREATE OR ALTER PROCEDURE sp_TraCuuLichSuHoaDonKH
-	@maTKKH CHAR(8),
-	@maCN CHAR(5) = NULL
+    @maTKKH CHAR(8),
+    @maCN CHAR(5) = NULL
 AS
 BEGIN
-	SELECT
-		HD.MaHD,
-		HD.NgayLap,
-		HD.TongTien,
-		HD.KhuyenMai,
-		HD.HinhThucThanhToan,
-		HD.MaCN,
-		CN.TenCN,
-		HD.MaTKKH,
-		KH.HoTen,
-		HD.MaTKNV,
-		NV.HoTen
-	FROM HOADON HD
-	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-	JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
-	JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
-	WHERE
+    SELECT
+        HD.MaHD,
+        HD.NgayLap,
+        HD.TongTien,
+        HD.KhuyenMai,
+        HD.HinhThucThanhToan,
+        HD.MaCN,
+        CN.TenCN,
+        HD.MaTKKH,
+        KH.HoTen,
+        HD.MaTKNV,
+        NV.HoTen
+    FROM HOADON HD
+        JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+        JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
+        JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
+    WHERE
 		HD.MaTKKH = @maTKKH
-		AND (@maCN IS NULL OR HD.MaCN = @maCN)
-	ORDER BY HD.NgayLap DESC;
+        AND (@maCN IS NULL OR HD.MaCN = @maCN)
+    ORDER BY HD.NgayLap DESC;
 END
 GO
 
 --1b: Tra cứu danh sách thú cưng của khách hàng
 CREATE OR ALTER PROCEDURE sp_TraCuuDanhSachThuCungKH
-	@maTKKH CHAR(8)
+    @maTKKH CHAR(8)
 AS
 BEGIN
-	SELECT 
-		TC.MaTC,
+    SELECT
+        TC.MaTC,
         TC.TenTC,
         TC.Loai,
         TC.Giong,
-		TC.MATKKH,
-		KH.HoTen
-	FROM THUCUNG TC
-	JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
-	WHERE TC.MaTKKH = @maTKKH
-	ORDER BY TC.MaTC
+        TC.MATKKH,
+        KH.HoTen
+    FROM THUCUNG TC
+        JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+    WHERE TC.MaTKKH = @maTKKH
+    ORDER BY TC.MaTC
 END
 GO
 
 --1c: Tra cứu lịch sử SDDV của khách hàng
 CREATE OR ALTER PROCEDURE sp_TraCuuLichSuSDDVKH
-	@maTKKH CHAR(8),
-	@maCN CHAR(5) = NULL
+    @maTKKH CHAR(8),
+    @maCN CHAR(5) = NULL
 AS
 BEGIN
-	SELECT 
-		SDV.MaSDDV, 
-		SDV.LoaiDV,
-		SDV.MaHD,
-		HD.NgayLap AS NgaySuDung,
-		CN.TenCN,
-		TC.TenTC
-	FROM SUDUNGDICHVU SDV
-	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
-	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-    LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
-	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
-	LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
-	WHERE
+    SELECT
+        SDV.MaSDDV,
+        SDV.LoaiDV,
+        SDV.MaHD,
+        HD.NgayLap AS NgaySuDung,
+        CN.TenCN,
+        TC.TenTC
+    FROM SUDUNGDICHVU SDV
+        JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+        JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+        LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+        LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+        LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+    WHERE
 		HD.MaTKKH = @maTKKH
-		AND (@maCN IS NULL OR HD.MaCN = @maCN)
-	ORDER BY HD.NgayLap DESC;
+        AND (@maCN IS NULL OR HD.MaCN = @maCN)
+    ORDER BY HD.NgayLap DESC;
 END
 GO
 
 --1d: Tra cứu lịch sử khám và tiêm của thú cưng
 CREATE OR ALTER PROCEDURE sp_TraCuuLichSuKhamTiemTC
-	@maTC CHAR(8),
-	@maCN CHAR(5) = NULL
+    @maTC CHAR(8),
+    @maCN CHAR(5) = NULL
 AS
 BEGIN
-	SELECT 
-		SDV.MaSDDV, 
-		SDV.LoaiDV,
-		HD.NgayLap AS NgaySuDung,
-		CN.TenCN,
-		NV.MaTKNV AS MaBS,
-		NV.HoTen AS TenBS
-	FROM SUDUNGDICHVU SDV
-	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
-	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-	LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
-	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
-	JOIN NHANVIEN NV
-		ON (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV)
-		OR (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV)
-	WHERE 
+    SELECT
+        SDV.MaSDDV,
+        SDV.LoaiDV,
+        HD.NgayLap AS NgaySuDung,
+        CN.TenCN,
+        NV.MaTKNV AS MaBS,
+        NV.HoTen AS TenBS
+    FROM SUDUNGDICHVU SDV
+        JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+        JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+        LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+        LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+        JOIN NHANVIEN NV
+        ON (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV)
+            OR (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV)
+    WHERE 
 		(KB.MaTC = @maTC OR TP.MaTC = @maTC)
-		AND (@maCN IS NULL OR HD.MaCN = @maCN)
-	ORDER BY HD.NgayLap DESC;
+        AND (@maCN IS NULL OR HD.MaCN = @maCN)
+    ORDER BY HD.NgayLap DESC;
 END
 GO
 
@@ -110,96 +110,98 @@ GO
 --2: Bác sĩ tra cứu lịch sử khám và tiêm của mình + lấy thông tin khám bệnh, tiêm phòng + cập nhật chi tiết toa thuốc, chi tiết tiêm phòng.
 --   Nhân viên tạo hoá đơn, thêm dịch vụ vào hoá đơn.
 
- --2a: Bác sĩ tra cứu lịch sử khám/tiêm của mình
+--2a: Bác sĩ tra cứu lịch sử khám/tiêm của mình
 CREATE OR ALTER PROCEDURE sp_TraCuuLichSuKhamTiemBS
-	@maTKNV CHAR(8)
+    @maTKNV CHAR(8)
 AS
 BEGIN
-	SELECT
-		SDV.MaSDDV,
-		HD.NgayLap AS NgaySuDung,
-		SDV.LoaiDV,
-		KH.MaTKKH,
-		KH.HoTen,
-		TC.TenTC
-	FROM SUDUNGDICHVU SDV
-	JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+    SELECT
+        SDV.MaSDDV,
+        HD.NgayLap AS NgaySuDung,
+        SDV.LoaiDV,
+        KH.MaTKKH,
+        KH.HoTen,
+        TC.TenTC
+    FROM SUDUNGDICHVU SDV
+        JOIN HOADON HD ON SDV.MaHD = HD.MaHD
 
-	LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
-	LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
-	LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
-	LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+        LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+        LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+        LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+        LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
 
-	WHERE
+    WHERE
 	(
 		EXISTS (
 			SELECT 1
-			FROM KHAMBENH
-			WHERE MaSDDV = SDV.MaSDDV
-			AND MaBS = @maTKNV
+        FROM KHAMBENH
+        WHERE MaSDDV = SDV.MaSDDV
+            AND MaBS = @maTKNV
 		)
-		OR
-		EXISTS (
+        OR
+        EXISTS (
 			SELECT 1
-			FROM TIEMPHONG
-			WHERE MaSDDV = SDV.MaSDDV
-			AND MaBS = @maTKNV
+        FROM TIEMPHONG
+        WHERE MaSDDV = SDV.MaSDDV
+            AND MaBS = @maTKNV
 		)
 	)
-	ORDER BY NgaySuDung DESC;
+    ORDER BY NgaySuDung DESC;
 END
 GO
 
 --2b: Tra cứu toa thuốc của một lần khám bệnh
 CREATE OR ALTER PROCEDURE sp_TraCuuToaThuoc
-	@maSDDV CHAR(10)
+    @maSDDV CHAR(10)
 AS
 BEGIN
-	SELECT
-		CT.MaSP AS MaThuoc,
-		SP.TenSP AS TenThuoc,
-		CT.SoLuong,
-		CT.LieuLuong,
-		CT.CachDung,
-		(SP.Gia * CT.SoLuong) AS Gia
-	FROM CHITIETTOATHUOC CT
-	JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
-	WHERE CT.MaSDDV = @maSDDV
+    SELECT
+        CT.MaSP AS MaThuoc,
+        SP.TenSP AS TenThuoc,
+        CT.SoLuong,
+        CT.LieuLuong,
+        CT.CachDung,
+        (SP.Gia * CT.SoLuong) AS Gia
+    FROM CHITIETTOATHUOC CT
+        JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+    WHERE CT.MaSDDV = @maSDDV
 END
 GO
 
 --2c: Thêm thuốc vào toa thuốc
 CREATE OR ALTER PROCEDURE sp_ThemThuocToaThuoc
-	@maSP CHAR(8), 
-	@maSDDV	CHAR(10),
-	@soLuong INT,
-	@lieuLuong NVARCHAR(50),
-	@cachDung NVARCHAR(50)
+    @maSP CHAR(8),
+    @maSDDV	CHAR(10),
+    @soLuong INT,
+    @lieuLuong NVARCHAR(50),
+    @cachDung NVARCHAR(50)
 AS
 BEGIN
-	INSERT INTO CHITIETTOATHUOC (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
-    VALUES (@maSP, @maSDDV, @soLuong, @lieuLuong, @cachDung);
+    INSERT INTO CHITIETTOATHUOC
+        (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
+    VALUES
+        (@maSP, @maSDDV, @soLuong, @lieuLuong, @cachDung);
 
-	DECLARE
+    DECLARE
 		@donGia DECIMAL(19,2),
 		@tienThuoc DECIMAL(19,2),
 		@maHD CHAR(8)
-	
-	SELECT @donGia = Gia
-	FROM SANPHAM
-	WHERE MaSP = @maSP;
 
-	SET @tienThuoc = @donGia * @soLuong;
+    SELECT @donGia = Gia
+    FROM SANPHAM
+    WHERE MaSP = @maSP;
 
-	UPDATE SUDUNGDICHVU
+    SET @tienThuoc = @donGia * @soLuong;
+
+    UPDATE SUDUNGDICHVU
 	SET TongTienDV = TongTienDV + @tienThuoc
 	WHERE MaSDDV = @maSDDV;
-	
-	SELECT @maHD = MaHD 
-	FROM SUDUNGDICHVU
-	WHERE MaSDDV = @maSDDV;
 
-	UPDATE HOADON
+    SELECT @maHD = MaHD
+    FROM SUDUNGDICHVU
+    WHERE MaSDDV = @maSDDV;
+
+    UPDATE HOADON
 	SET TongTien = TongTien + @tienThuoc
 	WHERE MaHD = @maHD;
 END
@@ -212,8 +214,8 @@ GO
 CREATE OR ALTER PROCEDURE sp_ThemHoaDon
     @maTKNV CHAR(8),
     @maTKKH CHAR(8),
-	@maCN CHAR(5),
-	@newMaHD CHAR(8) OUTPUT
+    @maCN CHAR(5),
+    @newMaHD CHAR(8) OUTPUT
 AS
 BEGIN
     IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
@@ -307,7 +309,7 @@ GO
 
 
 
---5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong năm
+--5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong tháng năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
     @thang INT,
     @nam INT
@@ -372,8 +374,9 @@ BEGIN
     FROM HOADON
     WHERE YEAR(NgayLap) = @nam
 END
-
-
+	SELECT SUM(TongTien)
+    FROM HOADON
+    WHERE YEAR(NgayLap) = @nam
 GO
 
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng
@@ -392,12 +395,7 @@ BEGIN
 END
 GO
 
---Procedure thêm:
-
-
-
-
-
+-- Procedure thêm:
 CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
     @MaThuCung CHAR(8),
     @MaGoi CHAR(5),
@@ -446,7 +444,6 @@ EXEC sp_Tinh_Doanh_Thu_CT_theo_thang @thang = 1, @nam = 2025;
 EXEC sp_Tinh_Doanh_Thu_CT_theo_nam @nam = 2025;
 
 EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
-
 
 
 

@@ -205,7 +205,7 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
                 SP.MaSP,
                 SP.TenSP,
                 CT.LieuLuong,
-                DG.MaGoi
+                DG.MaDK
             FROM CHITIETTIEMPHONG CT
             JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
             LEFT JOIN DANGKYGOITIEM DG ON CT.MaDK = DG.MaDK

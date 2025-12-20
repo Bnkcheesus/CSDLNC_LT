@@ -4,9 +4,14 @@ import {
     updateDocExaminationInfo,
     getToaThuoc,
     updateToaThuoc,
+    getDocVaccinationInfo,
+    getToaTiem,
+    updateToaTiem,
     getPetInfo,
     getPetHistory,
-    getMedicineByKeyword
+    getPetPackages,
+    getMedicineByKeyword,
+    getVaccineByKeyword
 } from '../models/DocModel.js';
 
 export const getDocServiceHistoryController = async (req, res) => {
@@ -108,6 +113,64 @@ export const updateToaThuocController = async (req, res) => {
     }
 };
 
+export const getDocVaccinationInfoController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const serviceInfo = await getDocVaccinationInfo(maSDDV);
+        if (!serviceInfo) {
+            return res.status(404).json({ message: 'Service info not found' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: serviceInfo
+        });
+    } catch (err) {
+        console.error('Error in getDocVaccinationInfo controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getToaTiemController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const toaTiem = await getToaTiem(maSDDV);
+        return res.status(200).json({
+            success: true,
+            data: toaTiem
+        });
+    } catch (err) {
+        console.error('Error in getToaTiem controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateToaTiemController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        const tiemData = req.body;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        if (tiemData.length === 0) {
+            return res.status(400).json({ message: 'Toa tiem data is required' });
+        }
+        const result = await updateToaTiem(maSDDV, tiemData);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in updateToaTiem controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 export const getPetInfoController = async (req, res) => {
     try {
         const { maTC } = req.params;
@@ -148,6 +211,23 @@ export const getPetHistoryController = async (req, res) => {
     }
 };
 
+export const getPetPackagesController = async (req, res) => {
+    try {
+        const { maTC } = req.params;
+        if (!maTC) {
+            return res.status(400).json({ message: 'MaTC is required' });
+        }
+        const packages = await getPetPackages(maTC);
+        return res.status(200).json({
+            success: true,
+            data: packages
+        });
+    } catch (err) {
+        console.error('Error in getPetPackages controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 export const getMedicineByKeywordController = async (req, res) => {
     try {
         const { search } = req.query;
@@ -159,6 +239,21 @@ export const getMedicineByKeywordController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getMedicineByKeyword controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getVaccineByKeywordController = async (req, res) => {
+    try {
+        const { search } = req.query;
+        
+        const vaccines = await getVaccineByKeyword(search || '');
+        return res.status(200).json({
+            success: true,
+            data: vaccines
+        });
+    } catch (err) {
+        console.error('Error in getVaccineByKeyword controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

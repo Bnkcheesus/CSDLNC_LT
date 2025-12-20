@@ -248,7 +248,6 @@ export default function DocExamination() {
     }
 
     const handleSubmitChange = async () => {
-        console.log(ctkb);
         try {
             await axios.put(`http://localhost:5000/api/doctor/khambenh/${maSDDV}`, {
                 TrieuChung: ctkb.TrieuChung,
@@ -273,6 +272,7 @@ export default function DocExamination() {
                         Authorization: `Bearer ${token}`,
                     }
                 });
+                t.isNew = false;
             }
 
             alert("Chi tiết khám bệnh đã được cập nhật thành công!");
@@ -313,26 +313,26 @@ export default function DocExamination() {
                 <h3 className="text-base font-semibold mb-3">Thông tin khám bệnh</h3>
                 {/* SDDV INFO */}
                 <div className="p-6 grid grid-cols-3 gap-4 border-b">
-                <div>
-                    <label className="font-medium">Bác sĩ</label>
-                    <input value={sddv.MaBS + " - " + sddv.TenBS} disabled className="w-full p-2 border bg-gray-100 rounded" />
-                </div>
-                <div>
-                    <label className="font-medium">Chi nhánh</label>
-                    <input value={sddv.TenCN} disabled className="w-full p-2 border bg-gray-100 rounded" />
-                </div>
-                <div>
-                    <label className="font-medium">Ngày khám</label>
-                    <input value={sddv.NgaySDDV} disabled className="w-full p-2 border bg-gray-100 rounded" />
-                </div>
-                <div>
-                    <label className="font-medium">Khách hàng</label>
-                    <input value={sddv.MaKH + " - " + sddv.TenKH} disabled className="w-full p-2 border bg-gray-100 rounded" />
-                </div>
-                <div>
-                    <label className="font-medium">Thú cưng</label>
-                    <input value={sddv.MaTC + " - " + sddv.TenTC} disabled className="w-full p-2 border bg-gray-100 rounded" />
-                </div>
+                    <div>
+                        <label className="font-medium">Bác sĩ</label>
+                        <input value={sddv.MaBS + " - " + sddv.TenBS} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                    </div>
+                    <div>
+                        <label className="font-medium">Chi nhánh</label>
+                        <input value={sddv.TenCN} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                    </div>
+                    <div>
+                        <label className="font-medium">Ngày khám</label>
+                        <input value={sddv.NgaySDDV} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                    </div>
+                    <div>
+                        <label className="font-medium">Khách hàng</label>
+                        <input value={sddv.MaKH + " - " + sddv.TenKH} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                    </div>
+                    <div>
+                        <label className="font-medium">Thú cưng</label>
+                        <input value={sddv.MaTC + " - " + sddv.TenTC} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                    </div>
                 </div>
 
                 {/* CTKB */}
@@ -364,7 +364,7 @@ export default function DocExamination() {
                             onChange={(e) => setCTKB({ ...ctkb, NgayTaiKham: e.target.value })}
                             className="w-full p-2 border rounded"
                         />
-                </div>
+                    </div>
                 </div>
 
                 {/* ADD THUOC */}
