@@ -207,10 +207,88 @@ BEGIN
 END
 GO
 
--- chưa có tiêm phòng
+--2d: Tra cứu toa tiêm của một lần tiêm phòng
+CREATE OR ALTER PROCEDURE sp_TraCuuToaTiem
+	@maSDDV CHAR(10)
+AS
+BEGIN
+	SELECT
+		CT.MaSP AS MaVaccine,
+		SP.TenSP AS TenVaccine,
+		CT.LieuLuong,
+		CT.MaDK,
+		GT.MaGoi,
+		GT.TenGoi,
+		CASE 
+            WHEN CT.MaDK IS NULL THEN 
+                SP.Gia * CT.LieuLuong
+            ELSE
+                SP.Gia * CT.LieuLuong * ((100 - GT.MucUuDai) / 100.0)
+        END AS Gia
+	FROM CHITIETTIEMPHONG CT
+	JOIN SANPHAM SP
+		ON CT.MaSP = SP.MaSP
+	LEFT JOIN DANGKYGOITIEM DK
+		ON CT.MaDK = DK.MaDK
+	LEFT JOIN GOITIEM GT
+		ON DK.MaGoi = GT.MaGoi
+	WHERE
+        CT.MaSDDV = @maSDDV;
+END
+GO
 
+--2e: Thêm vaccine vào toa tiêm
+CREATE OR ALTER PROCEDURE sp_ThemVaccineToaTiem
+	@maSP CHAR(8),
+	@maSDDV CHAR(10),
+	@LieuLuong INT,
+	@maDK CHAR(8)
+AS
+BEGIN
+	INSERT INTO CHITIETTIEMPHONG
+		(MaSP, MaSDDV, LieuLuong, MaDK)
+    VALUES
+		(@maSP, @maSDDV, @LieuLuong, @maDK);
 
---2d: Tạo hoá đơn mới
+	DECLARE
+		@donGia DECIMAL(19,2),
+		@uuDai DECIMAL(4,2),
+		@tienVaccine DECIMAL(19,2),
+		@maHD CHAR(8)
+
+    SELECT @donGia = Gia
+    FROM SANPHAM
+    WHERE MaSP = @maSP;
+
+	IF (@maDK IS NULL)
+	BEGIN
+		SET @uuDai = 0.00;
+	END
+	ELSE
+	BEGIN
+		SELECT @uuDai = MucUuDai
+		FROM GOITIEM GT
+		JOIN DANGKYGOITIEM DK ON GT.MaGoi = DK.MaGoi
+		WHERE DK.MaDK = @maDK;
+	END
+	
+    SET @tienVaccine = @donGia * @lieuLuong * ((100 - @uuDai) / 100.0);
+
+    UPDATE SUDUNGDICHVU
+	SET TongTienDV = TongTienDV + @tienVaccine
+	WHERE MaSDDV = @maSDDV;
+
+    SELECT @maHD = MaHD
+    FROM SUDUNGDICHVU
+    WHERE MaSDDV = @maSDDV;
+
+    UPDATE HOADON
+	SET TongTien = TongTien + @tienVaccine
+	WHERE MaHD = @maHD;
+END
+GO
+
+--2f: Tạo hoá đơn mới
 CREATE OR ALTER PROCEDURE sp_ThemHoaDon
     @maTKNV CHAR(8),
     @maTKKH CHAR(8),
@@ -247,7 +325,7 @@ BEGIN
 END
 GO
 
---2e: Thêm dịch vụ vào hoá đơn
+--2g: Thêm dịch vụ vào hoá đơn
 CREATE OR ALTER PROCEDURE sp_ThemSDDV
     @maHD CHAR(8),
     @Loai CHAR(2),
