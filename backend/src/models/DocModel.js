@@ -193,8 +193,7 @@ export const updateToaThuoc = async (maSDDV, thuocData) => {
     try {
         const pool = await getPool();
         const query = `
-            INSERT INTO CHITIETTOATHUOC (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
-            VALUES (@maSP, @maSDDV, @SoLuong, @LieuLuong, @CachDung)
+            EXEC sp_ThemChiTietToaThuoc @maSDDV, @maSP, @SoLuong, @LieuLuong, @CachDung
         `;
         await pool.request()
             .input('maSDDV', maSDDV)
@@ -293,8 +292,7 @@ export const updateToaTiem = async (maSDDV, tiemData) => {
     try {
         const pool = await getPool();
         const query = `
-            INSERT INTO CHITIETTIEMPHONG (MaSP, MaSDDV, LieuLuong, MaDK)
-            VALUES (@maSP, @maSDDV, @LieuLuong, @maDK)
+            EXEC sp_ThemChiTietTiemPhong @maSDDV, @maSP, @LieuLuong, @maDK
         `;
         console.log(tiemData);
         await pool.request()

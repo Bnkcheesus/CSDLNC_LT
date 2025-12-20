@@ -136,6 +136,8 @@ export default function CustomerPetHistory() {
                 onChange={(t) => {
                     setType(t);
                     setPage(1);
+                    setRowDetails({});
+                    setOpenRow(null);
                 }}
                 types={[
                     { key: "all", label: "Tất cả dịch vụ" },

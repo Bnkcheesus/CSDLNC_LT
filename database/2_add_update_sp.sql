@@ -449,7 +449,9 @@ GO
 CREATE OR ALTER PROCEDURE sp_ThemChiTietToaThuoc (
     @MaSDDV CHAR(10),
     @MaSP CHAR(8),
-    @SoLuong INT
+    @SoLuong INT,
+	@LieuLuong NVARCHAR(50) = NULL,
+	@CachDung NVARCHAR(50) = NULL
 )
 AS
 BEGIN
@@ -465,8 +467,8 @@ BEGIN
     END
 
     -- Thêm vào CHITIETTOATHUOC
-    INSERT INTO CHITIETTOATHUOC (MaSP, MaSDDV, SoLuong)
-    VALUES (@MaSP, @MaSDDV, @SoLuong);
+    INSERT INTO CHITIETTOATHUOC (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
+    VALUES (@MaSP, @MaSDDV, @SoLuong, @LieuLuong, @CachDung);
 
     -- Cập nhật lại tổng tiền dịch vụ khám bệnh
     DECLARE @TongTienToaThuoc DECIMAL(19, 2);

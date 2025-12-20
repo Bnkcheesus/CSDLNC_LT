@@ -66,7 +66,7 @@ export default function CustomerPurchaseDetail() {
                                 <Info label="Ngày mua hàng" value={detail.NgayLap} />
                                 <Info label="Chi nhánh" value={detail.TenCN} />
                                 <Info label="Nhân viên bán hàng" value={detail.TenNV} />
-                                <Info label="Tổng tiền" value={`${detail.TongTienDV} VND`} />
+                                <Info label="Tổng tiền" value={`${detail.TongTien ? detail.TongTien.toLocaleString() : "-" }`} />
                             </div>
                             <div className="p-4"> </div>
                         </section>

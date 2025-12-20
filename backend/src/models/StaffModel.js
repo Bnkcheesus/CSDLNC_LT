@@ -29,11 +29,7 @@ export const getDoctorsByBranch = async (maCN) => {
             FROM NHANVIEN NV
             JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
             WHERE L.MaCN = @maCN AND NV.ChucVu = 'BSTY'
-            AND L.NgayBatDau = (
-                SELECT MAX(NgayBatDau)
-                FROM LICHSULAMVIEC
-                WHERE MaTKNV = NV.MaTKNV
-            )
+            AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
         `;
         const result = await pool.request()
             .input('maCN', maCN)
@@ -89,7 +85,7 @@ export const addServiceInvoice = async (maTKKH, maTKNV, maCN) => {
             .input('maTKNV', maTKNV)
             .input('maCN', maCN)
             .output('newMaHD')
-            .query('EXEC sp_ThemHoaDon @maTKNV, @maTKKH, @maCN, @newMaHD OUTPUT');
+            .query('EXEC sp_ThemHoaDonMoi @maTKNV, @maTKKH, @maCN, @newMaHD OUTPUT');
         return {
             MaHD: result.output.newMaHD
         }
@@ -149,7 +145,7 @@ export const addSDDV = async (maHD, loaiDV, maBS, maTC) => {
             .input('loaiDV', loaiDV)
             .input('maBS', maBS)
             .input('maTC', maTC)
-            .query('EXEC sp_ThemSDDV @maHD, @loaiDV, @maTC, @maBS');
+            .query('EXEC sp_ThemSDDVMoi @maHD, @loaiDV, @maTC, @maBS');
         return result.rowsAffected[0] > 0;
     } catch (err) {
         console.error('Error adding SDDV:', err);

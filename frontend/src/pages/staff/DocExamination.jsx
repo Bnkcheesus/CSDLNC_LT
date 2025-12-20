@@ -261,7 +261,6 @@ export default function DocExamination() {
 
             for (const t of toaThuoc) {
                 if (!t.isNew) continue;
-                console.log("Submitting thuoc:", t);
                 await axios.post(`http://localhost:5000/api/doctor/khambenh/${maSDDV}/toathuoc`, {
                     MaThuoc: t.MaThuoc,
                     SoLuong: t.SoLuong,

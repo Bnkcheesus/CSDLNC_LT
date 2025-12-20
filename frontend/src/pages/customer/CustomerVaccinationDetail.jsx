@@ -67,7 +67,7 @@ export default function CustomerVaccinationDetail() {
                                 <Info label="Chi nhánh" value={detail.TenCN} />
                                 <Info label="Thú cưng" value={detail.TenTC} />
                                 <Info label="Bác sĩ" value={detail.TenBS} />
-                                <Info label="Tổng tiền" value={`${detail.TongTienDV} VND`} />
+                                <Info label="Tổng tiền" value={`${detail.TongTien ? detail.TongTien.toLocaleString() : "-"}`} />
                             </div>
                             <div className="p-4"> </div>
                         </section>

@@ -289,7 +289,7 @@ END
 GO
 
 --2f: Tạo hoá đơn mới
-CREATE OR ALTER PROCEDURE sp_ThemHoaDon
+CREATE OR ALTER PROCEDURE sp_ThemHoaDonMoi
     @maTKNV CHAR(8),
     @maTKKH CHAR(8),
     @maCN CHAR(5),
@@ -326,7 +326,7 @@ END
 GO
 
 --2g: Thêm dịch vụ vào hoá đơn
-CREATE OR ALTER PROCEDURE sp_ThemSDDV
+CREATE OR ALTER PROCEDURE sp_ThemSDDVMoi
     @maHD CHAR(8),
     @Loai CHAR(2),
     @MaThuCung CHAR(8) = NULL,
@@ -368,19 +368,13 @@ BEGIN
         (@newMaSDDV, @Loai, 0, @maHD);
 
     IF (@Loai = 'KB')
-        INSERT INTO KHAMBENH
-    VALUES
-        (@newMaSDDV, NULL, NULL, NULL, @MaThuCung, @MaNV);
+        EXEC sp_ThemKhamBenh @newMaSDDV, @MaThuCung, @MaNV, NULL, NULL, NULL;
 
     IF (@Loai = 'TP')
-        INSERT INTO TIEMPHONG
-    VALUES
-        (@newMaSDDV, @MaThuCung, @MaNV);
+        EXEC sp_ThemTiemPhong @newMaSDDV, @MaThuCung, @MaNV;
 
     IF (@Loai = 'MH')
-        INSERT INTO MUAHANG
-    VALUES
-        (@newMaSDDV, @MaNV);
+        EXEC sp_ThemMuaHang @newMaSDDV, @MaNV;
 END
 GO
 

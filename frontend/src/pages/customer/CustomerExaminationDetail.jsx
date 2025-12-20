@@ -70,7 +70,7 @@ export default function CustomerExaminationDetail() {
                                 <Info label="Triệu chứng" value={detail.TrieuChung} />
                                 <Info label="Chuẩn đoán" value={detail.ChuanDoan} />
                                 <Info label="Ngày tái khám" value={detail.NgayTaiKham} />
-                                <Info label="Tổng tiền" value={`${detail.TongTienDV} VND`} />
+                                <Info label="Tổng tiền" value={`${detail.TongTien ? detail.TongTien.toLocaleString() : "-"}`} />
                             </div>
                             <div className="p-4"> </div>
                         </section>
