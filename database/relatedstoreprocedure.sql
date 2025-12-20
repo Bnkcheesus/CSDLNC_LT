@@ -1,7 +1,7 @@
 USE PETCAREDB
 GO
 
-
+--3: Quản lý tồn kho và kiểm tra sản phẩm 
 
 --5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
