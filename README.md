@@ -1,4 +1,4 @@
-# PetCareX – Hệ thống chăm sóc thú cưng
+# 🐾 PetCareX – Hệ thống chăm sóc thú cưng
 
 PetCareX là hệ thống quản lý dịch vụ chăm sóc thú cưng dành cho **khách hàng**, **nhân viên** và **quản lý**. Hệ thống hỗ trợ khám bệnh, tiêm phòng cho thú cưng, và mua hàng.
 
@@ -27,13 +27,11 @@ cd CSDLNC_LT.git
 ```
 
 
-### 2️⃣ Khởi tạo cơ sở dữ liệu SQL Server (nếu máy chưa có database)
+### 2️⃣ Khởi tạo cơ sở dữ liệu SQL Server
 
 1. Mở **SQL Server Management Studio (SSMS)**
-2. Mở file: `database/init.sql`
-
-
-3. Chạy toàn bộ script để tạo database **PETCAREDB**, các bảng và dữ liệu mẫu
+2. Bên trong thư mục `database/`, lần lượt chạy toàn bộ script của các file `init.sql`, `1_related_sp.sql`, `2_add_update_sp.sql` để tạo database **PETCAREDB**, các bảng, ràng buộc, và stored
+3. Bên trong thư mục `database/data/`, lần lượt chạy toàn bộ script của 20 file `.sql` theo thứ tự để tạo dữ liệu mẫu
 
 ### 3️⃣ Tạo file `.env` (backend)
 Trong thư mục `backend/`, tạo file `.env` với nội dung
@@ -49,14 +47,14 @@ JWT_SECRET=your_jwt_secret_key
 ```
 Thay `your_password` bằng mật khẩu SQL Server thực tế trên máy
 
-### 4️⃣ Cài đặt Backend
+### 4️⃣ Cài đặt backend
 
 ```
 cd backend
 npm install
 ```
 
-### 5️⃣ Cài đặt Frontend
+### 5️⃣ Cài đặt frontend
 
 ```
 cd frontend
