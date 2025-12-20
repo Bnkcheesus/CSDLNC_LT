@@ -222,6 +222,67 @@ export const getPetInfo = async (maTC) => {
     }
 };
 
+export const getPetHistory = async (maTC, type, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        let typeFilter = '';
+        if (type != 'all') {
+            typeFilter = 'AND SDV.LoaiDV = @type';
+        }
+        const query = `
+            SELECT 
+                SDV.MaSDDV, 
+                SDV.LoaiDV,
+                HD.NgayLap AS NgaySuDung,
+                CN.TenCN,
+                NV.HoTen AS TenBS
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            JOIN NHANVIEN NV ON 
+                (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV) OR 
+                (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV)
+            WHERE 
+                (KB.MaTC = @maTC OR TP.MaTC = @maTC)
+                ${typeFilter}
+            ORDER BY HD.NgayLap DESC
+            OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            WHERE 
+                (KB.MaTC = @maTC OR TP.MaTC = @maTC)
+                ${type !== "all" ? "AND SDV.LoaiDV = @type" : ""}
+        `;
+
+        const result = await pool.request()
+            .input('maTC', maTC)
+            .input('type', type)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+
+        const history = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: history,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting pet history by ID:', err);
+        throw err;
+    }
+};
+
 export const getMedicineByKeyword = async (keyword) => {
     try {
         const pool = await getPool();
