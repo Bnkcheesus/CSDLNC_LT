@@ -309,7 +309,7 @@ GO
 
 
 
---5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong năm
+--5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong tháng năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
     @thang INT,
     @nam INT
@@ -374,8 +374,9 @@ BEGIN
     FROM HOADON
     WHERE YEAR(NgayLap) = @nam
 END
-
-
+	SELECT SUM(TongTien)
+    FROM HOADON
+    WHERE YEAR(NgayLap) = @nam
 GO
 
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng
@@ -394,48 +395,7 @@ BEGIN
 END
 GO
 
--- Thêm hóa đơn mới
-GO
-CREATE OR ALTER PROCEDURE sp_ThemHoaDon
-    @maTKNV CHAR(8),
-    @maTKKH CHAR(8)
-AS
-BEGIN
-    IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
-    FROM KHACHHANG
-    WHERE MaTKKH = @maTKKH))
-		RETURN
-    IF (NOT EXISTS (SELECT NHANVIEN.MaTKNV
-    FROM NHANVIEN
-    WHERE MaTKNV = @maTKNV))
-		RETURN
-    DECLARE @newMaHD CHAR(8);
-    DECLARE @maxMaHD CHAR(8);
-    DECLARE @num INT;
-    DECLARE @maCN CHAR(5);
-
-
-
-
-    DECLARE @latestStartCurrent DATE;
-
-    SELECT @latestStartCurrent = MAX(NgayBatDau)
-    FROM LICHSULAMVIEC
-    WHERE MaTKNV = @maTKNV AND (NgayKetThuc IS NULL OR NgayKetThuc > GETDATE())
-
-    IF (@latestStartCurrent IS NULL)
-		RETURN;
-
-    SELECT @maCN = MaCN
-    FROM LICHSULAMVIEC
-    WHERE MaTKNV = @maTKNV AND (NgayKetThuc IS NULL OR NgayKetThuc > GETDATE()) AND NgayBatDau = @latestStartCurrent;
-
-    INSERT INTO HOADON
-        (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
-    VALUES
-        (@newMaHD, GETDATE(), 0, 0, NULL, @maCN, @maTKKH, @maTKNV)
-END
-GO
+-- Procedure thêm:
 CREATE OR ALTER PROCEDURE sp_DangKyGoiTiem
     @MaThuCung CHAR(8),
     @MaGoi CHAR(5),
