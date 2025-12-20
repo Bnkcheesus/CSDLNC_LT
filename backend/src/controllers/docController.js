@@ -5,6 +5,7 @@ import {
     getToaThuoc,
     updateToaThuoc,
     getPetInfo,
+    getPetHistory,
     getMedicineByKeyword
 } from '../models/DocModel.js';
 
@@ -123,6 +124,26 @@ export const getPetInfoController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getPetInfo controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getPetHistoryController = async (req, res) => {
+    try {
+        const { maTC } = req.params;
+        if (!maTC) {
+            return res.status(400).json({ message: 'MaTC is required' });
+        }
+        const type = req.query.type || 'all';
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const history = await getPetHistory(maTC, type, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: history
+        });
+    } catch (err) {
+        console.error('Error in getPetHistory controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

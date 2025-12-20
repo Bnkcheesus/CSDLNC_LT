@@ -3,12 +3,23 @@ import { useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
+import CategoryBar from "../../components/ui/CategoryBar.jsx";
 import PetInfoCard from "../../components/ui/PetInfoCard.jsx";
+import PetHistoryTable from "../../components/ui/PetHistoryTable.jsx";
 import axios from "axios";
 
 export default function DocExamination() {
     const token = localStorage.getItem("token");
     const { maSDDV } = useParams();
+    const [type, setType] = useState("CTKB");
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [limit] = useState(20);
+    const [totalPages, setTotalPages] = useState(1);
+    const [error, setError] = useState("");
+    const [openRow, setOpenRow] = useState(null);
+    const [rowDetails, setRowDetails] = useState({});
 
     const [thuocKeyword, setThuocKeyword] = useState("");
     const [thuocResults, setThuocResults] = useState([]);
@@ -115,6 +126,65 @@ export default function DocExamination() {
         };
         fetchPet();
     }, [sddv.MaTC, token]);
+
+    useEffect(() => {
+        if (!token || !sddv.MaTC) return;
+        if (type !== "LSKB") return;
+
+        const fetchPetExaminationHistory = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                const res = await axios.get(`http://localhost:5000/api/doctor/pet/${sddv.MaTC}/history`, {
+                    params: { type: "KB", page: page, limit: limit },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if (res.data.success) {
+                    setRows(res.data.data.rows || []);
+                    setTotalPages(res.data.data.totalPages || 1);
+                }
+                else {
+                    setError("Failed to fetch pet examination history.");
+                }
+            } catch (err) {
+                console.error("Error fetching pet examination history:", err);
+                setError("An error occurred while fetching pet examination history.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPetExaminationHistory();
+    }, [token, type, sddv.MaTC, page, limit]);
+
+    const handleToggleRow = async (r) => {
+        if (openRow === r.MaSDDV) {
+            setOpenRow(null);
+            return;
+        }
+
+        if (!rowDetails[r.MaSDDV]) {
+            try {
+                let res;
+                res = await axios.get(`http://localhost:5000/api/doctor/khambenh/${r.MaSDDV}/toathuoc`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if (res?.data?.success) {
+                    setRowDetails(prev => ({ ...prev, [r.MaSDDV]: res.data.data }));
+                }
+            } catch (err) {
+                console.error("Error fetching prescription details:", err);
+            }
+        }
+
+        setOpenRow(r.MaSDDV);
+    };
 
     const handleThuocSearchChange = (e) => {
         setThuocKeyword(e.target.value);
@@ -223,195 +293,225 @@ export default function DocExamination() {
         <PetInfoCard pet={pet} />
       </div>
 
-      <div className="max-w-[1200px] mx-auto px-4 py-6">
-        <div className="bg-white border rounded shadow-sm p-4">
-            <h3 className="text-base font-semibold mb-3">Thông tin khám bệnh</h3>
-            {/* SDDV INFO */}
-            <div className="p-6 grid grid-cols-3 gap-4 border-b">
-            <div>
-                <label className="font-medium">Bác sĩ</label>
-                <input value={sddv.MaBS + " - " + sddv.TenBS} disabled className="w-full p-2 border bg-gray-100 rounded" />
-            </div>
-            <div>
-                <label className="font-medium">Chi nhánh</label>
-                <input value={sddv.TenCN} disabled className="w-full p-2 border bg-gray-100 rounded" />
-            </div>
-            <div>
-                <label className="font-medium">Ngày khám</label>
-                <input value={sddv.NgaySDDV} disabled className="w-full p-2 border bg-gray-100 rounded" />
-            </div>
-            <div>
-                <label className="font-medium">Khách hàng</label>
-                <input value={sddv.MaKH + " - " + sddv.TenKH} disabled className="w-full p-2 border bg-gray-100 rounded" />
-            </div>
-            <div>
-                <label className="font-medium">Thú cưng</label>
-                <input value={sddv.MaTC + " - " + sddv.TenTC} disabled className="w-full p-2 border bg-gray-100 rounded" />
-            </div>
-            </div>
+      {/* ---------------- CATEGORY BAR ---------------- */}
+      <CategoryBar
+        active={type}
+        onChange={(t) => {
+            setType(t);
+            setPage(1);
+            setOpenRow(null);
+        }}
+        types={[
+            { key: "CTKB", label: "Chi tiết khám bệnh" },
+            { key: "LSKB", label: "Lịch sử khám bệnh" }
+        ]}
+      />
 
-            {/* CTKB */}
-            <div className="p-6 border-b grid grid-cols-3 gap-4">
+      {type === "CTKB" && (
+        <div className="max-w-[1200px] mx-auto px-4 py-6">
+            <div className="bg-white border rounded shadow-sm p-4">
+                <h3 className="text-base font-semibold mb-3">Thông tin khám bệnh</h3>
+                {/* SDDV INFO */}
+                <div className="p-6 grid grid-cols-3 gap-4 border-b">
                 <div>
-                    <label className="font-medium">Triệu chứng</label>
-                    <textarea
-                        className="border p-2 rounded w-full h-24"
-                        value={ctkb.TrieuChung}
-                        onChange={(e) => setCTKB({ ...ctkb, TrieuChung: e.target.value })}
-                    />
+                    <label className="font-medium">Bác sĩ</label>
+                    <input value={sddv.MaBS + " - " + sddv.TenBS} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                </div>
+                <div>
+                    <label className="font-medium">Chi nhánh</label>
+                    <input value={sddv.TenCN} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                </div>
+                <div>
+                    <label className="font-medium">Ngày khám</label>
+                    <input value={sddv.NgaySDDV} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                </div>
+                <div>
+                    <label className="font-medium">Khách hàng</label>
+                    <input value={sddv.MaKH + " - " + sddv.TenKH} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                </div>
+                <div>
+                    <label className="font-medium">Thú cưng</label>
+                    <input value={sddv.MaTC + " - " + sddv.TenTC} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                </div>
                 </div>
 
-                <div>
-                    <label className="font-medium">Chuẩn đoán</label>
-                    <textarea
-                        className="border p-2 rounded w-full h-24"
-                        value={ctkb.ChuanDoan}
-                        onChange={(e) => setCTKB({ ...ctkb, ChuanDoan: e.target.value })}
-                    />
+                {/* CTKB */}
+                <div className="p-6 border-b grid grid-cols-3 gap-4">
+                    <div>
+                        <label className="font-medium">Triệu chứng</label>
+                        <textarea
+                            className="border p-2 rounded w-full h-24"
+                            value={ctkb.TrieuChung}
+                            onChange={(e) => setCTKB({ ...ctkb, TrieuChung: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="font-medium">Chuẩn đoán</label>
+                        <textarea
+                            className="border p-2 rounded w-full h-24"
+                            value={ctkb.ChuanDoan}
+                            onChange={(e) => setCTKB({ ...ctkb, ChuanDoan: e.target.value })}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="font-medium">Ngày tái khám</label>
+                        <input
+                            type="date"
+                            name="NgayTaiKham"
+                            value={ctkb.NgayTaiKham}
+                            onChange={(e) => setCTKB({ ...ctkb, NgayTaiKham: e.target.value })}
+                            className="w-full p-2 border rounded"
+                        />
+                </div>
                 </div>
 
-                <div>
-                    <label className="font-medium">Ngày tái khám</label>
-                    <input
-                        type="date"
-                        name="NgayTaiKham"
-                        value={ctkb.NgayTaiKham}
-                        onChange={(e) => setCTKB({ ...ctkb, NgayTaiKham: e.target.value })}
-                        className="w-full p-2 border rounded"
-                    />
-            </div>
-            </div>
+                {/* ADD THUOC */}
+                <div className="p-6 border-b">
+                    <div className="grid grid-cols-4 gap-4">
+                    <div>
+                        <label className="font-medium">Thuốc</label>
+                        <input
+                            value={thuocKeyword}
+                            onChange={handleThuocSearchChange}
+                            className="w-full p-2 border rounded"
+                            placeholder="Nhập mã hoặc tên thuốc"
+                        />
 
-            {/* ADD THUOC */}
-            <div className="p-6 border-b">
-                <div className="grid grid-cols-4 gap-4">
-                <div>
-                    <label className="font-medium">Thuốc</label>
-                    <input
-                        value={thuocKeyword}
-                        onChange={handleThuocSearchChange}
-                        className="w-full p-2 border rounded"
-                        placeholder="Nhập mã hoặc tên thuốc"
-                    />
-
-                    {thuocResults.length > 0 && (
-                        <div className="absolute bg-white border w-full mt-1 z-10 max-h-40 overflow-auto">
-                        {thuocResults.map(c => (
-                            <div
-                            key={c.MaThuoc}
-                            className="p-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => {
-                                setThuocKeyword(`${c.MaThuoc} - ${c.TenThuoc}`);
-                                setThuocResults([]);
-                                setCtttForm({ ...ctttForm, MaThuoc: c.MaThuoc, TenThuoc: c.TenThuoc });
-                            }}
-                            >
-                            {c.MaThuoc} - {c.TenThuoc}
+                        {thuocResults.length > 0 && (
+                            <div className="absolute bg-white border w-full mt-1 z-10 max-h-40 overflow-auto">
+                            {thuocResults.map(c => (
+                                <div
+                                key={c.MaThuoc}
+                                className="p-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => {
+                                    setThuocKeyword(`${c.MaThuoc} - ${c.TenThuoc}`);
+                                    setThuocResults([]);
+                                    setCtttForm({ ...ctttForm, MaThuoc: c.MaThuoc, TenThuoc: c.TenThuoc });
+                                }}
+                                >
+                                {c.MaThuoc} - {c.TenThuoc}
+                                </div>
+                            ))}
                             </div>
-                        ))}
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
 
-                <div>
-                    <label className="font-medium">Số lượng</label>
-                    <input
-                        type="number"
-                        min="1"
-                        step="1"
-                        className="border p-2 rounded w-full"
-                        value={ctttForm.SoLuong || ""}
-                        onChange={(e) => setCtttForm({ ...ctttForm, SoLuong: e.target.value })}
-                    />
-                </div>
+                    <div>
+                        <label className="font-medium">Số lượng</label>
+                        <input
+                            type="number"
+                            min="1"
+                            step="1"
+                            className="border p-2 rounded w-full"
+                            value={ctttForm.SoLuong || ""}
+                            onChange={(e) => setCtttForm({ ...ctttForm, SoLuong: e.target.value })}
+                        />
+                    </div>
 
-                <div>
-                    <label className="font-medium">Liều lượng</label>
-                    <input
-                        type="text"
-                        className="border p-2 rounded w-full"
-                        value={ctttForm.LieuLuong}
-                        onChange={(e) => setCtttForm({ ...ctttForm, LieuLuong: e.target.value })}
-                    />
-                </div>
+                    <div>
+                        <label className="font-medium">Liều lượng</label>
+                        <input
+                            type="text"
+                            className="border p-2 rounded w-full"
+                            value={ctttForm.LieuLuong}
+                            onChange={(e) => setCtttForm({ ...ctttForm, LieuLuong: e.target.value })}
+                        />
+                    </div>
 
-                <div>
-                    <label className="font-medium">Cách dùng</label>
-                    <input
-                        type="text"
-                        className="border p-2 rounded w-full"
-                        value={ctttForm.CachDung}
-                        onChange={(e) => setCtttForm({ ...ctttForm, CachDung: e.target.value })}
-                    />
+                    <div>
+                        <label className="font-medium">Cách dùng</label>
+                        <input
+                            type="text"
+                            className="border p-2 rounded w-full"
+                            value={ctttForm.CachDung}
+                            onChange={(e) => setCtttForm({ ...ctttForm, CachDung: e.target.value })}
+                        />
+                    </div>
+                    </div >
+                    
+                    <div className="p-4"></div>
+                    <div className="text-right">
+                        <button
+                            onClick={handleAddThuoc}
+                            className="
+                            px-6 py-2
+                            bg-blue-500 text-white font-medium
+                            rounded 
+                            shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                            hover:brightness-110
+                            active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                            transition-all
+                            "
+                        >
+                            Thêm thuốc
+                        </button>
+                    </div>
                 </div>
-                </div >
                 
-                <div className="p-4"></div>
-                <div className="text-right">
-                    <button
-                        onClick={handleAddThuoc}
-                        className="
-                        px-6 py-2
-                        bg-blue-500 text-white font-medium
-                        rounded 
-                        shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
-                        hover:brightness-110
-                        active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
-                        transition-all
-                        "
-                    >
-                        Thêm thuốc
-                    </button>
+                
+
+                {/* TOA THUOC */}
+                <table className="w-full text-center border-t">
+                <thead className="bg-gray-50">
+                    <tr className="text-xs text-gray-600">
+                    <th className="px-2 py-1">Mã thuốc</th>
+                    <th className="px-2 py-1">Tên thuốc</th>
+                    <th className="px-2 py-1">Số lượng</th>
+                    <th className="px-2 py-1">Liều lượng</th>
+                    <th className="px-2 py-1">Cách dùng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {toaThuoc.map((s, i) => (
+                    <tr key={i} className="text-xs border-t">
+                        <td className="px-2 py-1">{s.MaThuoc}</td>
+                        <td className="px-2 py-1">{s.TenThuoc}</td>
+                        <td className="px-2 py-1">{s.SoLuong}</td>
+                        <td className="px-2 py-1">{s.LieuLuong}</td>
+                        <td className="px-2 py-1">{s.CachDung}</td>
+                    </tr>
+                    ))}
+                </tbody>
+                </table>
+
+                {/* SUBMIT */}
+                <div className="p-6 text-center">
+                <button
+                    onClick={handleSubmitChange}
+                    className="
+                    px-6 py-2 
+                    bg-blue-500 text-white font-medium
+                    rounded 
+                    shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                    hover:brightness-110
+                    active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                    transition-all
+                    "
+                >
+                    Cập nhật
+                </button>
                 </div>
             </div>
-            
-            
-
-            {/* TOA THUOC */}
-            <table className="w-full text-center border-t">
-            <thead className="bg-gray-50">
-                <tr className="text-xs text-gray-600">
-                <th className="px-2 py-1">Mã thuốc</th>
-                <th className="px-2 py-1">Tên thuốc</th>
-                <th className="px-2 py-1">Số lượng</th>
-                <th className="px-2 py-1">Liều lượng</th>
-                <th className="px-2 py-1">Cách dùng</th>
-                </tr>
-            </thead>
-            <tbody>
-                {toaThuoc.map((s, i) => (
-                <tr key={i} className="text-xs border-t">
-                    <td className="px-2 py-1">{s.MaThuoc}</td>
-                    <td className="px-2 py-1">{s.TenThuoc}</td>
-                    <td className="px-2 py-1">{s.SoLuong}</td>
-                    <td className="px-2 py-1">{s.LieuLuong}</td>
-                    <td className="px-2 py-1">{s.CachDung}</td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-
-            {/* SUBMIT */}
-            <div className="p-6 text-center">
-            <button
-                onClick={handleSubmitChange}
-                className="
-                px-6 py-2 
-                bg-blue-500 text-white font-medium
-                rounded 
-                shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
-                hover:brightness-110
-                active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
-                transition-all
-                "
-            >
-                Cập nhật
-            </button>
-            </div>
-
         </div>
-
-      </div>
+     )}
+     {type === "LSKB" && (
+        <div className="max-w-[1200px] mx-auto px-4 py-6">
+            <PetHistoryTable
+            rows={rows}
+            loading={loading}
+            error={error}
+            page={page}
+            totalPages={totalPages}
+            openRow={openRow}
+            rowDetails={rowDetails}
+            onToggleRow={handleToggleRow}
+            onPrevPage={() => setPage(p => Math.max(1, p - 1))}
+            onNextPage={() => setPage(p => Math.min(totalPages, p + 1))}
+            />
+        </div>
+      )}
     </div>
   );
 }

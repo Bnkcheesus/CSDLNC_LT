@@ -6,6 +6,7 @@ import {
     getToaThuocController,
     updateToaThuocController,
     getPetInfoController,
+    getPetHistoryController,
     getMedicineByKeywordController
 } from '../controllers/docController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
@@ -18,6 +19,7 @@ router.put('/khambenh/:maSDDV', authMiddleware, updateDocExaminationInfoControll
 router.get('/khambenh/:maSDDV/toathuoc', authMiddleware, getToaThuocController);
 router.post('/khambenh/:maSDDV/toathuoc', authMiddleware, updateToaThuocController);
 router.get('/pet/:maTC', authMiddleware, getPetInfoController);
+router.get('/pet/:maTC/history', authMiddleware, getPetHistoryController);
 router.get('/thuoc', authMiddleware, getMedicineByKeywordController);
 
 export default router;
