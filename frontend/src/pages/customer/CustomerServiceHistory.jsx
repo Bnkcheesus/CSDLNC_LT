@@ -27,7 +27,7 @@ export default function CustomerServiceHistory() {
             setLoading(true);
             setError("");
             try {
-                const res = await axios.get(`http://localhost:5000/api/customer/${maTK}/history`, {
+                const res = await axios.get(`http://localhost:5000/api/customer/history`, {
                     params: { type: type, page: page, limit: limit },
                     headers: {
                         Authorization: `Bearer ${token}`,

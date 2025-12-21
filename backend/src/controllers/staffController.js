@@ -1,5 +1,7 @@
+import e from 'express';
 import {
     getStaffProfile,
+    updateStaffProfile,
     getDoctorsByBranch,
     getCustomersByKeyword,
     getPetsByCustomer,
@@ -30,6 +32,28 @@ export const getStaffProfileController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getStaffProfile controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateStaffProfileController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKNV is required' });
+        }
+        const updateData = req.body;
+
+        const updateSuccess = await updateStaffProfile(maTK, updateData);
+        if (!updateSuccess) {
+            return res.status(500).json({ message: 'Failed to update staff profile' });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Staff profile updated successfully'
+        });
+    } catch (err) {
+        console.error('Error in updateStaffProfile controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

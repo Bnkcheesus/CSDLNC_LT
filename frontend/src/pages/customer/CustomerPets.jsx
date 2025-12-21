@@ -24,7 +24,7 @@ export default function CustomerPets() {
             setLoading(true);
             setError("");
             try {
-                const res = await axios.get(`http://localhost:5000/api/customer/${maTK}/pets`, {
+                const res = await axios.get(`http://localhost:5000/api/customer/pets`, {
                     params: { page: page, limit: limit },
                     headers: {
                         Authorization: `Bearer ${token}`,

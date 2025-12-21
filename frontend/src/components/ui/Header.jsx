@@ -13,7 +13,7 @@ export default function Header() {
                 const maTK = localStorage.getItem("maTK");
                 if (!maTK) return;
 
-                const res = await axios.get(`http://localhost:5000/api/user/${maTK}/name`, {
+                const res = await axios.get(`http://localhost:5000/api/user/name`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },

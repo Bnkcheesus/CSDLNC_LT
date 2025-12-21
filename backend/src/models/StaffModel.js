@@ -4,12 +4,12 @@ export const getStaffProfile = async (maTKNV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT TOP 1 NV.MaTKNV, NV.HoTen, NV.GioiTinh, NV.NgaySinh, NV.ChucVu, CN.MaCN, CN.TenCN
+            SELECT TOP 1 NV.MaTKNV, NV.HoTen, NV.GioiTinh, NV.NgaySinh, NV.ChucVu, NV.NgayVaoLam, CN.MaCN, CN.TenCN
             FROM NHANVIEN NV
             JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
             JOIN CHINHANH CN ON CN.MaCN = L.MaCN
             WHERE NV.MaTKNV = @maTKNV
-            ORDER BY L.NgayBatDau DESC
+            AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
         `;
         const result = await pool.request()
             .input('maTKNV', maTKNV)
@@ -17,6 +17,30 @@ export const getStaffProfile = async (maTKNV) => {
         return result.recordset[0] || null;
     } catch (err) {
         console.error('Error getting staff profile:', err);
+        throw err;
+    }
+};
+
+export const updateStaffProfile = async (maTKNV, profileData) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            UPDATE NHANVIEN
+            SET
+                HoTen = @HoTen,
+                GioiTinh = @GioiTinh,
+                NgaySinh = @NgaySinh
+            WHERE MaTKNV = @maTKNV;
+        `;
+        const result = await pool.request()
+            .input('maTKNV', maTKNV)
+            .input('HoTen', profileData.name)
+            .input('GioiTinh', profileData.gender)
+            .input('NgaySinh', profileData.dob)
+            .query(query);
+        return result.rowsAffected[0] > 0;
+    } catch (err) {
+        console.error('Error updating staff profile:', err);
         throw err;
     }
 };

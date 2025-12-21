@@ -24,7 +24,7 @@ export default function CustomerVaccinationPackages() {
             setLoading(true);
             setError("");
             try {
-                const res = await axios.get(`http://localhost:5000/api/customer/${maTK}/packages`, {
+                const res = await axios.get(`http://localhost:5000/api/customer/packages`, {
                     params: { page: page, limit: limit },
                     headers: {
                         Authorization: `Bearer ${token}`,

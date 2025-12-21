@@ -19,7 +19,7 @@ export default function CustomerProfile() {
         const fetchProfile = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`http://localhost:5000/api/customer/${maTK}`, {
+                const res = await axios.get(`http://localhost:5000/api/customer/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -37,7 +37,7 @@ export default function CustomerProfile() {
             }
         };
         fetchProfile();
-    }, [maTK]);
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -52,7 +52,7 @@ export default function CustomerProfile() {
         try {
             const token = localStorage.getItem("token");
             console.log("Updating with data:", form);
-            await axios.put(`http://localhost:5000/api/customer/${maTK}`, form, {
+            await axios.put(`http://localhost:5000/api/customer/profile`, form, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

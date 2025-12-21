@@ -1,10 +1,9 @@
 import express from 'express';
-import { getUserName, getUserRole } from '../controllers/userController.js';
+import { getUserName } from '../controllers/userController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/:maTK/name', authMiddleware, getUserName);
-router.get('/:maTK/role', authMiddleware, getUserRole);
+router.get('/name', authMiddleware, getUserName);
 
 export default router;
