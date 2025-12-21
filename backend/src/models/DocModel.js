@@ -169,15 +169,7 @@ export const getToaThuoc = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT
-                CT.MaSP AS MaThuoc,
-                SP.TenSP AS TenThuoc,
-                CT.SoLuong,
-                CT.LieuLuong,
-                CT.CachDung
-            FROM CHITIETTOATHUOC CT
-            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
-            WHERE CT.MaSDDV = @maSDDV
+            EXEC sp_TraCuuToaThuoc @maSDDV;
         `;
         const result = await pool.request()
             .input('maSDDV', maSDDV)
@@ -307,22 +299,7 @@ export const getToaTiem = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT
-                CTTP.MaSP AS MaVaccine,
-                SP.TenSP AS TenVaccine,
-                CTTP.LieuLuong,
-                CTTP.MaDK,
-                GT.MaGoi,
-                GT.TenGoi
-            FROM CHITIETTIEMPHONG CTTP
-            JOIN SANPHAM SP
-                ON CTTP.MaSP = SP.MaSP
-            LEFT JOIN DANGKYGOITIEM DK
-                ON CTTP.MaDK = DK.MaDK
-            LEFT JOIN GOITIEM GT
-                ON DK.MaGoi = GT.MaGoi
-            WHERE
-                CTTP.MaSDDV = @maSDDV
+            EXEC sp_TraCuuToaTiem @maSDDV;
         `;
         const result = await pool.request()
             .input('maSDDV', maSDDV)
@@ -493,22 +470,7 @@ export const getPetPackages = async (maTC) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT
-                DK.MaDK,
-                DK.NgayDK,
-                DK.NgayBatDau,
-                DK.MaGoi,
-                GT.TenGoi,
-                GT.ThoiHan,
-                GT.MucUuDai,
-                GT.TongTienGoi
-            FROM DANGKYGOITIEM DK
-            JOIN GOITIEM GT
-                ON DK.MaGoi = GT.MaGoi
-            WHERE
-                DK.MaTC = @maTC
-            ORDER BY
-                DK.NgayDK DESC;
+            EXEC sp_TraCuuDKGoiTiemThuCung @maTC;
         `;
         const result = await pool.request()
             .input('maTC', maTC)

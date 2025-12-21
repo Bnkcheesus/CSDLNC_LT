@@ -1,7 +1,7 @@
 USE PETCAREDB
 GO
 
---1: Tra cứu lịch sử hoá đơn và SDDV của khách hàng + danh sách thú cưng của khách hàng + lịch sử khám và tiêm của thú cưng
+--1: Tra cứu lịch sử hoá đơn và SDDV của khách hàng, danh sách thú cưng của khách hàng, lịch sử khám và tiêm của thú cưng, danh sách gói tiêm của thú cưng
 
 --1a: Tra cứu lịch sử hoá đơn của 1 khách hàng
 CREATE OR ALTER PROCEDURE sp_TraCuuLichSuHoaDonKH
@@ -105,6 +105,29 @@ BEGIN
 END
 GO
 
+--1e: Tra cứu danh sách gói tiêm đã đăng ký cho thú cưng
+CREATE OR ALTER PROCEDURE sp_TraCuuDKGoiTiemThuCung
+	@maTC CHAR(8)
+AS
+BEGIN
+	SELECT
+        DK.MaDK,
+        DK.NgayDK,
+        DK.NgayBatDau,
+        DK.MaGoi,
+        GT.TenGoi,
+        GT.ThoiHan,
+        GT.MucUuDai,
+        GT.TongTienGoi
+    FROM DANGKYGOITIEM DK
+    JOIN GOITIEM GT
+        ON DK.MaGoi = GT.MaGoi
+    WHERE
+        DK.MaTC = @maTC
+    ORDER BY
+        DK.NgayDK DESC;
+END
+GO
 
 
 --2: Bác sĩ tra cứu lịch sử khám và tiêm của mình + lấy thông tin khám bệnh, tiêm phòng + cập nhật chi tiết toa thuốc, chi tiết tiêm phòng.
@@ -163,7 +186,7 @@ BEGIN
         CT.CachDung,
         (SP.Gia * CT.SoLuong) AS Gia
     FROM CHITIETTOATHUOC CT
-        JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+    JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
     WHERE CT.MaSDDV = @maSDDV
 END
 GO
@@ -200,12 +223,12 @@ BEGIN
                 SP.Gia * CT.LieuLuong * ((100 - GT.MucUuDai) / 100.0)
         END AS Gia
     FROM CHITIETTIEMPHONG CT
-        JOIN SANPHAM SP
-        ON CT.MaSP = SP.MaSP
-        LEFT JOIN DANGKYGOITIEM DK
-        ON CT.MaDK = DK.MaDK
-        LEFT JOIN GOITIEM GT
-        ON DK.MaGoi = GT.MaGoi
+    JOIN SANPHAM SP
+		ON CT.MaSP = SP.MaSP
+    LEFT JOIN DANGKYGOITIEM DK
+		ON CT.MaDK = DK.MaDK
+    LEFT JOIN GOITIEM GT
+		ON DK.MaGoi = GT.MaGoi
     WHERE
         CT.MaSDDV = @maSDDV;
 END
@@ -530,3 +553,16 @@ BEGIN
     AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
 END
 GO
+
+--Tra cứu thông tin nhân viên kèm chi nhánh làm việc hiện tại
+CREATE OR ALTER PROCEDURE sp_TraCuuThongTinNhanVien
+	@maTKNV CHAR(8)
+AS
+BEGIN
+	SELECT TOP 1 NV.MaTKNV, NV.HoTen, NV.GioiTinh, NV.NgaySinh, NV.ChucVu, NV.NgayVaoLam, CN.MaCN, CN.TenCN
+	FROM NHANVIEN NV
+	JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
+	JOIN CHINHANH CN ON CN.MaCN = L.MaCN
+	WHERE NV.MaTKNV = @maTKNV
+	AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
+END
