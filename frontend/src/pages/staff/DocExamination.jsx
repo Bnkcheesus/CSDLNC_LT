@@ -516,7 +516,7 @@ export default function DocExamination() {
                     </tr>
                 </thead>
                 <tbody>
-                    {toaThuoc.map((s, i) => (
+                    {toaThuoc.filter(s => s.MaThuoc).map((s, i) => (
                     <tr key={i} className="text-xs border-t">
                         <td className="px-2 py-1">{s.MaThuoc}</td>
                         <td className="px-2 py-1">{s.TenThuoc}</td>

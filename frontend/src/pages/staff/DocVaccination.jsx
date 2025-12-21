@@ -533,7 +533,7 @@ export default function DocExamination() {
                         </tr>
                     </thead>
                     <tbody>
-                        {toaTiem.map((s, i) => (
+                        {toaTiem.filter(s => s.MaVaccine).map((s, i) => (
                         <tr key={i} className="text-xs border-t">
                             <td className="px-2 py-1">{s.MaVaccine}</td>
                             <td className="px-2 py-1">{s.TenVaccine}</td>
