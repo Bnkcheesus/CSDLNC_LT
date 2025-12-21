@@ -330,7 +330,8 @@ CREATE OR ALTER PROCEDURE sp_ThemSDDVMoi
     @maHD CHAR(8),
     @Loai CHAR(2),
     @MaThuCung CHAR(8) = NULL,
-    @MaNV CHAR(8)
+    @MaNV CHAR(8),
+	@newMaSDDV CHAR(10) = NULL OUTPUT
 AS
 BEGIN
     IF (@maHD NOT IN (SELECT MaHD
@@ -348,7 +349,6 @@ BEGIN
     IF (@Loai NOT IN ('KB', 'TP', 'MH'))
         RETURN;
 
-    DECLARE @newMaSDDV CHAR(10);
     DECLARE @maxMaSDDV CHAR(10);
     DECLARE @num INT;
 

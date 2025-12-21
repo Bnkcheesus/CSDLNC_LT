@@ -618,6 +618,7 @@ export default function DocExamination() {
                 <div className="p-6 text-center">
                 <button
                     onClick={handleSubmitChange}
+                    disabled={editingIndex !== null}
                     className="
                     px-6 py-2 
                     bg-blue-500 text-white font-medium
