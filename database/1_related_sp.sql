@@ -379,8 +379,62 @@ END
 GO
 
 
-
-
+--3a: Truy vấn sản phẩm tồn kho của chi nhánh bất kì
+CREATE OR ALTER PROCEDURE sp_Truy_Van_Ton_Kho
+	@tensp NVARCHAR(50),
+	@tencn NVARCHAR(50)
+AS
+BEGIN
+	SELECT MaLo, SoLuongTonKho, NgaySanXuat, HanSuDung 
+	FROM LOSANPHAM
+	JOIN CHINHANH ON CHINHANH.MaCN = LOSANPHAM.MaCN
+	JOIN SANPHAM ON LOSANPHAM.MaSP = SANPHAM.MaSP
+	WHERE TenSP = @tensp AND TenCN = @tenCN 
+END
+GO
+--3b: Truy vấn sản phẩm của chi nhánh bất kì sắp hết hạn (ĐK sắp hết hạn: Sau 60 ngày tính từ ngày gần nhất)
+CREATE OR ALTER PROCEDURE sp_Truy_Van_Ton_Kho_Sap_Het_Han
+	@tensp NVARCHAR(50),
+	@tencn NVARCHAR(50)
+AS
+BEGIN
+	SELECT MaLo, SoLuongTonKho, NgaySanXuat, HanSuDung 
+	FROM LOSANPHAM
+	JOIN CHINHANH ON CHINHANH.MaCN = LOSANPHAM.MaCN
+	JOIN SANPHAM ON LOSANPHAM.MaSP = SANPHAM.MaSP
+	WHERE TenSP = @tensp AND TenCN = @tenCN AND HanSuDung > NgaySanXuat AND HanSuDung <= DATEADD(day, 60, GETDATE())
+END
+GO
+--4: Thống kê vắc xin sử dụng nhiều nhất trong năm:
+CREATE OR ALTER PROCEDURE sp_Tim_Vac_Xin_Su_Dung_Nhieu_Nhat_Trong_Nam
+    @Nam INT
+AS
+BEGIN
+    SELECT 
+        sp.TenSP,
+        COUNT(*) AS SoLanSuDung
+    FROM HOADON hd
+    JOIN SUDUNGDICHVU sddv ON sddv.MaHD = hd.MaHD
+    JOIN TIEMPHONG tp ON tp.MaSDDV = sddv.MaSDDV
+    JOIN CHITIETTIEMPHONG cttp ON cttp.MaSDDV = tp.MaSDDV
+    JOIN SANPHAM sp ON sp.MaSP = cttp.MaSP
+    WHERE sp.LoaiSP = N'Vaccine'
+      AND YEAR(hd.NgayLap) = @Nam
+    GROUP BY sp.TenSP
+    HAVING COUNT(*) >= ALL(
+            SELECT COUNT(*) AS SoLan
+            FROM HOADON hd2
+            JOIN SUDUNGDICHVU sddv2 ON sddv2.MaHD = hd2.MaHD
+            JOIN TIEMPHONG tp2 ON tp2.MaSDDV = sddv2.MaSDDV
+            JOIN CHITIETTIEMPHONG cttp2 ON cttp2.MaSDDV = tp2.MaSDDV
+            JOIN SANPHAM sp2 ON sp2.MaSP = cttp2.MaSP
+            WHERE sp2.LoaiSP = N'Vaccine'
+              AND YEAR(hd2.NgayLap) = @Nam
+            GROUP BY sp2.TenSP
+        ) 
+END
+GO
+GO
 --5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong tháng năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
     @thang INT,
