@@ -3,9 +3,13 @@ import {
     getDocExaminationInfo,
     updateDocExaminationInfo,
     getToaThuoc,
+    addThuoc,
+    deleteThuoc,
     updateToaThuoc,
     getDocVaccinationInfo,
     getToaTiem,
+    addVaccine,
+    deleteVaccine,
     updateToaTiem,
     getPetInfo,
     getPetHistory,
@@ -92,7 +96,7 @@ export const getToaThuocController = async (req, res) => {
     }
 };
 
-export const updateToaThuocController = async (req, res) => {
+export const addThuocController = async (req, res) => {
     try {
         const { maSDDV } = req.params;
         const thuocData = req.body;
@@ -102,7 +106,45 @@ export const updateToaThuocController = async (req, res) => {
         if (thuocData.length === 0) {
             return res.status(400).json({ message: 'Toa thuoc data is required' });
         }
-        const result = await updateToaThuoc(maSDDV, thuocData);
+        const result = await addThuoc(maSDDV, thuocData);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in addThuoc controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const deleteThuocController = async (req, res) => {
+    try {
+        const { maSDDV, maThuoc } = req.params;
+        if (!maSDDV || !maThuoc) {
+            return res.status(400).json({ message: 'MaSDDV and MaThuoc are required' });
+        }
+        const result = await deleteThuoc(maSDDV, maThuoc);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in deleteThuoc controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateToaThuocController = async (req, res) => {
+    try {
+        const { maSDDV, maThuoc } = req.params;
+        const thuocData = req.body;
+        if (!maSDDV || !maThuoc) {
+            return res.status(400).json({ message: 'MaSDDV and MaThuoc are required' });
+        }
+        if (!thuocData || Object.keys(thuocData).length === 0) {
+            return res.status(400).json({ message: 'Thuoc data is required' });
+        }
+        const result = await updateToaThuoc(maSDDV, maThuoc, thuocData);
         return res.status(200).json({
             success: true,
             message: result
@@ -150,7 +192,7 @@ export const getToaTiemController = async (req, res) => {
     }
 };
 
-export const updateToaTiemController = async (req, res) => {
+export const addVaccineController = async (req, res) => {
     try {
         const { maSDDV } = req.params;
         const tiemData = req.body;
@@ -160,7 +202,45 @@ export const updateToaTiemController = async (req, res) => {
         if (tiemData.length === 0) {
             return res.status(400).json({ message: 'Toa tiem data is required' });
         }
-        const result = await updateToaTiem(maSDDV, tiemData);
+        const result = await addVaccine(maSDDV, tiemData);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in updateToaTiem controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const deleteVaccineController = async (req, res) => {
+    try {
+        const { maSDDV, maVaccine } = req.params;
+        if (!maSDDV || !maVaccine) {
+            return res.status(400).json({ message: 'MaSDDV and MaVaccine are required' });
+        }
+        const result = await deleteVaccine(maSDDV, maVaccine);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in deleteVaccine controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateToaTiemController = async (req, res) => {
+    try {
+        const { maSDDV, maVaccine } = req.params;
+        const tiemData = req.body;
+        if (!maSDDV || !maVaccine) {
+            return res.status(400).json({ message: 'MaSDDV and MaVaccine are required' });
+        }
+        if (!tiemData || Object.keys(tiemData).length === 0) {
+            return res.status(400).json({ message: 'Vaccine data is required' });
+        }
+        const result = await updateToaTiem(maSDDV, maVaccine, tiemData);
         return res.status(200).json({
             success: true,
             message: result

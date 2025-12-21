@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Pencil, Trash2, Check, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
@@ -20,9 +21,12 @@ export default function DocExamination() {
     const [error, setError] = useState("");
     const [openRow, setOpenRow] = useState(null);
     const [rowDetails, setRowDetails] = useState({});
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editDraft, setEditDraft] = useState(null);
 
     const [thuocKeyword, setThuocKeyword] = useState("");
     const [thuocResults, setThuocResults] = useState([]);
+    const [deletedThuoc, setDeletedThuoc] = useState([]);
 
     const [sddv, setSDDV] = useState({});
     const [pet, setPet] = useState([]);
@@ -247,6 +251,31 @@ export default function DocExamination() {
         setThuocKeyword("");
     }
 
+    const handleDeleteThuoc = (index) => {
+        if (!window.confirm("Bạn có chắc muốn xoá thuốc này?")) return;
+
+        setToaThuoc(prev => {
+            const thuoc = prev[index];
+            if (!thuoc.isNew) {
+                setDeletedThuoc(d => [...d, thuoc]);
+            }
+
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
+    const handleSaveEdit = (index) => {
+        setToaThuoc(prev =>
+            prev.map((t, i) =>
+            i === index
+                ? { ...editDraft, isNew: t.isNew }
+                : t
+            )
+        );
+        setEditingIndex(null);
+        setEditDraft(null);
+    };
+
     const handleSubmitChange = async () => {
         try {
             await axios.put(`http://localhost:5000/api/doctor/khambenh/${maSDDV}`, {
@@ -259,19 +288,42 @@ export default function DocExamination() {
                 }
             });
 
-            for (const t of toaThuoc) {
-                if (!t.isNew) continue;
-                await axios.post(`http://localhost:5000/api/doctor/khambenh/${maSDDV}/toathuoc`, {
-                    MaThuoc: t.MaThuoc,
-                    SoLuong: t.SoLuong,
-                    LieuLuong: t.LieuLuong,
-                    CachDung: t.CachDung
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+            for (const t of deletedThuoc) {
+                await axios.delete(`http://localhost:5000/api/doctor/khambenh/${maSDDV}/toathuoc/${t.MaThuoc}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     }
-                });
-                t.isNew = false;
+                );
+            }
+            setDeletedThuoc([]);
+
+            for (const t of toaThuoc) {
+                if (!t.isNew) {
+                    await axios.put(`http://localhost:5000/api/doctor/khambenh/${maSDDV}/toathuoc/${t.MaThuoc}`, {
+                        SoLuong: t.SoLuong,
+                        LieuLuong: t.LieuLuong,
+                        CachDung: t.CachDung
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+                }
+                else {
+                    await axios.post(`http://localhost:5000/api/doctor/khambenh/${maSDDV}/toathuoc`, {
+                        MaThuoc: t.MaThuoc,
+                        SoLuong: t.SoLuong,
+                        LieuLuong: t.LieuLuong,
+                        CachDung: t.CachDung
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+                    t.isNew = false;
+                }
             }
 
             alert("Chi tiết khám bệnh đã được cập nhật thành công!");
@@ -460,6 +512,7 @@ export default function DocExamination() {
                     <th className="px-2 py-1">Số lượng</th>
                     <th className="px-2 py-1">Liều lượng</th>
                     <th className="px-2 py-1">Cách dùng</th>
+                    <th className="px-2 py-1"> </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -467,9 +520,95 @@ export default function DocExamination() {
                     <tr key={i} className="text-xs border-t">
                         <td className="px-2 py-1">{s.MaThuoc}</td>
                         <td className="px-2 py-1">{s.TenThuoc}</td>
-                        <td className="px-2 py-1">{s.SoLuong}</td>
-                        <td className="px-2 py-1">{s.LieuLuong}</td>
-                        <td className="px-2 py-1">{s.CachDung}</td>
+                        {/* SỐ LƯỢNG */}
+                        <td className="px-2 py-1">
+                            {editingIndex === i ? (
+                                <input
+                                    type="number"
+                                    min="1"
+                                    className="border p-1 w-20 rounded"
+                                    value={editDraft.SoLuong}
+                                    onChange={(e) =>
+                                        setEditDraft(d => ({ ...d, SoLuong: e.target.value }))
+                                    }
+                                />
+                                ) : (
+                                s.SoLuong
+                            )}
+                        </td>
+
+                        {/* LIỀU LƯỢNG */}
+                        <td className="px-2 py-1">
+                            {editingIndex === i ? (
+                                <input
+                                    type="text"
+                                    className="border p-1 w-full rounded"
+                                    value={editDraft.LieuLuong}
+                                    onChange={(e) => {
+                                        setEditDraft(d => ({ ...d, LieuLuong: e.target.value }));
+                                    }}
+                                />
+                            ) : (
+                                s.LieuLuong
+                            )}
+                        </td>
+
+                        {/* CÁCH DÙNG */}
+                        <td className="px-2 py-1">
+                            {editingIndex === i ? (
+                                <input
+                                    type="text"
+                                    className="border p-1 w-full rounded"
+                                    value={editDraft.CachDung}
+                                    onChange={(e) => {
+                                        setEditDraft(d => ({ ...d, CachDung: e.target.value }));
+                                    }}
+                                />
+                            ) : (
+                                s.CachDung
+                            )}
+                        </td>
+
+                        {/* ACTIONS */}
+                        <td className="px-2 py-1 text-right">
+                            {editingIndex === i ? (
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        onClick={() => handleSaveEdit(i)}
+                                        className="text-green-600 hover:text-green-800"
+                                    >
+                                        <Check size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setEditingIndex(null);
+                                            setEditDraft(null);
+                                        }}
+                                        className="text-gray-500 hover:text-gray-700"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex justify-end gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setEditingIndex(i);
+                                            setEditDraft({ ...s });
+                                        }}
+                                        className="text-blue-600 hover:text-blue-800"
+                                        >
+                                        <Pencil size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteThuoc(i)}
+                                        className="text-red-600 hover:text-red-800"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </td>
                     </tr>
                     ))}
                 </tbody>

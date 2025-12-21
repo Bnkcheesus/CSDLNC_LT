@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Pencil, Trash2, Check, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
@@ -20,10 +21,13 @@ export default function DocExamination() {
     const [error, setError] = useState("");
     const [openRow, setOpenRow] = useState(null);
     const [rowDetails, setRowDetails] = useState({});
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editDraft, setEditDraft] = useState(null);
 
     const [vaccineKeyword, setVaccineKeyword] = useState("");
     const [vaccineResults, setVaccineResults] = useState([]);
     const [packages, setPackages] = useState([]);
+    const [deletedVaccines, setDeletedVaccines] = useState([]);
 
     const [sddv, setSDDV] = useState({});
     const [pet, setPet] = useState([]);
@@ -279,20 +283,66 @@ export default function DocExamination() {
         fetchDangKyGoiTiem();
     }, [cttpForm.isInGoiTiem, sddv.MaTC, token]);
 
+    const handleDeleteVaccine = (index) => {
+        if (!window.confirm("Bạn có chắc muốn xoá vaccine này?")) return;
+
+        setToaTiem(prev => {
+            const vaccine = prev[index];
+            if (!vaccine.isNew) {
+                setDeletedVaccines(d => [...d, vaccine]);
+            }
+
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
+    const handleSaveEdit = (index) => {
+        setToaTiem(prev =>
+            prev.map((t, i) =>
+            i === index
+                ? { ...editDraft, isNew: t.isNew }
+                : t
+            )
+        );
+        setEditingIndex(null);
+        setEditDraft(null);
+    };
+
     const handleSubmitChange = async () => {
         try {
-            for (const t of toaTiem) {
-                if (!t.isNew) continue;
-                await axios.post(`http://localhost:5000/api/doctor/tiemphong/${maSDDV}/toatiem`, {
-                    MaVaccine: t.MaVaccine,
-                    LieuLuong: t.LieuLuong,
-                    MaDK: t.MaDK ? t.MaDK : null
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
+            for (const t of deletedVaccines) {
+                await axios.delete(`http://localhost:5000/api/doctor/tiemphong/${maSDDV}/toatiem/${t.MaVaccine}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
                     }
-                });
-                t.isNew = false;
+                );
+            }
+            setDeletedVaccines([]);
+
+            for (const t of toaTiem) {
+                if (!t.isNew) {
+                    await axios.put(`http://localhost:5000/api/doctor/tiemphong/${maSDDV}/toatiem/${t.MaVaccine}`, {
+                        LieuLuong: t.LieuLuong
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+                }
+                else {
+                    await axios.post(`http://localhost:5000/api/doctor/tiemphong/${maSDDV}/toatiem`, {
+                        MaVaccine: t.MaVaccine,
+                        LieuLuong: t.LieuLuong,
+                        MaDK: t.MaDK ? t.MaDK : null
+                    }, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        }
+                    });
+                    t.isNew = false;
+                }
             }
 
             alert("Chi tiết tiêm phòng đã được cập nhật thành công!");
@@ -479,6 +529,7 @@ export default function DocExamination() {
                             <th className="px-2 py-1">Mã đăng ký</th>
                             <th className="px-2 py-1">Mã gói</th>
                             <th className="px-2 py-1">Tên gói</th>
+                            <th className="px-2 py-1"> </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -486,10 +537,66 @@ export default function DocExamination() {
                         <tr key={i} className="text-xs border-t">
                             <td className="px-2 py-1">{s.MaVaccine}</td>
                             <td className="px-2 py-1">{s.TenVaccine}</td>
-                            <td className="px-2 py-1">{s.LieuLuong}</td>
+                            {/* LIỀU LƯỢNG */}
+                            <td className="px-2 py-1">
+                                {editingIndex === i ? (
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        className="border p-1 w-20 rounded"
+                                        value={editDraft.LieuLuong}
+                                        onChange={(e) =>
+                                            setEditDraft(d => ({ ...d, LieuLuong: e.target.value }))
+                                        }
+                                    />
+                                    ) : (
+                                    s.LieuLuong
+                                )}
+                            </td>
                             <td className="px-2 py-1">{s.MaDK || "-"}</td>
                             <td className="px-2 py-1">{s.MaGoi || "-"}</td>
                             <td className="px-2 py-1">{s.TenGoi || "-"}</td>
+
+                            {/* ACTIONS */}
+                            <td className="px-2 py-1 text-right">
+                                {editingIndex === i ? (
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            onClick={() => handleSaveEdit(i)}
+                                            className="text-green-600 hover:text-green-800"
+                                        >
+                                            <Check size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setEditingIndex(null);
+                                                setEditDraft(null);
+                                            }}
+                                            className="text-gray-500 hover:text-gray-700"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-end gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setEditingIndex(i);
+                                                setEditDraft({ ...s });
+                                            }}
+                                            className="text-blue-600 hover:text-blue-800"
+                                            >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteVaccine(i)}
+                                            className="text-red-600 hover:text-red-800"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                            </td>
                         </tr>
                         ))}
                     </tbody>

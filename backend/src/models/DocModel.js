@@ -189,7 +189,7 @@ export const getToaThuoc = async (maSDDV) => {
     }
 };
 
-export const updateToaThuoc = async (maSDDV, thuocData) => {
+export const addThuoc = async (maSDDV, thuocData) => {
     try {
         const pool = await getPool();
         const query = `
@@ -205,6 +205,52 @@ export const updateToaThuoc = async (maSDDV, thuocData) => {
         return { message: 'Prescription item added successfully' };
     } catch (err) {
         console.error('Error adding prescription item by service ID:', err);
+        throw err;
+    }
+};
+
+export const deleteThuoc = async (maSDDV, maThuoc) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            DELETE FROM CHITIETTOATHUOC
+            WHERE MaSDDV = @maSDDV AND MaSP = @maSP;
+
+            EXEC sp_CapNhatTongTienDVKhamBenh @maSDDV;
+        `;
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('maSP', maThuoc)
+            .query(query);
+        return { message: 'Prescription item deleted successfully' };
+    } catch (err) {
+        console.error('Error deleting prescription item by service ID:', err);
+        throw err;
+    }
+};
+
+export const updateToaThuoc = async (maSDDV, maThuoc, thuocData) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            UPDATE CHITIETTOATHUOC
+            SET SoLuong = @SoLuong,
+                LieuLuong = @LieuLuong,
+                CachDung = @CachDung
+            WHERE MaSDDV = @maSDDV AND MaSP = @maSP;
+
+            EXEC sp_CapNhatTongTienDVKhamBenh @maSDDV;
+        `;
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('maSP', maThuoc)
+            .input('SoLuong', thuocData.SoLuong)
+            .input('LieuLuong', thuocData.LieuLuong)
+            .input('CachDung', thuocData.CachDung)
+            .query(query);
+        return { message: 'Prescription item updated successfully' };
+    } catch (err) {
+        console.error('Error updating prescription item by service ID:', err);
         throw err;
     }
 };
@@ -288,7 +334,7 @@ export const getToaTiem = async (maSDDV) => {
     }
 };
 
-export const updateToaTiem = async (maSDDV, tiemData) => {
+export const addVaccine = async (maSDDV, tiemData) => {
     try {
         const pool = await getPool();
         const query = `
@@ -304,6 +350,48 @@ export const updateToaTiem = async (maSDDV, tiemData) => {
         return { message: 'Toa tiem item added successfully' };
     } catch (err) {
         console.error('Error adding toa tiem item by service ID:', err);
+        throw err;
+    }
+};
+
+export const deleteVaccine = async (maSDDV, maVaccine) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            DELETE FROM CHITIETTIEMPHONG
+            WHERE MaSDDV = @maSDDV AND MaSP = @maSP;
+
+            EXEC sp_CapNhatTongTienDVTiemPhong @maSDDV;
+        `;
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('maSP', maVaccine)
+            .query(query);
+        return { message: 'Toa tiem item deleted successfully' };
+    } catch (err) {
+        console.error('Error deleting toa tiem item by service ID:', err);
+        throw err;
+    }
+};
+
+export const updateToaTiem = async (maSDDV, maVaccine, tiemData) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            UPDATE CHITIETTIEMPHONG
+            SET LieuLuong = @LieuLuong
+            WHERE MaSDDV = @maSDDV AND MaSP = @maSP;
+
+            EXEC sp_CapNhatTongTienDVTiemPhong @maSDDV;
+        `;
+        await pool.request()
+            .input('maSDDV', maSDDV)
+            .input('maSP', maVaccine)
+            .input('LieuLuong', tiemData.LieuLuong)
+            .query(query);
+        return { message: 'Toa tiem item updated successfully' };
+    } catch (err) {
+        console.error('Error updating toa tiem item by service ID:', err);
         throw err;
     }
 };

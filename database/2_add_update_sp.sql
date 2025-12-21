@@ -70,7 +70,7 @@ END
 GO
 
 -- 3. Cập nhật Tổng Tiền Dịch Vụ Tiêm Phòng
-CREATE OR ALTER PROCEDURE sp_CapNhatTongTienDVTiengPhong (@MaSDDV CHAR(10))
+CREATE OR ALTER PROCEDURE sp_CapNhatTongTienDVTiemPhong (@MaSDDV CHAR(10))
 AS
 BEGIN
     SET NOCOUNT ON;
