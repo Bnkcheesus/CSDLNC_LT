@@ -177,33 +177,7 @@ CREATE OR ALTER PROCEDURE sp_ThemThuocToaThuoc
     @cachDung NVARCHAR(50)
 AS
 BEGIN
-    INSERT INTO CHITIETTOATHUOC
-        (MaSP, MaSDDV, SoLuong, LieuLuong, CachDung)
-    VALUES
-        (@maSP, @maSDDV, @soLuong, @lieuLuong, @cachDung);
-
-    DECLARE
-		@donGia DECIMAL(19,2),
-		@tienThuoc DECIMAL(19,2),
-		@maHD CHAR(8)
-
-    SELECT @donGia = Gia
-    FROM SANPHAM
-    WHERE MaSP = @maSP;
-
-    SET @tienThuoc = @donGia * @soLuong;
-
-    UPDATE SUDUNGDICHVU
-	SET TongTienDV = TongTienDV + @tienThuoc
-	WHERE MaSDDV = @maSDDV;
-
-    SELECT @maHD = MaHD
-    FROM SUDUNGDICHVU
-    WHERE MaSDDV = @maSDDV;
-
-    UPDATE HOADON
-	SET TongTien = TongTien + @tienThuoc
-	WHERE MaHD = @maHD;
+    EXEC sp_ThemChiTietToaThuoc @maSDDV, @maSP, @soLuong, @lieuLuong, @cachDung;
 END
 GO
 
@@ -241,50 +215,11 @@ GO
 CREATE OR ALTER PROCEDURE sp_ThemVaccineToaTiem
     @maSP CHAR(8),
     @maSDDV CHAR(10),
-    @LieuLuong INT,
+    @lieuLuong INT,
     @maDK CHAR(8)
 AS
 BEGIN
-    INSERT INTO CHITIETTIEMPHONG
-        (MaSP, MaSDDV, LieuLuong, MaDK)
-    VALUES
-        (@maSP, @maSDDV, @LieuLuong, @maDK);
-
-    DECLARE
-		@donGia DECIMAL(19,2),
-		@uuDai DECIMAL(4,2),
-		@tienVaccine DECIMAL(19,2),
-		@maHD CHAR(8)
-
-    SELECT @donGia = Gia
-    FROM SANPHAM
-    WHERE MaSP = @maSP;
-
-    IF (@maDK IS NULL)
-	BEGIN
-        SET @uuDai = 0.00;
-    END
-	ELSE
-	BEGIN
-        SELECT @uuDai = MucUuDai
-        FROM GOITIEM GT
-            JOIN DANGKYGOITIEM DK ON GT.MaGoi = DK.MaGoi
-        WHERE DK.MaDK = @maDK;
-    END
-
-    SET @tienVaccine = @donGia * @lieuLuong * ((100 - @uuDai) / 100.0);
-
-    UPDATE SUDUNGDICHVU
-	SET TongTienDV = TongTienDV + @tienVaccine
-	WHERE MaSDDV = @maSDDV;
-
-    SELECT @maHD = MaHD
-    FROM SUDUNGDICHVU
-    WHERE MaSDDV = @maSDDV;
-
-    UPDATE HOADON
-	SET TongTien = TongTien + @tienVaccine
-	WHERE MaHD = @maHD;
+    EXEC sp_ThemChiTietTiemPhong @maSDDV, @maSP, @lieuLuong, @maDK;
 END
 GO
 
@@ -375,6 +310,22 @@ BEGIN
 
     IF (@Loai = 'MH')
         EXEC sp_ThemMuaHang @newMaSDDV, @MaNV;
+END
+GO
+
+--2h: Tra cứu chi tiết mua hàng
+CREATE OR ALTER PROCEDURE sp_TraCuuChiTietMuaHang
+	@maSDDV CHAR(10)
+AS
+BEGIN
+    SELECT
+        CT.MaSP,
+        SP.TenSP,
+        CT.SoLuong,
+        (SP.Gia * CT.SoLuong) AS Gia
+    FROM CHITIETMUAHANG CT
+        JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
+    WHERE CT.MaSDDV = @maSDDV;
 END
 GO
 
@@ -520,18 +471,62 @@ BEGIN
 	)
 END
 GO
---CREATE OR ALTER PROCEDURE sp_ThemSDDV @maHD CHAR(8),
-/*
-EXEC sp_Tim_Thu_Cung @thang = 1, @nam = 2025;
 
-EXEC sp_Tinh_Doanh_Thu_CN_theo_thang @tencn = N'Chi nhánh JohnHuyện', @thang = 1, @nam = 2025;
 
-EXEC sp_Tinh_Doanh_Thu_CN_theo_nam @tencn = N'Chi nhánh JohnHuyện', @nam = 2025;
+-------Các sp khác: ----------
 
-EXEC sp_Tinh_Doanh_Thu_CT_theo_thang @thang = 1, @nam = 2025;
+--Tra cứu thông tin hoá đơn
+CREATE OR ALTER PROCEDURE sp_TraCuuThongTinHoaDon
+	@maHD CHAR(8)
+AS
+BEGIN
+	SELECT
+		HD.MaHD,
+		HD.NgayLap,
+		CN.TenCN,
+		HD.MaTKNV,
+		HD.MaTKKH,
+		HD.TongTien,
+		HD.KhuyenMai,
+		HD.HinhThucThanhToan
+	FROM HOADON HD
+	JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+	WHERE HD.MaHD = @maHD;
+END
+GO
 
-EXEC sp_Tinh_Doanh_Thu_CT_theo_nam @nam = 2025;
+--Tra cứu danh sách dịch vụ trong hoá đơn
+CREATE OR ALTER PROCEDURE sp_TraCuuDichVuHoaDon
+	@maHD CHAR(8)
+AS
+BEGIN
+	SELECT 
+        SDV.MaSDDV, 
+        SDV.LoaiDV,
+        NV.HoTen AS TenNV,
+        SDV.TongTienDV
+    FROM SUDUNGDICHVU SDV
+    JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+    LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+    LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+    LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
+    JOIN NHANVIEN NV ON 
+        (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV) OR 
+        (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV) OR
+        (SDV.LoaiDV = 'MH' AND MH.MaNVBH = NV.MaTKNV)
+    WHERE HD.MaHD = @maHD;
+END
+GO
 
-EXEC sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang;
-*/
-
+--Tra cứu danh sách bác sĩ đang làm việc tại chi nhánh
+CREATE OR ALTER PROCEDURE sp_TraCuuDanhSachBacSiTheoChiNhanh
+	@maCN CHAR(5)
+AS
+BEGIN
+	SELECT NV.MaTKNV, NV.HoTen
+    FROM NHANVIEN NV
+    JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
+    WHERE L.MaCN = @maCN AND NV.ChucVu = 'BSTY'
+    AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
+END
+GO

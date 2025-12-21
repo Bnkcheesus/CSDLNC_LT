@@ -76,26 +76,30 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @MaDK CHAR(8);
-    DECLARE @TongTien DECIMAL(19, 2) = 0.00;
+    DECLARE @TongTien DECIMAL(19, 2);
 
-    -- Kiểm tra có thuộc gói tiêm không
-    SELECT @MaDK = MaDK
-    FROM CHITIETTIEMPHONG
-    WHERE MaSDDV = @MaSDDV;
-
-    IF @MaDK IS NOT NULL -- Thuộc gói tiêm đã đăng ký
-    BEGIN
-        -- Tiêm phòng trong gói thường có giá 0 vì đã được trả trong GOITIEM
-        SET @TongTien = 0.00; 
-    END
-    ELSE -- Tiêm phòng đơn lẻ
-    BEGIN
-        -- Tính tổng tiền vaccine
-        SELECT @TongTien = ISNULL(SUM(C.LieuLuong * S.Gia), 0)
-        FROM CHITIETTIEMPHONG C
-        JOIN SANPHAM S ON C.MaSP = S.MaSP
-        WHERE C.MaSDDV = @MaSDDV;
-    END
+    /*
+        Tính tổng tiền cho từng dòng CHITIETTIEMPHONG:
+        - Có MaDK  → áp dụng ưu đãi gói tiêm
+        - Không có → giá đầy đủ
+    */
+    SELECT 
+        @TongTien = ISNULL(SUM(
+            CASE 
+                WHEN C.MaDK IS NOT NULL THEN
+                    S.Gia * C.LieuLuong * ((100 - GT.MucUuDai) / 100.0)
+                ELSE
+                    S.Gia * C.LieuLuong
+            END
+        ), 0)
+    FROM CHITIETTIEMPHONG C
+    JOIN SANPHAM S 
+        ON C.MaSP = S.MaSP
+    LEFT JOIN DANGKYGOITIEM DK 
+        ON C.MaDK = DK.MaDK
+    LEFT JOIN GOITIEM GT 
+        ON DK.MaGoi = GT.MaGoi
+    WHERE C.MaSDDV = @MaSDDV;
 
     -- Cập nhật TongTienDV
     UPDATE SUDUNGDICHVU
@@ -471,14 +475,7 @@ BEGIN
     VALUES (@MaSP, @MaSDDV, @SoLuong, @LieuLuong, @CachDung);
 
     -- Cập nhật lại tổng tiền dịch vụ khám bệnh
-    DECLARE @TongTienToaThuoc DECIMAL(19, 2);
-    SELECT @TongTienToaThuoc = ISNULL(SUM(C.SoLuong * S.Gia), 0)
-    FROM CHITIETTOATHUOC C
-    JOIN SANPHAM S ON C.MaSP = S.MaSP
-    WHERE C.MaSDDV = @MaSDDV;
-    UPDATE SUDUNGDICHVU
-    SET TongTienDV = @TongTienToaThuoc
-    WHERE MaSDDV = @MaSDDV AND LoaiDV = 'KB';
+    EXEC sp_CapNhatTongTienDVKhamBenh @MaSDDV;
 
     -- Cập nhật lại tổng tiền trong hóa đơn
     DECLARE @MaHD CHAR(8);
@@ -514,14 +511,7 @@ BEGIN
     VALUES (@MaSP, @MaSDDV, @LieuLuong, @MaDK);
 
     -- Cập nhật lại tổng tiền dịch vụ tiêm phòng
-    DECLARE @TongTienTiemPhong DECIMAL(19, 2);
-    SELECT @TongTienTiemPhong = ISNULL(SUM(C.LieuLuong * S.Gia), 0)
-    FROM CHITIETTIEMPHONG C
-    JOIN SANPHAM S ON C.MaSP = S.MaSP
-    WHERE C.MaSDDV = @MaSDDV;
-    UPDATE SUDUNGDICHVU
-    SET TongTienDV = @TongTienTiemPhong
-    WHERE MaSDDV = @MaSDDV AND LoaiDV = 'TP';
+    EXEC sp_CapNhatTongTienDVTiemPhong @MaSDDV;
 
     -- Cập nhật lại tổng tiền trong hóa đơn
     DECLARE @MaHD CHAR(8);
@@ -557,14 +547,7 @@ BEGIN
     VALUES (@MaSP, @MaSDDV, @SoLuong);
 
     -- Cập nhật lại tổng tiền dịch vụ mua hàng
-    DECLARE @TongTienMuaHang DECIMAL(19, 2);
-    SELECT @TongTienMuaHang = ISNULL(SUM(C.SoLuong * S.Gia), 0)
-    FROM CHITIETMUAHANG C
-    JOIN SANPHAM S ON C.MaSP = S.MaSP
-    WHERE C.MaSDDV = @MaSDDV;
-    UPDATE SUDUNGDICHVU
-    SET TongTienDV = @TongTienMuaHang
-    WHERE MaSDDV = @MaSDDV AND LoaiDV = 'MH';
+    EXEC sp_CapNhatTongTienDV_MuaHang @MaSDDV;
 
     -- Cập nhật lại tổng tiền trong hóa đơn
     DECLARE @MaHD CHAR(8);

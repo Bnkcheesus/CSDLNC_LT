@@ -4,12 +4,7 @@ export const getStaffProfile = async (maTKNV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT TOP 1 NV.MaTKNV, NV.HoTen, NV.GioiTinh, NV.NgaySinh, NV.ChucVu, NV.NgayVaoLam, CN.MaCN, CN.TenCN
-            FROM NHANVIEN NV
-            JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
-            JOIN CHINHANH CN ON CN.MaCN = L.MaCN
-            WHERE NV.MaTKNV = @maTKNV
-            AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
+            EXEC sp_TraCuuThongTinNhanVien @maTKNV;
         `;
         const result = await pool.request()
             .input('maTKNV', maTKNV)
@@ -49,11 +44,7 @@ export const getDoctorsByBranch = async (maCN) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT NV.MaTKNV, NV.HoTen
-            FROM NHANVIEN NV
-            JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
-            WHERE L.MaCN = @maCN AND NV.ChucVu = 'BSTY'
-            AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
+            EXEC sp_TraCuuDanhSachBacSiTheoChiNhanh @maCN;
         `;
         const result = await pool.request()
             .input('maCN', maCN)
@@ -87,9 +78,7 @@ export const getPetsByCustomer = async (maTKKH) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT MaTC, TenTC, Loai
-            FROM THUCUNG
-            WHERE MaTKKH = @maTKKH
+            EXEC sp_TraCuuDanhSachThuCungKH @maTKKH;
         `;
         const result = await pool.request()
             .input('maTKKH', maTKKH)
@@ -129,11 +118,9 @@ export const getServiceInvoiceHistory = async (maTKNV, page, limit) => {
             .input('offset', offset)
             .query(`
                 SELECT
-                    HD.MaHD,
-                    HD.NgayLap,
-                    HD.MaTKKH,
-                    KH.HoTen AS TenKH,
-                    CN.TenCN
+                    HD.MaHD, HD.NgayLap,
+                    KH.MaTKKH, KH.HoTen AS TenKH,
+                    CN.MaCN, CN.TenCN
                 FROM HOADON HD
                 JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
                 JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
@@ -181,16 +168,7 @@ export const getServiceInvoiceInfo = async (maHD) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT
-                HD.MaHD,
-                HD.NgayLap,
-                CN.TenCN,
-                HD.MaTKNV,
-                HD.MaTKKH,
-                HD.TongTien
-            FROM HOADON HD
-            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-            WHERE HD.MaHD = @maHD
+            EXEC sp_TraCuuThongTinHoaDon @maHD;
         `;
             
         const result = await pool.request()
@@ -207,21 +185,7 @@ export const getServiceInvoiceDetail = async (maHD) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT 
-                SDV.MaSDDV, 
-                SDV.LoaiDV,
-                NV.HoTen AS TenNV,
-                SDV.TongTienDV
-            FROM SUDUNGDICHVU SDV
-            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
-            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
-            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
-            LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
-            JOIN NHANVIEN NV ON 
-                (SDV.LoaiDV = 'KB' AND KB.MaBS = NV.MaTKNV) OR 
-                (SDV.LoaiDV = 'TP' AND TP.MaBS = NV.MaTKNV) OR
-                (SDV.LoaiDV = 'MH' AND MH.MaNVBH = NV.MaTKNV)
-            WHERE HD.MaHD = @maHD
+            EXEC sp_TraCuuDichVuHoaDon @maHD;
         `;
         const result = await pool.request()
             .input('maHD', maHD)
@@ -237,13 +201,7 @@ export const getExaminationDetail = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT 
-                SP.MaSP,
-                SP.TenSP,
-                CT.SoLuong
-            FROM CHITIETTOATHUOC CT
-            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
-            WHERE CT.MaSDDV = @maSDDV
+            EXEC sp_TraCuuToaThuoc @maSDDV;
         `;
         const result = await pool.request()
             .input('maSDDV', maSDDV)
@@ -259,15 +217,7 @@ export const getVaccinationDetail = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT 
-                SP.MaSP,
-                SP.TenSP,
-                CT.LieuLuong,
-                DG.MaGoi
-            FROM CHITIETTIEMPHONG CT
-            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
-            LEFT JOIN DANGKYGOITIEM DG ON CT.MaDK = DG.MaDK
-            WHERE CT.MaSDDV = @maSDDV
+            EXEC sp_TraCuuToaTiem @maSDDV;
         `;
         const result = await pool.request()
             .input('maSDDV', maSDDV)
@@ -283,13 +233,7 @@ export const getPurchaseDetail = async (maSDDV) => {
     try {
         const pool = await getPool();
         const query = `
-            SELECT 
-                SP.MaSP,
-                SP.TenSP,
-                CT.SoLuong
-            FROM CHITIETMUAHANG CT
-            JOIN SANPHAM SP ON CT.MaSP = SP.MaSP
-            WHERE CT.MaSDDV = @maSDDV
+            EXEC sp_TraCuuChiTietMuaHang @maSDDV;
         `;
         const result = await pool.request()
             .input('maSDDV', maSDDV)

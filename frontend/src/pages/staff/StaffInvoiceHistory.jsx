@@ -103,9 +103,8 @@ export default function StaffInvoiceHistory() {
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã hóa đơn</th>
                       <th className="px-3 py-2">Ngày lập</th>
-                      <th className="px-3 py-2">Mã khách hàng</th>
-                      <th className="px-3 py-2">Tên khách hàng</th>
-                      <th className="px-3 py-2">Tên chi nhánh</th>
+                      <th className="px-3 py-2">Khách hàng</th>
+                      <th className="px-3 py-2">Chi nhánh</th>
                       <th className="px-3 py-2"></th>
                     </tr>
                   </thead>
@@ -121,8 +120,7 @@ export default function StaffInvoiceHistory() {
                             ? new Date(r.NgayLap).toLocaleDateString()
                             : "-"}
                         </td>
-                        <td className="px-3 py-3 text-sm">{r.MaTKKH || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.TenKH || "-"}</td>
+                        <td className="px-3 py-3 text-sm">{r.MaTKKH ? r.MaTKKH + " - " + r.TenKH : "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.TenCN || "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
                           <button

@@ -131,6 +131,7 @@ export default function CustomerPetHistory() {
                             <p><strong>Chi nhánh:</strong> {invoice.TenCN}</p>
                             <p><strong>Mã nhân viên:</strong> {invoice.MaTKNV}</p>
                             <p><strong>Mã khách hàng:</strong> {invoice.MaTKKH}</p>
+                            <p><strong>Tổng tiền:</strong> {invoice.TongTien ? invoice.TongTien.toLocaleString() : "-"}</p>
                         </div>
                     </div>
                 )}
@@ -204,13 +205,15 @@ export default function CustomerPetHistory() {
                                                                         <tr className="text-xs text-gray-600">
                                                                             <th className="px-2 py-1">Tên thuốc</th>
                                                                             <th className="px-2 py-1">Số lượng</th>
+                                                                            <th className="px-2 py-1">Giá</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].map((d) => (
                                                                             <tr key={d.MaSP} className="text-xs border-t">
-                                                                                <td className="px-2 py-1">{d.TenSP}</td>
+                                                                                <td className="px-2 py-1">{d.TenThuoc}</td>
                                                                                 <td className="px-2 py-1">{d.SoLuong}</td>
+                                                                                <td className="px-2 py-1">{d.Gia ? d.Gia.toLocaleString() : "-"}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -224,15 +227,19 @@ export default function CustomerPetHistory() {
                                                                         <tr className="text-xs text-gray-600">
                                                                             <th className="px-2 py-1">Tên vaccine</th>
                                                                             <th className="px-2 py-1">Liều lượng</th>
-                                                                            <th className="px-2 py-1">Mã gói tiêm</th>
+                                                                            <th className="px-2 py-1">Mã đăng ký gói</th>
+                                                                            <th className="px-2 py-1">Tên gói</th>
+                                                                            <th className="px-2 py-1">Giá</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {rowDetails[r.MaSDDV].map((d) => (
                                                                             <tr key={d.MaSP} className="text-xs border-t">
-                                                                                <td className="px-2 py-1">{d.TenSP}</td>
+                                                                                <td className="px-2 py-1">{d.TenVaccine}</td>
                                                                                 <td className="px-2 py-1">{d.LieuLuong}</td>
-                                                                                <td className="px-2 py-1">{d.MaGoi || "-"}</td>
+                                                                                <td className="px-2 py-1">{d.MaDK || "-"}</td>
+                                                                                <td className="px-2 py-1">{d.TenGoi || "-"}</td>
+                                                                                <td className="px-2 py-1">{d.Gia ? d.Gia.toLocaleString() : "-"}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
@@ -246,6 +253,7 @@ export default function CustomerPetHistory() {
                                                                         <tr className="text-xs text-gray-600">
                                                                             <th className="px-2 py-1">Tên sản phẩm</th>
                                                                             <th className="px-2 py-1">Số lượng</th>
+                                                                            <th className="px-2 py-1">Giá</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -253,6 +261,7 @@ export default function CustomerPetHistory() {
                                                                             <tr key={d.MaSP} className="text-xs border-t">
                                                                                 <td className="px-2 py-1">{d.TenSP}</td>
                                                                                 <td className="px-2 py-1">{d.SoLuong}</td>
+                                                                                <td className="px-2 py-1">{d.Gia ? d.Gia.toLocaleString() : "-"}</td>
                                                                             </tr>
                                                                         ))}
                                                                     </tbody>
