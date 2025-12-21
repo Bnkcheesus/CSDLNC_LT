@@ -341,7 +341,7 @@ export default function DocExamination() {
 
       {/* ---------------- PET INFORMATION ---------------- */}
       <div className="max-w-[1200px] mx-auto px-4 mt-6">
-        <PetInfoCard pet={pet} />
+        <PetInfoCard pet={pet} role={"BSTY"} />
       </div>
 
       {/* ---------------- CATEGORY BAR ---------------- */}

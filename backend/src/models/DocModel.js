@@ -409,6 +409,25 @@ export const getPetInfo = async (maTC) => {
     }
 };
 
+export const updatePetHealth = async (maTC, healthData) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            UPDATE THUCUNG
+            SET TinhTrangSucKhoe = @TinhTrangSucKhoe
+            WHERE MaTC = @maTC;
+        `;
+        await pool.request()
+            .input('maTC', maTC)
+            .input('TinhTrangSucKhoe', healthData.TinhTrangSucKhoe)
+            .query(query);
+        return { message: 'Pet health status updated successfully' };
+    } catch (err) {
+        console.error('Error updating pet health status by ID:', err);
+        throw err;
+    }
+};
+
 export const getPetHistory = async (maTC, type, page, limit) => {
     try {
         const pool = await getPool();

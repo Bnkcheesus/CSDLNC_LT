@@ -12,6 +12,7 @@ import {
     deleteVaccine,
     updateToaTiem,
     getPetInfo,
+    updatePetHealth,
     getPetHistory,
     getPetPackages,
     getMedicineByKeyword,
@@ -267,6 +268,24 @@ export const getPetInfoController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getPetInfo controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updatePetHealthController = async (req, res) => {
+    try {
+        const { maTC } = req.params;
+        const { TinhTrangSucKhoe } = req.body;
+        if (!maTC) {
+            return res.status(400).json({ message: 'MaTC is required' });
+        }
+        const result = await updatePetHealth(maTC, TinhTrangSucKhoe);
+        return res.status(200).json({
+            success: true,
+            message: result
+        });
+    } catch (err) {
+        console.error('Error in updatePetHealth controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

@@ -13,6 +13,7 @@ import {
     addVaccineController,
     deleteVaccineController,
     getPetInfoController,
+    updatePetHealthController,
     getPetHistoryController,
     getPetPackagesController,
     getMedicineByKeywordController,
@@ -38,6 +39,7 @@ router.delete('/tiemphong/:maSDDV/toatiem/:maVaccine', authMiddleware, deleteVac
 router.put('/tiemphong/:maSDDV/toatiem/:maVaccine', authMiddleware, updateToaTiemController);
 
 router.get('/pet/:maTC', authMiddleware, getPetInfoController);
+router.put('/pet/:maTC', authMiddleware, updatePetHealthController);
 router.get('/pet/:maTC/history', authMiddleware, getPetHistoryController);
 router.get('/pet/:maTC/goitiem', authMiddleware, getPetPackagesController);
 

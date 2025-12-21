@@ -127,7 +127,7 @@ export default function CustomerPetHistory() {
 
             {/* ---------------- PET INFORMATION ---------------- */}
             <div className="max-w-[1200px] mx-auto px-4 mt-6">
-                <PetInfoCard pet={pet} />
+                <PetInfoCard pet={pet} role="KH" />
             </div>
 
             {/* ---------------- SERVICE TYPE BAR ---------------- */}

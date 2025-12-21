@@ -120,7 +120,11 @@ export default function DocServiceHistory() {
                         className="border-t hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-3 py-3 text-sm">{r.MaSDDV}</td>
-                        <td className="px-3 py-3 text-sm">{r.NgaySuDung}</td>
+                        <td className="px-3 py-3 text-sm">{
+                          r.NgaySuDung
+                            ? new Date(r.NgaySuDung).toLocaleDateString()
+                            : "-"}
+                        </td>
                         <td className="px-3 py-3 text-sm">{r.LoaiDV || "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.MaTKKH + " - " + r.HoTen || "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.MaTC + " - " + r.TenTC || "-"}</td>
