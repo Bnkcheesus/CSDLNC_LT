@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Pencil, Save, X } from "lucide-react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/ui/Header";
@@ -18,6 +19,13 @@ export default function StaffServiceInvoiceDetail() {
     const [openRow, setOpenRow] = useState(null);
     const [rowDetails, setRowDetails] = useState({});
 
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [editInvoice, setEditInvoice] = useState({
+        KhuyenMai: 0,
+        HinhThucThanhToan: "TM"
+    });
+
     useEffect(() => {
         if (!token || !maHD) return;
 
@@ -33,6 +41,10 @@ export default function StaffServiceInvoiceDetail() {
 
                 if (res.data.success) {
                     setInvoice(res.data.data);
+                    setEditInvoice({
+                        KhuyenMai: res.data.data.KhuyenMai || 0,
+                        HinhThucThanhToan: res.data.data.HinhThucThanhToan || "TM"
+                    });
                 } else {
                     setError("Failed to fetch invoice.");
                 }
@@ -75,6 +87,42 @@ export default function StaffServiceInvoiceDetail() {
 
         fetchInvoiceDetails();
     }, [token, maHD]);
+
+    const handleUpdateInvoice = async () => {
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/staff/invoices/${maHD}`,
+                {
+                    KhuyenMai: editInvoice.KhuyenMai,
+                    HinhThucThanhToan: editInvoice.HinhThucThanhToan
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (!res.data.success) {
+                alert("Cập nhật hoá đơn thất bại");
+                return;
+            }
+
+            const resInvoice = await axios.get(
+                `http://localhost:5000/api/staff/invoices/${maHD}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (resInvoice.data.success) {
+                setInvoice(resInvoice.data.data);
+                setEditInvoice({
+                    KhuyenMai: resInvoice.data.data.KhuyenMai || 0,
+                    HinhThucThanhToan: resInvoice.data.data.HinhThucThanhToan || null
+                });
+            }
+
+            setIsEditing(false);
+            alert("Cập nhật hoá đơn thành công");
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleToggleRow = async (r) => {
         if (openRow === r.MaSDDV) {
@@ -125,14 +173,95 @@ export default function StaffServiceInvoiceDetail() {
             <div className="max-w-[1200px] mx-auto px-4 mt-6">
                 {invoice && (
                     <div className="bg-white border rounded-md shadow-sm p-4 mb-6">
-                        <h3 className="text-base font-semibold mb-3">Thông tin hoá đơn</h3>
+                        <h3 className="text-base font-semibold mb-3">Thông tin hoá đơn 
+                        {!isEditing ? (
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="p-2 rounded hover:bg-gray-100"
+                                title="Chỉnh sửa"
+                            >
+                                <Pencil size={16} />
+                            </button>
+                        ) : (
+                            <div className="inline">
+                                <button
+                                    onClick={handleUpdateInvoice}
+                                    className="p-2 rounded hover:bg-green-100 text-green-600"
+                                    title="Cập nhật"
+                                >
+                                    <Save size={16} />
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIsEditing(false);
+                                        setEditInvoice({
+                                            KhuyenMai: invoice.KhuyenMai || 0,
+                                            HinhThucThanhToan: invoice.HinhThucThanhToan || "TM"
+                                        });
+                                    }}
+                                    className="p-2 rounded hover:bg-red-100 text-red-600"
+                                    title="Huỷ"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+                        )}
+                        </h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-y-2 text-sm">
                             <p><strong>Mã hoá đơn:</strong> {invoice.MaHD}</p>
                             <p><strong>Ngày lập:</strong> {invoice.NgayLap ? new Date(invoice.NgayLap).toLocaleDateString() : "-"}</p>
                             <p><strong>Chi nhánh:</strong> {invoice.TenCN}</p>
                             <p><strong>Mã nhân viên:</strong> {invoice.MaTKNV}</p>
                             <p><strong>Mã khách hàng:</strong> {invoice.MaTKKH}</p>
+                            <p><strong></strong> {""}</p>
                             <p><strong>Tổng tiền:</strong> {invoice.TongTien ? invoice.TongTien.toLocaleString() : "-"}</p>
+                            <p>
+                                <strong>Khuyến mãi: </strong>
+                                {!isEditing ? (
+                                    <span>
+                                        {invoice.KhuyenMai
+                                            ? invoice.KhuyenMai.toLocaleString()
+                                            : " - "}
+                                    </span>
+                                ) : (
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        step={1000}
+                                        value={editInvoice.KhuyenMai}
+                                        onChange={(e) =>
+                                            setEditInvoice(prev => ({
+                                                ...prev,
+                                                KhuyenMai: Number(e.target.value)
+                                            }))
+                                        }
+                                        className="border rounded px-2 py-1 w-32 text-sm"
+                                    />
+                                )}
+                            </p>
+                            <p>
+                                <strong>Hình thức thanh toán:</strong>{" "}
+                                {!isEditing ? (
+                                    invoice.HinhThucThanhToan === "TM" ? "Tiền mặt" :
+                                    invoice.HinhThucThanhToan === "CK" ? "Chuyển khoản" :
+                                    " - "
+                                ) : (
+                                    <select
+                                        value={editInvoice.HinhThucThanhToan}
+                                        onChange={(e) =>
+                                            setEditInvoice(prev => ({
+                                                ...prev,
+                                                HinhThucThanhToan: e.target.value
+                                            }))
+                                        }
+                                        className="border rounded px-2 py-1"
+                                    >
+                                        <option value="TM">Tiền mặt</option>
+                                        <option value="CK">Chuyển khoản</option>
+                                    </select>
+                                )}
+                            </p>
+
                         </div>
                     </div>
                 )}

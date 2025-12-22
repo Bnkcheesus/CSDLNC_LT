@@ -181,6 +181,21 @@ export const getServiceInvoiceInfo = async (maHD) => {
     }
 };
 
+export const updateServiceInvoiceInfo = async (maHD, KhuyenMai, HinhThucThanhToan) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maHD', maHD)
+            .input('KhuyenMai', KhuyenMai)
+            .input('HinhThucThanhToan', HinhThucThanhToan)
+            .query(`EXEC sp_CapNhatThongTinHoaDon @maHD, @KhuyenMai, @HinhThucThanhToan;`);
+        return result.rowsAffected[0] > 0;
+    } catch (err) {
+        console.error('Error updating service invoice info:', err);
+        throw err;
+    }
+};
+
 export const getServiceInvoiceDetail = async (maHD) => {
     try {
         const pool = await getPool();

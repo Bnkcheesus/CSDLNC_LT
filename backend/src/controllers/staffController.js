@@ -9,6 +9,7 @@ import {
     getServiceInvoiceHistory,
     addSDDV,
     getServiceInvoiceInfo,
+    updateServiceInvoiceInfo,
     getServiceInvoiceDetail,
     getExaminationDetail,
     getVaccinationDetail,
@@ -186,6 +187,26 @@ export const getServiceInvoiceInfoController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getServiceInvoiceInfo controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateServiceInvoiceInfoController = async (req, res) => {
+    try {
+        const { maHD } = req.params;
+        const { KhuyenMai, HinhThucThanhToan } = req.body;
+
+        if (!maHD) {
+            return res.status(400).json({ message: 'MaHD is required' });
+        }
+
+        const updatedInfo = await updateServiceInvoiceInfo(maHD, KhuyenMai, HinhThucThanhToan);
+        return res.status(200).json({
+            success: true,
+            data: updatedInfo
+        });
+    } catch (err) {
+        console.error('Error in updateServiceInvoiceInfo controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

@@ -9,6 +9,7 @@ import {
     getServiceInvoiceHistoryController,
     addSDDVController,
     getServiceInvoiceInfoController,
+    updateServiceInvoiceInfoController,
     getServiceInvoiceDetailController,
     getExaminationDetailController,
     getVaccinationDetailController,
@@ -27,6 +28,7 @@ router.post('/hddv', authMiddleware, addServiceInvoiceController);
 router.get('/hddv', authMiddleware, getServiceInvoiceHistoryController);
 router.post('/sddv', authMiddleware, addSDDVController);
 router.get('/invoices/:maHD', authMiddleware, getServiceInvoiceInfoController);
+router.put('/invoices/:maHD', authMiddleware, updateServiceInvoiceInfoController);
 router.get('/invoices/:maHD/details', authMiddleware, getServiceInvoiceDetailController);
 router.get('/khambenh/:maSDDV', authMiddleware, getExaminationDetailController);
 router.get('/tiemphong/:maSDDV', authMiddleware, getVaccinationDetailController);

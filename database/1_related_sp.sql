@@ -567,3 +567,20 @@ BEGIN
 	WHERE NV.MaTKNV = @maTKNV
 	AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
 END
+GO
+
+--Cập nhật khuyến mĩa và hình thức thanh toán của hoá đơn
+CREATE OR ALTER PROCEDURE sp_CapNhatThongTinHoaDon
+	@maHD CHAR(8),
+	@khuyenMai DECIMAL(19,2),
+	@httt CHAR(2) = NULL
+AS
+BEGIN
+	UPDATE HOADON
+    SET
+        KhuyenMai = @khuyenMai,
+        HinhThucThanhToan = @httt
+    WHERE MaHD = @maHD;
+
+    EXEC sp_CapNhatTongTienHD @maHD;
+END
