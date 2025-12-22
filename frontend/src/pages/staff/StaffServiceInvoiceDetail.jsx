@@ -4,9 +4,10 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
+import AddServiceBox from "../../components/ui/AddServiceBox.jsx";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-export default function CustomerPetHistory() {
+export default function StaffServiceInvoiceDetail() {
     const { maHD } = useParams();
     const token = localStorage.getItem("token");
 
@@ -138,6 +139,35 @@ export default function CustomerPetHistory() {
             </div>
 
             <div className="max-w-[1200px] mx-auto px-4 py-6">
+                {invoice && (
+                    <AddServiceBox
+                        maCN={invoice.MaCN}
+                        maTKKH={invoice.MaTKKH}
+                        onAdd={async (service) => {
+                            const resAdd =await axios.post("http://localhost:5000/api/staff/sddv", {
+                                MaHD: invoice.MaHD,
+                                LoaiDV: service.LoaiDV,
+                                MaBS: service.MaBS,
+                                MaTC: service.MaTC
+                            }, {
+                                headers: { Authorization: `Bearer ${token}` }
+                            });
+
+                            if (!resAdd.data.success) {
+                                alert("Thêm dịch vụ vào hoá đơn thất bại.");
+                                return;
+                            }
+                            alert("Thêm dịch vụ vào hoá đơn thành công.");
+
+                            // reload details
+                            const res = await axios.get(
+                                `http://localhost:5000/api/staff/invoices/${maHD}/details`,
+                                { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                            if (res.data.success) setRows(res.data.data);
+                        }}
+                    />
+                )}
                 <div className="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
 
                     <div className="p-4 border-b border-gray-100">

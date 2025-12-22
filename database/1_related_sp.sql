@@ -506,6 +506,7 @@ BEGIN
 	SELECT
 		HD.MaHD,
 		HD.NgayLap,
+		CN.MaCN,
 		CN.TenCN,
 		HD.MaTKNV,
 		HD.MaTKKH,

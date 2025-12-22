@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
+import AddServiceBox from "../../components/ui/AddServiceBox.jsx";
 import axios from "axios";
 
 export default function StaffAddServiceInvoice() {
@@ -16,15 +17,6 @@ export default function StaffAddServiceInvoice() {
     const [customerKeyword, setCustomerKeyword] = useState("");
     const [customerResults, setCustomerResults] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-
-    const [pets, setPets] = useState([]);
-    const [doctors, setDoctors] = useState([]);
-
-    const [serviceForm, setServiceForm] = useState({
-        LoaiDV: "KB",
-        MaBS: "",
-        MaTC: ""
-    });
 
     const [services, setServices] = useState([]);
 
@@ -53,32 +45,10 @@ export default function StaffAddServiceInvoice() {
         fetchStaffInfo();
     }, [token]);
 
-    useEffect(() => {
-        if (!staff.MaCN) return;
-        const fetchDoctors = async () => {
-            try {
-                const res = await axios.get(`http://localhost:5000/api/staff/doctors/${staff.MaCN}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-                if (res.data.success) {
-                    setDoctors(res.data.data);
-                } else {
-                    console.error("Failed to fetch doctors:", res.data.message);
-                }
-            } catch (err) {
-                console.error("Error fetching doctors:", err);
-            }
-        };
-        fetchDoctors();
-    }, [staff.MaCN, token]);
-
     const handleCustomerSearchChange = (e) => {
         setCustomerKeyword(e.target.value);
         setSelectedCustomer(null);
         setServices([]);
-        setPets([]);
 
         if (!e.target.value.trim()) {
             setCustomerResults([]);
@@ -108,57 +78,6 @@ export default function StaffAddServiceInvoice() {
         };
         fetchCustomers();
     }, [customerKeyword, token]);
-
-    useEffect(() => {
-        if (!selectedCustomer) {
-            return;
-        }
-
-        const fetchPets = async () => {
-            try {
-                const res = await axios.get(`http://localhost:5000/api/staff/pets/${selectedCustomer.MaTKKH}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-                if (res.data.success) {
-                    setPets(res.data.data);
-                } else {
-                    console.error("Failed to fetch pets:", res.data.message);
-                }
-            } catch (err) {
-                console.error("Error fetching pets:", err);
-            }
-        };
-        fetchPets();
-    }, [selectedCustomer, token]);
-
-    const handleAddService = () => {
-        if (!serviceForm.LoaiDV || !serviceForm.MaBS || !serviceForm.MaTC) {
-            alert("Vui lòng điền đầy đủ thông tin dịch vụ.");
-            return;
-        }
-
-        const doctor = doctors.find(doc => doc.MaTKNV === serviceForm.MaBS);
-        const pet = pets.find(p => p.MaTC === serviceForm.MaTC);
-
-        setServices (prevServices => [
-            ...prevServices,
-            {
-                LoaiDV: serviceForm.LoaiDV,
-                MaBS: serviceForm.MaBS,
-                TenBS: doctor ? doctor.HoTen : "",
-                MaTC: serviceForm.MaTC,
-                TenTC: pet ? pet.TenTC : ""
-            }
-        ]);
-
-        setServiceForm({
-            LoaiDV: "KB",
-            MaBS: "",
-            MaTC: ""
-        });
-    }
 
     const handleSubmitInvoice = async () => {
         try {
@@ -194,7 +113,6 @@ export default function StaffAddServiceInvoice() {
             alert("Hoá đơn dịch vụ đã được tạo thành công!");
             setSelectedCustomer(null);
             setCustomerKeyword("");
-            setPets([]);
             setServices([]);
         } catch (err) {
             console.error("Error submitting service invoice:", err);
@@ -256,53 +174,13 @@ export default function StaffAddServiceInvoice() {
         </div>
 
         {/* ADD SERVICE */}
-        <div className="p-6 border-b grid grid-cols-4 gap-4">
-          <select
-            value={serviceForm.LoaiDV}
-            onChange={e => setServiceForm({ ...serviceForm, LoaiDV: e.target.value })}
-            className="p-2 border rounded"
-          >
-            <option value="KB">Khám bệnh</option>
-            <option value="TP">Tiêm phòng</option>
-          </select>
-
-          <select
-            value={serviceForm.MaBS}
-            onChange={e => setServiceForm({ ...serviceForm, MaBS: e.target.value })}
-            className="p-2 border rounded"
-          >
-            <option value="">-- Chọn bác sĩ --</option>
-            {doctors.map(d => (
-              <option key={d.MaTKNV} value={d.MaTKNV}>{d.HoTen}</option>
-            ))}
-          </select>
-
-          <select
-            value={serviceForm.MaTC}
-            onChange={e => setServiceForm({ ...serviceForm, MaTC: e.target.value })}
-            className="p-2 border rounded"
-          >
-            <option value="">-- Chọn thú cưng --</option>
-            {pets.map(p => (
-              <option key={p.MaTC} value={p.MaTC}>{p.TenTC}</option>
-            ))}
-          </select>
-
-          <button
-            onClick={handleAddService}
-            className="
-              px-6 py-2
-              bg-blue-500 text-white font-medium
-              rounded 
-              shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
-              hover:brightness-110
-              active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
-              transition-all
-            "
-        >
-            Thêm dịch vụ
-          </button>
-        </div>
+        <AddServiceBox
+            maCN={staff.MaCN}
+            maTKKH={selectedCustomer?.MaTKKH}
+            onAdd={(service) => {
+                setServices(prev => [...prev, service]);
+            }}
+        />
 
         {/* SERVICE LIST */}
         <table className="w-full text-center border-t">
