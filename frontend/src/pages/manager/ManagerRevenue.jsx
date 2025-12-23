@@ -6,8 +6,6 @@ import CategoryBar from "../../components/ui/CategoryBar";
 
 import SystemRevenueTable from "../../components/ui/manager/SystemRevenueTable";
 import RevenueByBranchTable from "../../components/ui/manager/RevenueByBranchTable";
-import RevenueByServiceTable from "../../components/ui/manager/RevenueByServiceTable";
-import TopProductTable from "../../components/ui/manager/TopProductTable";
 
 export default function ManagerRevenue() {
     const [type, setType] = useState("overview");
@@ -22,10 +20,8 @@ export default function ManagerRevenue() {
                 active={type}
                 onChange={setType}
                 types={[
-                    { key: "overview", label: "Tổng quan" },
-                    { key: "branch", label: "Theo chi nhánh" },
-                    { key: "service", label: "Theo dịch vụ" },
-                    { key: "product", label: "Top sản phẩm" }
+                    { key: "overview", label: "Toàn hệ thống" },
+                    { key: "branch", label: "Theo chi nhánh" }
                 ]}
             />
 
@@ -37,14 +33,6 @@ export default function ManagerRevenue() {
 
                     {type === "branch" && (
                         <RevenueByBranchTable />
-                    )}
-
-                    {type === "service" && (
-                        <RevenueByServiceTable />
-                    )}
-
-                    {type === "product" && (
-                        <TopProductTable />
                     )}
                 </>
             </div>

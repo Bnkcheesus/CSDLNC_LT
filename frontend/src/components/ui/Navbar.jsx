@@ -10,7 +10,8 @@ const MENU_CONFIG = [
     { label: "Hoá đơn dịch vụ", to: "/staff/invoices", roles: ["receptionist"], relatedPaths: ["/staff/invoices/"] },
     { label: "Bán hàng", to: "/staff/sales/new", roles: ["sales"] },
     { label: "Khám bệnh & tiêm phòng", to: "/staff/doctor/history", roles: ["doctor"], relatedPaths: ["/staff/doctor/khambenh/", "/staff/doctor/tiemphong/"] },
-    { label: "Doanh thu", to: "/manager/revenue", roles: ["manager"] },
+    { label: "Doanh thu", to: "/manager/revenue", roles: ["manager"], relatedPaths: ["/manager/revenue/"] },
+    { label: "Sản phẩm", to: "/manager/products", roles: ["manager"], relatedPaths: ["/manager/products/"] },
     { label: "Thông tin cá nhân", to: "/staff/profile", roles: ["doctor", "manager", "receptionist", "sales"] },
 ];
 

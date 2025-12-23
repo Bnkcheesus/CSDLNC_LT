@@ -48,7 +48,7 @@ export default function RevenueByBranchTable() {
         const fetchYears = async () => {
             try {
                 const res = await axios.get(
-                    "http://localhost:5000/api/manager/revenue/years",
+                    "http://localhost:5000/api/manager/years",
                     {
                         headers: { Authorization: `Bearer ${token}` }
                     }

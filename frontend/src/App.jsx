@@ -20,6 +20,7 @@ import DocExamination from './pages/staff/DocExamination.jsx';
 import DocVaccination from './pages/staff/DocVaccination.jsx';
 import SalesAddPurchase from './pages/staff/SalesAddPurchase.jsx';
 import ManagerRevenue from './pages/manager/ManagerRevenue.jsx';
+import ManagerProducts from './pages/manager/ManagerProducts.jsx';
 
 export default function App() {
   return (
@@ -195,6 +196,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["manager"]}>
               <ManagerRevenue />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/products"
+          element={
+            <ProtectedRoute allowedRoles={["manager"]}>
+              <ManagerProducts />
             </ProtectedRoute>
           }
         />
