@@ -6,6 +6,7 @@ import customerRoutes from './routes/customerRoutes.js';
 import staffRoutes from './routes/staffRoutes.js';
 import docRoutes from './routes/docRoutes.js';
 import salesRoutes from './routes/salesRoutes.js';
+import managerRoutes from './routes/managerRoutes.js';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/customer', customerRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/doctor', docRoutes);
 app.use('/api/sales', salesRoutes);
+app.use('/api/manager', managerRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running...');

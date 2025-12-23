@@ -470,13 +470,36 @@ CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_nam
     @nam INT
 AS
 BEGIN
-    SELECT SUM(TongTien)
-    FROM HOADON
-    WHERE YEAR(NgayLap) = @nam
+    SELECT
+		@nam AS Nam,
+		SUM(SDDV.TongTienDV) AS TongDoanhThu,
+		SUM(CASE WHEN SDDV.LoaiDV = 'KB' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuKB,
+		SUM(CASE WHEN SDDV.LoaiDV = 'TP' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuTP,
+		SUM(CASE WHEN SDDV.LoaiDV = 'MH' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuMH
+	FROM HOADON HD
+	JOIN SUDUNGDICHVU SDDV
+		ON HD.MaHD = SDDV.MaHD
+	WHERE YEAR(HD.NgayLap) = @nam;
 END
-SELECT SUM(TongTien)
-FROM HOADON
-WHERE YEAR(NgayLap) = @nam
+GO
+
+CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_tung_thang_trong_nam
+	@nam INT
+AS
+BEGIN
+	SELECT
+		MONTH(HD.NgayLap) AS Thang,
+		SUM(SDDV.TongTienDV) AS TongDoanhThu,
+		SUM(CASE WHEN SDDV.LoaiDV = 'KB' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuKB,
+		SUM(CASE WHEN SDDV.LoaiDV = 'TP' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuTP,
+		SUM(CASE WHEN SDDV.LoaiDV = 'MH' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuMH
+	FROM HOADON HD
+	JOIN SUDUNGDICHVU SDDV
+		ON HD.MaHD = SDDV.MaHD
+	WHERE YEAR(HD.NgayLap) = @nam
+	GROUP BY MONTH(HD.NgayLap)
+	ORDER BY Thang;
+END
 GO
 
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng

@@ -19,6 +19,7 @@ import DocServiceHistory from './pages/staff/DocServiceHistory.jsx';
 import DocExamination from './pages/staff/DocExamination.jsx';
 import DocVaccination from './pages/staff/DocVaccination.jsx';
 import SalesAddPurchase from './pages/staff/SalesAddPurchase.jsx';
+import ManagerRevenue from './pages/manager/ManagerRevenue.jsx';
 
 export default function App() {
   return (
@@ -185,6 +186,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerVaccinationPackages />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/revenue"
+          element={
+            <ProtectedRoute allowedRoles={["manager"]}>
+              <ManagerRevenue />
             </ProtectedRoute>
           }
         />
