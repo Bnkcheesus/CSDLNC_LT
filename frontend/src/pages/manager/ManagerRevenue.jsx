@@ -4,7 +4,7 @@ import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle";
 import CategoryBar from "../../components/ui/CategoryBar";
 
-import RevenueSummaryCards from "../../components/ui/manager/RevenueSummaryCards";
+import SystemRevenueTable from "../../components/ui/manager/SystemRevenueTable";
 import RevenueByBranchTable from "../../components/ui/manager/RevenueByBranchTable";
 import RevenueByServiceTable from "../../components/ui/manager/RevenueByServiceTable";
 import TopProductTable from "../../components/ui/manager/TopProductTable";
@@ -32,7 +32,7 @@ export default function ManagerRevenue() {
             <div className="max-w-[1200px] mx-auto px-4 py-6">
                 <>
                     {type === "overview" && (
-                        <RevenueSummaryCards />
+                        <SystemRevenueTable />
                     )}
 
                     {type === "branch" && (

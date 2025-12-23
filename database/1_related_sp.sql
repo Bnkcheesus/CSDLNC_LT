@@ -502,6 +502,32 @@ BEGIN
 END
 GO
 
+CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_Tung_CN_theo_nam
+	@nam INT
+AS
+BEGIN
+	SELECT
+		CN.MaCN,
+		CN.TenCN,
+		SUM(SDDV.TongTienDV) AS TongDoanhThu,
+		SUM(CASE WHEN SDDV.LoaiDV = 'KB' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuKB,
+		SUM(CASE WHEN SDDV.LoaiDV = 'TP' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuTP,
+		SUM(CASE WHEN SDDV.LoaiDV = 'MH' THEN SDDV.TongTienDV ELSE 0 END) AS DoanhThuMH
+
+	FROM HOADON HD
+	JOIN SUDUNGDICHVU SDDV
+		ON HD.MaHD = SDDV.MaHD
+	JOIN CHINHANH CN
+		ON HD.MaCN = CN.MaCN
+	WHERE YEAR(HD.NgayLap) = @nam
+	GROUP BY
+		CN.MaCN,
+		CN.TenCN
+	ORDER BY
+		CN.MaCN;
+END
+GO
+
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng
 CREATE OR ALTER PROCEDURE sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang
 AS

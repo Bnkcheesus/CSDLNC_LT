@@ -1,5 +1,5 @@
-export default function TopProductTable({ data }) {
-    if (!data) return null;
+export default function TopProductTable() {
+    /* if (!data) return null;
 
     const renderTable = (title, rows) => (
         <div className="bg-white border rounded shadow-sm mb-6">
@@ -21,13 +21,13 @@ export default function TopProductTable({ data }) {
                 </tbody>
             </table>
         </div>
-    );
+    ); */
 
     return (
         <>
-            {renderTable("Thuốc kê nhiều nhất", data.thuoc)}
+            {/* {renderTable("Thuốc kê nhiều nhất", data.thuoc)}
             {renderTable("Vaccine tiêm nhiều nhất", data.vaccine)}
-            {renderTable("Sản phẩm bán lẻ bán chạy", data.banle)}
+            {renderTable("Sản phẩm bán lẻ bán chạy", data.banle)} */}
         </>
     );
 }

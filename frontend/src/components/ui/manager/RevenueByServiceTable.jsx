@@ -1,6 +1,6 @@
-export default function RevenueByServiceTable({ rows }) {
+export default function RevenueByServiceTable() {
     return (
-        <div className="bg-white border rounded shadow-sm">
+        {/* <div className="bg-white border rounded shadow-sm">
             <div className="p-4 border-b font-semibold">
                 Doanh thu theo dịch vụ từng chi nhánh
             </div>
@@ -23,6 +23,6 @@ export default function RevenueByServiceTable({ rows }) {
                     ))}
                 </tbody>
             </table>
-        </div>
+        </div> */}
     );
 }

@@ -32,6 +32,22 @@ export const getMonthlyRevenue = async (year) => {
     }
 };
 
+export const getRevenueByBranches = async (year) => {
+    try {
+        const pool = await getPool();
+        const query = `
+            EXEC sp_Tinh_Doanh_Thu_Tung_CN_theo_nam @year;
+        `;
+        const result = await pool.request()
+            .input('year', year)
+            .query(query);
+        return result.recordset;
+    } catch (err) {
+        console.error('Error in getRevenueByBranches:', err);
+        throw err;
+    }
+};
+
 export const getYears = async () => {
     try {
         const pool = await getPool();
