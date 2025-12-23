@@ -105,8 +105,8 @@ export default function CustomerServiceHistory() {
                       <th className="px-3 py-2">Mã sử dụng dịch vụ</th>
                       <th className="px-3 py-2">Ngày sử dụng dịch vụ</th>
                       <th className="px-3 py-2">Loại dịch vụ</th>
-                      <th className="px-3 py-2">Tên chi nhánh</th>
-                      <th className="px-3 py-2">Tên thú cưng</th>
+                      <th className="px-3 py-2">Chi nhánh</th>
+                      <th className="px-3 py-2">Thú cưng</th>
                       <th className="px-3 py-2"></th>
                     </tr>
                   </thead>
@@ -124,7 +124,7 @@ export default function CustomerServiceHistory() {
                         </td>
                         <td className="px-3 py-3 text-sm">{r.LoaiDV || "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.TenCN || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.TenTC || "-"}</td>
+                        <td className="px-3 py-3 text-sm">{r.MaTC ? r.MaTC + " - " + r.TenTC : "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
                           <button
                             onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}

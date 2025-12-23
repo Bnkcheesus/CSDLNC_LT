@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { User, Lock } from "lucide-react";
+import { User, Lock, Gem } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Header() {
     const [hoTen, setHoTen] = useState("");
+    const [role, setRole] = useState("");
+    const [branch, setBranch] = useState("");
+    const [rank, setRank] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,8 +22,55 @@ export default function Header() {
                     },
                 });
                 setHoTen(res.data.hoTen);
+                const role = localStorage.getItem("role");
+                if (role === "customer") {
+                    const resCustomer = await axios.get(`http://localhost:5000/api/customer/profile`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+                    setHoTen(resCustomer.data.data.HoTen);
+                    switch (resCustomer.data.data.LoaiThanhVien) {
+                        case "CB":
+                            setRank(" Cơ bản");
+                            break;
+                        case "TT":
+                            setRank(" Thân thiết");
+                            break;
+                        case "VIP":
+                            setRank(" VIP");
+                    }
+                }
+                else {
+                    const resStaff = await axios.get(`http://localhost:5000/api/staff/profile`, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    });
+                    setHoTen(resStaff.data.data.HoTen);
+                    setBranch(` - ${resStaff.data.data.TenCN}`);
+                }
+                switch (role) {
+                    case "customer":
+                        setRole(" (Khách hàng) - ");
+                        break;
+                    case "receptionist":
+                        setRole(" (Nhân viên tiếp tân)");
+                        break;
+                    case "sales":
+                        setRole(" (Nhân viên bán hàng)");
+                        break;
+                    case "doctor":
+                        setRole(" (Bác sĩ thú y)");
+                        break;
+                    case "manager":
+                        setRole(" (Quản lý)");
+                        break;
+                    default:
+                        setRole("");
+                }
             } catch (err) {
-                console.error("Error fetching user name:", err);
+                console.error("Error fetching header:", err);
             }
         };
         fetchUser();
@@ -46,7 +96,18 @@ export default function Header() {
           <div className="p-1 rounded-sm bg-gray-700">
             <User size={16} />
           </div>
-          <div className="text-gray-200">{hoTen ? hoTen : ""}</div>
+          <div className="font-semibold text-gray-200 flex items-center gap-1">
+              {hoTen && <span>{hoTen}</span>}
+              {role && <span>{role}</span>}
+              {branch && <span>{branch}</span>}
+
+              {rank && (
+                  <>
+                      <Gem size={16} />
+                      <span>{rank}</span>
+                  </>
+              )}
+          </div>
         </div>
 
         {/* spacer */}

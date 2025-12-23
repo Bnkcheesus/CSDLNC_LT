@@ -56,6 +56,7 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
                 SDV.LoaiDV,
                 HD.NgayLap AS NgaySuDung,
                 CN.TenCN,
+                TC.MaTC,
                 TC.TenTC
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
