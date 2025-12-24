@@ -4,7 +4,8 @@ import {
     getRevenueByBranchesController,
     getYearsController,
     getSystemProductsRecordController,
-    getProductsRecordOfBranchController
+    getProductsRecordOfBranchController,
+    getStaffRecordOfBranchController
 } from '../controllers/managerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -15,5 +16,6 @@ router.get('/revenue/branches', authMiddleware, getRevenueByBranchesController);
 router.get('/years', authMiddleware, getYearsController);
 router.get('/products', authMiddleware, getSystemProductsRecordController);
 router.get('/products/:maCN', authMiddleware, getProductsRecordOfBranchController);
+router.get('/staffs/:maCN', authMiddleware, getStaffRecordOfBranchController);
 
 export default router;

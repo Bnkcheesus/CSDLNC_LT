@@ -1,3 +1,4 @@
+import e from 'express';
 import { getPool } from '../config/db.js';
 
 export const getRevenue = async (year) => {
@@ -118,6 +119,82 @@ export const getProductsRecordOfBranch = async (year, maCN) => {
         };
     } catch (err) {
         console.error('Error in getProductsRecordOfBranch:', err);
+        throw err;
+    }
+};
+
+export const getStaffRecordOfBranch = async (type, page, limit, order, maCN) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        let typeFilter = '';
+        if (type != 'all') {
+            typeFilter = 'AND NV.ChucVu = @type';
+        }
+        const query = `
+            WITH NV_CN AS (
+                SELECT DISTINCT NV.MaTKNV, NV.HoTen, NV.ChucVu
+                FROM NHANVIEN NV
+                JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
+                WHERE L.MaCN = @maCN 
+                AND NV.ChucVu <> 'QLCN'
+                AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE())
+                ${typeFilter}
+            ),
+            NV_NGHIEPVU AS (
+                -- Khám bệnh
+                SELECT KB.MaBS AS MaTKNV, KB.MaSDDV FROM KHAMBENH KB
+                UNION ALL
+                -- Tiêm phòng
+                SELECT TP.MaBS, TP.MaSDDV FROM TIEMPHONG TP
+                UNION ALL
+                -- Mua hàng
+                SELECT MH.MaNVBH, MH.MaSDDV FROM MUAHANG MH
+                UNION ALL
+                -- Hoá đơn
+                SELECT HD.MaTKNV, HD.MaHD FROM HOADON HD
+                WHERE HD.MaCN = @maCN
+            )
+            
+            SELECT
+                    NV.MaTKNV,
+                    NV.HoTen,
+                    NV.ChucVu,
+                    COUNT(DISTINCT NVNV.MaSDDV) AS SoLuotXuLyNghiepVu,
+                    ROUND(AVG(CAST(DG.Diem AS FLOAT)), 2) AS DiemDanhGiaTB
+            INTO #DATA
+            FROM NV_CN NV
+            LEFT JOIN NV_NGHIEPVU NVNV ON NV.MaTKNV = NVNV.MaTKNV
+            LEFT JOIN DANHGIA DG ON NVNV.MaSDDV = DG.MaSDDV
+            GROUP BY NV.MaTKNV, NV.HoTen, NV.ChucVu;
+
+            SELECT *
+            FROM #DATA
+            ORDER BY
+                CASE WHEN @order = 'asc'  THEN DiemDanhGiaTB END ASC,
+                CASE WHEN @order = 'desc' THEN DiemDanhGiaTB END DESC,
+                SoLuotXuLyNghiepVu DESC
+            OFFSET @offset ROWS
+            FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS TotalRows
+            FROM #DATA;
+        `;
+        const result = await pool.request()
+            .input('type', type)
+            .input('offset', offset)
+            .input('limit', limit)
+            .input('order', order)
+            .input('maCN', maCN)
+            .query(query);
+            return {
+            rows: result.recordsets[0],
+            total: result.recordsets[1][0].TotalRows,
+            totalPages: Math.ceil(result.recordsets[1][0].TotalRows / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error in getStaffRecordOfBranch:', err);
         throw err;
     }
 };

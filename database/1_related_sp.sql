@@ -596,10 +596,23 @@ CREATE OR ALTER PROCEDURE sp_TraCuuDanhSachBacSiTheoChiNhanh
 	@maCN CHAR(5)
 AS
 BEGIN
-	SELECT NV.MaTKNV, NV.HoTen
+	SELECT DISTINCT NV.MaTKNV, NV.HoTen
     FROM NHANVIEN NV
     JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
     WHERE L.MaCN = @maCN AND NV.ChucVu = 'BSTY'
+    AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
+END
+GO
+
+--Tra cứu danh sách nhân viên đang làm việc tại chi nhánh
+CREATE OR ALTER PROCEDURE sp_TraCuuDanhSachNhanVienTheoChiNhanh
+	@maCN CHAR(5)
+AS
+BEGIN
+	SELECT DISTINCT NV.MaTKNV, NV.HoTen, NV.ChucVu
+    FROM NHANVIEN NV
+    JOIN LICHSULAMVIEC L ON NV.MaTKNV = L.MaTKNV
+    WHERE L.MaCN = @maCN AND (NV.ChucVu = 'BSTY' OR NV.ChucVu = 'NVTT' OR NV.ChucVu = 'NVBH')
     AND (L.NgayKetThuc IS NULL OR L.NgayKetThuc > GETDATE());
 END
 GO

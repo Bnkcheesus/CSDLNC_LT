@@ -12,6 +12,7 @@ const MENU_CONFIG = [
     { label: "Khám bệnh & tiêm phòng", to: "/staff/doctor/history", roles: ["doctor"], relatedPaths: ["/staff/doctor/khambenh/", "/staff/doctor/tiemphong/"] },
     { label: "Doanh thu", to: "/manager/revenue", roles: ["manager"], relatedPaths: ["/manager/revenue/"] },
     { label: "Sản phẩm", to: "/manager/products", roles: ["manager"], relatedPaths: ["/manager/products/"] },
+    { label: "Nhân viên", to: "/manager/staffs", roles: ["manager"], relatedPaths: ["/manager/staffs/"] },
     { label: "Thông tin cá nhân", to: "/staff/profile", roles: ["doctor", "manager", "receptionist", "sales"] },
 ];
 
