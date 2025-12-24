@@ -599,11 +599,22 @@ BEGIN
 
     -- Kiểm tra dữ liệu đầu vào
     IF (@MaTC NOT IN (SELECT THUCUNG.MaTC FROM THUCUNG))
-        RETURN
+    BEGIN
+        RAISERROR(N'Lỗi: Thú cưng có mã %s không tồn tại.', 16, 1, @MaTC);
+        RETURN;
+    END
+
     IF (@MaGoi NOT IN (SELECT GOITIEM.MaGoi FROM GOITIEM))
-		RETURN
+    BEGIN
+        RAISERROR(N'Lỗi: Gói tiêm có mã %s không tồn tại.', 16, 1, @MaGoi);
+		RETURN;
+    END
+
     IF (@NgayBatDau < CAST(GETDATE() AS DATE))
-		RETURN
+    BEGIN
+        RAISERROR(N'Lỗi: Ngày bắt đầu đăng ký gói tiêm không được nhỏ hơn ngày hiện tại.', 16, 1);
+		RETURN;
+    END
 
     DECLARE @newMaDK CHAR(8);
     DECLARE @maxMaDK CHAR(8);
