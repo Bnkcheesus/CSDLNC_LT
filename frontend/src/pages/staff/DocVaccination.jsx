@@ -626,16 +626,17 @@ export default function DocExamination() {
      {type === "LSTP" && (
         <div className="max-w-[1200px] mx-auto px-4 py-6">
             <PetHistoryTable
-            rows={rows}
-            loading={loading}
-            error={error}
-            page={page}
-            totalPages={totalPages}
-            openRow={openRow}
-            rowDetails={rowDetails}
-            onToggleRow={handleToggleRow}
-            onPrevPage={() => setPage(p => Math.max(1, p - 1))}
-            onNextPage={() => setPage(p => Math.min(totalPages, p + 1))}
+                title="Lịch sử tiêm phòng"
+                rows={rows}
+                loading={loading}
+                error={error}
+                page={page}
+                totalPages={totalPages}
+                openRow={openRow}
+                rowDetails={rowDetails}
+                onToggleRow={handleToggleRow}
+                onPrevPage={() => setPage(p => Math.max(1, p - 1))}
+                onNextPage={() => setPage(p => Math.min(totalPages, p + 1))}
             />
         </div>
       )}

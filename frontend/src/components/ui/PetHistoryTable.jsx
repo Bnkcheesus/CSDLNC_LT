@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function PetHistoryTable({
+    title='Lịch sử khám & tiêm phòng',
     rows,
     loading,
     error,
@@ -18,7 +19,7 @@ export default function PetHistoryTable({
             {/* HEADER */}
             <div className="p-4 border-b border-gray-100">
                 <h3 className="text-base font-semibold">
-                    Lịch sử khám & tiêm phòng
+                    {title}
                 </h3>
             </div>
 

@@ -108,29 +108,39 @@ export const addServiceInvoice = async (maTKKH, maTKNV, maCN) => {
     }
 };
 
-export const getServiceInvoiceHistory = async (maTKNV, page, limit) => {
+export const getServiceInvoiceHistory = async (maTKNV, branch, type, page, limit) => {
     try {
         const pool = await getPool();
         const offset = (page - 1) * limit;
+        let typeFilter = '';
+        if (type === 'all') {
+            typeFilter = 'WHERE HD.MaCN = @branch';
+        }
+        else if (type === 'only') {
+            typeFilter = 'WHERE HD.MaTKNV = @maTKNV';
+        }
         const result = await pool.request()
             .input('maTKNV', maTKNV)
             .input('limit', limit)
             .input('offset', offset)
+            .input('branch', branch)
             .query(`
                 SELECT
                     HD.MaHD, HD.NgayLap,
                     KH.MaTKKH, KH.HoTen AS TenKH,
-                    CN.MaCN, CN.TenCN
+                    CN.MaCN, CN.TenCN,
+                    HD.MaTKNV, NV.HoTen AS TenNV
                 FROM HOADON HD
                 JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
                 JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-                WHERE HD.MaTKNV = @maTKNV
+                JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
+                ${typeFilter}
                 ORDER BY HD.NgayLap DESC
                 OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
 
                 SELECT COUNT(*) AS TotalCount
-                FROM HOADON
-                WHERE MaTKNV = @maTKNV;
+                FROM HOADON HD
+                ${typeFilter};
             `);
 
         const invoices = result.recordsets[0];
