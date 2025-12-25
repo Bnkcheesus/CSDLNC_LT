@@ -16,7 +16,7 @@ export default function AddServiceBox({ maCN, maTKKH, onAdd }) {
     useEffect(() => {
         if (!maCN) return;
 
-        axios.get(`http://localhost:5000/api/staff/doctors/${maCN}`, {
+        axios.get(`http://localhost:5000/api/user/doctors/${maCN}`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => {
             if (res.data.success) setDoctors(res.data.data);
@@ -26,7 +26,7 @@ export default function AddServiceBox({ maCN, maTKKH, onAdd }) {
     useEffect(() => {
         if (!maTKKH) return;
 
-        axios.get(`http://localhost:5000/api/staff/pets/${maTKKH}`, {
+        axios.get(`http://localhost:5000/api/user/pets/${maTKKH}`, {
             headers: { Authorization: `Bearer ${token}` }
         }).then(res => {
             if (res.data.success) setPets(res.data.data);

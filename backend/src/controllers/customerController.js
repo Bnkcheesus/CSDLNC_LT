@@ -10,7 +10,9 @@ import {
     getCustomerPetsByID,
     getCustomerPetProfileByID,
     getCustomerPetHistoryByID,
-    getCustomerPackagesByID
+    getCustomerPackagesByID,
+    addAppointment,
+    addAppointmentService
 } from "../models/CustomerModel.js";
 
 export const getCustomerDetails = async (req, res) => {
@@ -259,4 +261,42 @@ export const getCustomerPackages = async (req, res) => {
         console.error('Error in getCustomerPackages controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
+};
+
+export const addAppointmentController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+        const appointmentData = req.body;
+
+        const result = await addAppointment(maTK, appointmentData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addAppointmentController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addAppointmentServiceController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+        const serviceData = req.body;
+
+        await addAppointmentService(serviceData);
+        return res.status(200).json({
+            success: true,
+            message: 'Service added to appointment successfully'
+        });
+    } catch (err) {
+        console.error('Error in addAppointmentServiceController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }  
 };

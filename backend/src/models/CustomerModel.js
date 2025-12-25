@@ -491,3 +491,35 @@ export const getCustomerPackagesByID = async (maTKKH, page, limit) => {
         throw err;
     }
 };
+
+export const addAppointment = async (maTKKH, appointmentData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('MaTKKH', maTKKH)
+            .input('MaCN', appointmentData.MaCN)
+            .input('NgayHen', appointmentData.NgayHen)
+            .output('newMaHD')
+            .query(`EXEC sp_DatHen @MaTKKH, @MaCN, @NgayHen, @newMaHD OUTPUT`);
+        return { MaHD: result.output.newMaHD };
+    } catch (err) {
+        console.error('Error adding appointment:', err);
+        throw err;
+    }
+};
+
+export const addAppointmentService = async (serviceData) => {
+    try {
+        const pool = await getPool();
+        await pool.request()
+            .input('MaHD', serviceData.MaHD)
+            .input('LoaiDV', serviceData.LoaiDV)
+            .input('MaBS', serviceData.MaBS)
+            .input('MaTC', serviceData.MaTC)
+            .query(`EXEC sp_ThemSDDVMoi @MaHD, @LoaiDV, @MaTC, @MaBS`);
+        return true;
+    } catch (err) {
+        console.error('Error adding appointment service:', err);
+        throw err;
+    }
+};

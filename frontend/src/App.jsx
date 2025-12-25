@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 import CustomerHome from './pages/customer/CustomerHome.jsx';
 import CustomerProfile from './pages/customer/CustomerProfile.jsx';
 import CustomerServiceHistory from './pages/customer/CustomerServiceHistory.jsx';
+import CustomerAddAppointment from './pages/customer/CustomerAddAppointment.jsx';
 import CustomerExaminationDetail from './pages/customer/CustomerExaminationDetail.jsx';
 import CustomerVaccinationDetail from './pages/customer/CustomerVaccinationDetail.jsx';
 import CustomerPurchaseDetail from './pages/customer/CustomerPurchaseDetail.jsx';
@@ -135,6 +136,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerServiceHistory />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/appointment"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerAddAppointment />
             </ProtectedRoute>
           }
         />

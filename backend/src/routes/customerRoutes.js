@@ -11,7 +11,9 @@ import {
     getCustomerPets,
     getCustomerPetProfile,
     getCustomerPetHistory,
-    getCustomerPackages
+    getCustomerPackages,
+    addAppointmentController,
+    addAppointmentServiceController
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -31,5 +33,8 @@ router.get('/pets/:maTC', authMiddleware, getCustomerPetProfile);
 router.get('/pets/:maTC/history', authMiddleware, getCustomerPetHistory);
 
 router.get('/packages', authMiddleware, getCustomerPackages);
+
+router.post('/appointment', authMiddleware, addAppointmentController);
+router.post('/appointment/service', authMiddleware, addAppointmentServiceController);
 
 export default router;

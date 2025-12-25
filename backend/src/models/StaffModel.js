@@ -40,22 +40,6 @@ export const updateStaffProfile = async (maTKNV, profileData) => {
     }
 };
 
-export const getDoctorsByBranch = async (maCN) => {
-    try {
-        const pool = await getPool();
-        const query = `
-            EXEC sp_TraCuuDanhSachBacSiTheoChiNhanh @maCN;
-        `;
-        const result = await pool.request()
-            .input('maCN', maCN)
-            .query(query);
-        return result.recordset || [];
-    } catch (err) {
-        console.error('Error getting doctors by branch:', err);
-        throw err;
-    }
-};
-
 export const getCustomersByKeyword = async (keyword) => {
     try {
         const pool = await getPool();
@@ -70,22 +54,6 @@ export const getCustomersByKeyword = async (keyword) => {
         return result.recordset || [];
     } catch (err) {
         console.error('Error getting customers by keyword:', err);
-        throw err;
-    }
-};
-
-export const getPetsByCustomer = async (maTKKH) => {
-    try {
-        const pool = await getPool();
-        const query = `
-            EXEC sp_TraCuuDanhSachThuCungKH @maTKKH;
-        `;
-        const result = await pool.request()
-            .input('maTKKH', maTKKH)
-            .query(query);
-        return result.recordset || [];
-    } catch (err) {
-        console.error('Error getting pets by customer:', err);
         throw err;
     }
 };

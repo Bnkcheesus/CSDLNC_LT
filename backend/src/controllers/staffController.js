@@ -2,9 +2,7 @@ import e from 'express';
 import {
     getStaffProfile,
     updateStaffProfile,
-    getDoctorsByBranch,
     getCustomersByKeyword,
-    getPetsByCustomer,
     addServiceInvoice,
     getServiceInvoiceHistory,
     addSDDV,
@@ -59,24 +57,6 @@ export const updateStaffProfileController = async (req, res) => {
     }
 };
 
-export const getDoctorsByBranchController = async (req, res) => {
-    try {
-        const { maCN } = req.params;
-        if (!maCN) {
-            return res.status(400).json({ message: 'MaCN is required' });
-        }
-        
-        const doctors = await getDoctorsByBranch(maCN);
-        return res.status(200).json({
-            success: true,
-            data: doctors
-        });
-    } catch (err) {
-        console.error('Error in getDoctorsByBranch controller:', err);
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
 export const getCustomersByKeywordController = async (req, res) => {
     try {
         const { search } = req.query;
@@ -88,24 +68,6 @@ export const getCustomersByKeywordController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getCustomersByKeyword controller:', err);
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-export const getPetsByCustomerController = async (req, res) => {
-    try {
-        const { maTKKH } = req.params;
-        if (!maTKKH) {
-            return res.status(400).json({ message: 'MaTKKH is required' });
-        }
-
-        const pets = await getPetsByCustomer(maTKKH);
-        return res.status(200).json({
-            success: true,
-            data: pets
-        });
-    } catch (err) {
-        console.error('Error in getPetsByCustomer controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

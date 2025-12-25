@@ -2,9 +2,7 @@ import express from 'express';
 import {
     getStaffProfileController,
     updateStaffProfileController,
-    getDoctorsByBranchController,
     getCustomersByKeywordController,
-    getPetsByCustomerController,
     addServiceInvoiceController,
     getServiceInvoiceHistoryController,
     addSDDVController,
@@ -21,9 +19,7 @@ const router = express.Router();
 
 router.get('/profile', authMiddleware, getStaffProfileController);
 router.put('/profile', authMiddleware, updateStaffProfileController);
-router.get('/doctors/:maCN', authMiddleware, getDoctorsByBranchController);
 router.get('/customers', authMiddleware, getCustomersByKeywordController);
-router.get('/pets/:maTKKH', authMiddleware, getPetsByCustomerController);
 router.post('/hddv', authMiddleware, addServiceInvoiceController);
 router.get('/hddv', authMiddleware, getServiceInvoiceHistoryController);
 router.post('/sddv', authMiddleware, addSDDVController);

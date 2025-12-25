@@ -906,3 +906,43 @@ BEGIN
 	GROUP BY SP.LoaiSP;
 END
 GO
+
+--Đặt hẹn (khách hàng)
+CREATE OR ALTER PROCEDURE sp_DatHen
+    @maTKKH CHAR(8),
+    @maCN CHAR(5),
+	@ngay DATE,
+    @newMaHD CHAR(8) OUTPUT
+AS
+BEGIN
+    IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
+    FROM KHACHHANG
+    WHERE MaTKKH = @maTKKH))
+		RETURN
+
+	IF @ngay <= CAST(GETDATE() AS DATE)
+	BEGIN
+		RAISERROR(N'Ngày hẹn phải từ ngày mai trở đi', 16, 1);
+		RETURN;
+	END
+   
+    DECLARE @maxMaHD CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaHD = MAX(MaHD)
+    FROM HOADON;
+
+    IF (@maxMaHD IS NULL)
+        SET @newMaHD = 'HD000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaHD, 3, 6) AS INT) + 1;
+        SET @newMaHD = 'HD' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO HOADON
+        (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
+    VALUES
+        (@newMaHD, @ngay, 0, 0, NULL, @maCN, @maTKKH, null)
+END
+GO
