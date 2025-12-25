@@ -18,8 +18,8 @@ export default function StaffInvoiceHistory() {
     const [limit] = useState(20);
     const [totalPages, setTotalPages] = useState(1);
     const [error, setError] = useState("");
-
     const [branch, setBranch] = useState("");
+    const [customerKeyword, setCustomerKeyword] = useState("");
 
     useEffect(() => {
         if (!token) return;
@@ -55,7 +55,7 @@ export default function StaffInvoiceHistory() {
             setError("");
             try {
                 const res = await axios.get(`http://localhost:5000/api/staff/hddv`, {
-                    params: { branch: branch.MaCN, type: type, page: page, limit: limit },
+                    params: { keyword: customerKeyword, branch: branch.MaCN, type: type, page: page, limit: limit },
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
@@ -76,7 +76,7 @@ export default function StaffInvoiceHistory() {
         };
 
         fetchInvoiceHistory();
-    }, [maTK, token, branch, type, page, limit]);
+    }, [maTK, token, customerKeyword, branch, type, page, limit]);
 
     const handleViewDetails = (maHD) => {
         navigate(`/staff/invoices/${maHD}`);
@@ -123,8 +123,14 @@ export default function StaffInvoiceHistory() {
         </div>
         <div className="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
           {/* table header */}
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 flex items-center justify-between p-4">
             <h3 className="text-base font-semibold">Lịch sử hóa đơn dịch vụ {type === "all" ? "- " + branch.TenCN : "của bạn"}</h3>
+            <input
+                value={customerKeyword}
+                onChange={(e) => setCustomerKeyword(e.target.value)}
+                className="p-2 border rounded w-full max-w-sm"
+                placeholder="Nhập mã hoặc tên khách hàng để tìm kiếm"
+            />
           </div>
 
           {/* table content */}

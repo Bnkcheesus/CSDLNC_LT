@@ -108,7 +108,7 @@ export const addServiceInvoice = async (maTKKH, maTKNV, maCN) => {
     }
 };
 
-export const getServiceInvoiceHistory = async (maTKNV, branch, type, page, limit) => {
+export const getServiceInvoiceHistory = async (maTKNV, keyword, branch, type, page, limit) => {
     try {
         const pool = await getPool();
         const offset = (page - 1) * limit;
@@ -119,11 +119,17 @@ export const getServiceInvoiceHistory = async (maTKNV, branch, type, page, limit
         else if (type === 'only') {
             typeFilter = 'WHERE HD.MaTKNV = @maTKNV';
         }
+        let keywordFilter = '';
+        if (keyword) {
+            keywordFilter = ` AND (KH.MaTKKH LIKE '%' + @keyword + '%' OR KH.HoTen LIKE '%' + @keyword + '%')`;
+            typeFilter += keywordFilter;
+        }
         const result = await pool.request()
             .input('maTKNV', maTKNV)
             .input('limit', limit)
             .input('offset', offset)
             .input('branch', branch)
+            .input('keyword', keyword)
             .query(`
                 SELECT
                     HD.MaHD, HD.NgayLap,
@@ -140,6 +146,7 @@ export const getServiceInvoiceHistory = async (maTKNV, branch, type, page, limit
 
                 SELECT COUNT(*) AS TotalCount
                 FROM HOADON HD
+                JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
                 ${typeFilter};
             `);
 
