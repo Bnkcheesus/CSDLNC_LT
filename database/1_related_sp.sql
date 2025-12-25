@@ -409,7 +409,7 @@ BEGIN
 END
 GO
 GO
---5: Kịch bản Tìm thú cưng có sử dụng dịch vụ trong tháng năm
+--5a: Kịch bản Tìm thú cưng có sử dụng dịch vụ tiêm phòng trong tháng năm
 CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
     @thang INT,
     @nam INT
@@ -417,8 +417,22 @@ AS
 BEGIN
     SELECT DISTINCT THUCUNG.MaTC, THUCUNG.TenTC
     FROM THUCUNG
-        JOIN TIEMPHONG ON TIEMPHONG.MaTC = THUCUNG.TenTC
+        JOIN TIEMPHONG ON TIEMPHONG.MaTC = THUCUNG.MaTC
         JOIN SUDUNGDICHVU ON SUDUNGDICHVU.MASDDV = TIEMPHONG.MASDDV
+        JOIN HOADON ON HOADON.MaHD = SUDUNGDICHVU.MaHD
+    WHERE YEAR(NgayLap) = @nam AND MONTH(NgayLap) = @thang
+END
+GO
+--5b: Kịch bản Tìm thú cưng có sử dụng dịch vụ khám bệnh trong tháng năm
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
+    @thang INT,
+    @nam INT
+AS
+BEGIN
+    SELECT DISTINCT THUCUNG.MaTC, THUCUNG.TenTC
+    FROM THUCUNG
+        JOIN KHAMBENH ON KHAMBENH.MaTC = THUCUNG.MaTC
+        JOIN SUDUNGDICHVU ON SUDUNGDICHVU.MASDDV = KHAMBENH.MASDDV
         JOIN HOADON ON HOADON.MaHD = SUDUNGDICHVU.MaHD
     WHERE YEAR(NgayLap) = @nam AND MONTH(NgayLap) = @thang
 END
@@ -906,3 +920,16 @@ BEGIN
 	GROUP BY SP.LoaiSP;
 END
 GO
+
+EXEC sp_TraCuuLichSuHoaDonKH 'KH000001'
+GO
+
+EXEC sp_Truy_Van_Ton_Kho_Sap_Het_Han N'SP 100', N'Chi nhánh 7'
+GO
+CREATE NONCLUSTERED INDEX sp_TonKho ON LOSANPHAM (HanSuDung) 
+GO
+DROP INDEX sp_TonKho ON LOSANPHAM
+GO
+CREATE NONCLUSTERED INDEX hoaDonRelated ON HOADON (MaTKKH)
+GO
+DROP INDEX hoaDonRelated ON HOADON
