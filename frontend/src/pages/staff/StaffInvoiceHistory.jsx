@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
+import CategoryBar from "../../components/ui/CategoryBar.jsx";
 import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -10,13 +11,41 @@ export default function StaffInvoiceHistory() {
     const maTK = localStorage.getItem("maTK");
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
-    
+    const [type, setType] = useState("all");
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [limit] = useState(20);
     const [totalPages, setTotalPages] = useState(1);
     const [error, setError] = useState("");
+    const [branch, setBranch] = useState("");
+    const [customerKeyword, setCustomerKeyword] = useState("");
+
+    useEffect(() => {
+        if (!token) return;
+        
+        const fetchBranchInfo = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5000/api/staff/profile`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                if (res.data.success) {
+                    setBranch({
+                        MaCN: res.data.data.MaCN,
+                        TenCN: res.data.data.TenCN
+                    });
+                } else {
+                    console.error("Failed to fetch branch info:", res.data.message);
+                }
+            } catch (err) {
+                console.error("Error fetching branch info:", err);
+            }
+        };
+
+        fetchBranchInfo();
+    }, [token]);
 
     useEffect(() => {
         if (!maTK || !token) return;
@@ -26,7 +55,7 @@ export default function StaffInvoiceHistory() {
             setError("");
             try {
                 const res = await axios.get(`http://localhost:5000/api/staff/hddv`, {
-                    params: { page: page, limit: limit },
+                    params: { keyword: customerKeyword, branch: branch.MaCN, type: type, page: page, limit: limit },
                     headers: {
                         Authorization: `Bearer ${token}`,
                     }
@@ -47,7 +76,7 @@ export default function StaffInvoiceHistory() {
         };
 
         fetchInvoiceHistory();
-    }, [maTK, token, page, limit]);
+    }, [maTK, token, customerKeyword, branch, type, page, limit]);
 
     const handleViewDetails = (maHD) => {
         navigate(`/staff/invoices/${maHD}`);
@@ -62,6 +91,18 @@ export default function StaffInvoiceHistory() {
       <Header />
       <Navbar />
       <PageTitle title="Hóa đơn dịch vụ" />
+
+      <CategoryBar
+        active={type}
+        onChange={(t) => {
+          setType(t);
+          setPage(1);
+        }}
+          types={[
+            { key: "all", label: "Hoá đơn chi nhánh" },
+            { key: "only", label: "Lịch sử của bạn" }
+        ]}
+      />
 
       <div className="max-w-[1200px] mx-auto px-4 py-6">
         <div className="p-6 text-right">
@@ -82,8 +123,14 @@ export default function StaffInvoiceHistory() {
         </div>
         <div className="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
           {/* table header */}
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="text-base font-semibold">Lịch sử hóa đơn dịch vụ</h3>
+          <div className="border-b border-gray-100 flex items-center justify-between p-4">
+            <h3 className="text-base font-semibold">Lịch sử hóa đơn dịch vụ {type === "all" ? "- " + branch.TenCN : "của bạn"}</h3>
+            <input
+                value={customerKeyword}
+                onChange={(e) => setCustomerKeyword(e.target.value)}
+                className="p-2 border rounded w-full max-w-sm"
+                placeholder="Nhập mã hoặc tên khách hàng để tìm kiếm"
+            />
           </div>
 
           {/* table content */}
@@ -103,6 +150,7 @@ export default function StaffInvoiceHistory() {
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã hóa đơn</th>
                       <th className="px-3 py-2">Ngày lập</th>
+                      <th className="px-3 py-2">Nhân viên lập</th>
                       <th className="px-3 py-2">Khách hàng</th>
                       <th className="px-3 py-2">Chi nhánh</th>
                       <th className="px-3 py-2"></th>
@@ -120,6 +168,7 @@ export default function StaffInvoiceHistory() {
                             ? new Date(r.NgayLap).toLocaleDateString()
                             : "-"}
                         </td>
+                        <td className="px-3 py-3 text-sm">{r.MaTKNV ? r.MaTKNV + " - " + r.TenNV : "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.MaTKKH ? r.MaTKKH + " - " + r.TenKH : "-"}</td>
                         <td className="px-3 py-3 text-sm">{r.TenCN || "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
