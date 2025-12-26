@@ -42,6 +42,7 @@ export default function StaffServiceInvoiceDetail() {
                 if (res.data.success) {
                     setInvoice(res.data.data);
                     setEditInvoice({
+                        MaTKNV: res.data.data.MaTKNV || null,
                         KhuyenMai: res.data.data.KhuyenMai || 0,
                         HinhThucThanhToan: res.data.data.HinhThucThanhToan || "TM"
                     });
@@ -93,6 +94,7 @@ export default function StaffServiceInvoiceDetail() {
             const res = await axios.put(
                 `http://localhost:5000/api/staff/invoices/${maHD}`,
                 {
+                    MaTKNV: null,
                     KhuyenMai: editInvoice.KhuyenMai,
                     HinhThucThanhToan: editInvoice.HinhThucThanhToan
                 },
@@ -164,6 +166,49 @@ export default function StaffServiceInvoiceDetail() {
         setOpenRow(r.MaSDDV);
     };
 
+    const handleUpdateInvoiceStaff = async () => {
+        try {
+            const res = await axios.put(
+                `http://localhost:5000/api/staff/invoices/${maHD}`,
+                {
+                    MaTKNV: localStorage.getItem("maTK"),
+                    KhuyenMai: null,
+                    HinhThucThanhToan: null
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (!res.data.success) {
+                alert("Tiếp nhận hoá đơn thất bại");
+                return;
+            }
+            const resInvoice = await axios.get(
+                `http://localhost:5000/api/staff/invoices/${maHD}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (resInvoice.data.success) {
+                setInvoice(resInvoice.data.data);
+                setEditInvoice({
+                    KhuyenMai: resInvoice.data.data.KhuyenMai || 0,
+                    HinhThucThanhToan: resInvoice.data.data.HinhThucThanhToan || null
+                });
+            }
+
+            setIsEditing(false);
+            alert("Tiếp nhận hoá đơn thành công");
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleTiepNhan = async () => {
+        try {
+            handleUpdateInvoiceStaff();
+        } catch (err) {
+            console.error("Error handling appointment:", err);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white text-sm">
             <Header />
@@ -211,7 +256,25 @@ export default function StaffServiceInvoiceDetail() {
                             <p><strong>Mã hoá đơn:</strong> {invoice.MaHD}</p>
                             <p><strong>Ngày lập:</strong> {invoice.NgayLap ? new Date(invoice.NgayLap).toLocaleDateString() : "-"}</p>
                             <p><strong>Chi nhánh:</strong> {invoice.TenCN}</p>
-                            <p><strong>Mã nhân viên:</strong> {invoice.MaTKNV}</p>
+                            <p><strong>Mã nhân viên:</strong> {
+                                !isEditing ? (
+                                    <span>{invoice.MaTKNV || " - "}</span>
+                                ) : (
+                                    !invoice.MaTKNV ? (
+                                        <button
+                                            onClick={handleTiepNhan}
+                                            className=" px-6 py-2 bg-blue-500 text-white font-medium rounded
+                                            shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                                            hover:brightness-110 active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                                            transition-all "
+                                        >
+                                            Tiếp nhận
+                                        </button>
+                                    ) : (
+                                        <span>{invoice.MaTKNV || " - "}</span>
+                                    )
+                                )
+                            }</p>
                             <p><strong>Mã khách hàng:</strong> {invoice.MaTKKH}</p>
                             <p><strong></strong> {""}</p>
                             <p><strong>Tổng tiền:</strong> {invoice.TongTien ? invoice.TongTien.toLocaleString() : "-"}</p>
@@ -226,7 +289,9 @@ export default function StaffServiceInvoiceDetail() {
                                 ) : (
                                     <input
                                         type="number"
+                                        disabled={invoice.MaTKNV === null}
                                         min={0}
+                                        max={invoice.TongTien || 0}
                                         step={1000}
                                         value={editInvoice.KhuyenMai}
                                         onChange={(e) =>
@@ -248,6 +313,7 @@ export default function StaffServiceInvoiceDetail() {
                                 ) : (
                                     <select
                                         value={editInvoice.HinhThucThanhToan}
+                                        disabled={invoice.MaTKNV === null}
                                         onChange={(e) =>
                                             setEditInvoice(prev => ({
                                                 ...prev,

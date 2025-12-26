@@ -159,13 +159,13 @@ export const getServiceInvoiceInfoController = async (req, res) => {
 export const updateServiceInvoiceInfoController = async (req, res) => {
     try {
         const { maHD } = req.params;
-        const { KhuyenMai, HinhThucThanhToan } = req.body;
+        const { MaTKNV, KhuyenMai, HinhThucThanhToan } = req.body;
 
         if (!maHD) {
             return res.status(400).json({ message: 'MaHD is required' });
         }
 
-        const updatedInfo = await updateServiceInvoiceInfo(maHD, KhuyenMai, HinhThucThanhToan);
+        const updatedInfo = await updateServiceInvoiceInfo(maHD, MaTKNV, KhuyenMai, HinhThucThanhToan);
         return res.status(200).json({
             success: true,
             data: updatedInfo

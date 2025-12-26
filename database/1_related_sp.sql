@@ -645,7 +645,7 @@ BEGIN
 END
 GO
 
---Cập nhật khuyến mĩa và hình thức thanh toán của hoá đơn
+--Cập nhật khuyến mãi và hình thức thanh toán của hoá đơn
 CREATE OR ALTER PROCEDURE sp_CapNhatThongTinHoaDon
 	@maHD CHAR(8),
 	@khuyenMai DECIMAL(19,2),
@@ -659,6 +659,19 @@ BEGIN
     WHERE MaHD = @maHD;
 
     EXEC sp_CapNhatTongTienHD @maHD;
+END
+GO
+
+--Cập nhật nhân viên tiếp nhận hoá đơn hẹn
+CREATE OR ALTER PROCEDURE sp_CapNhatNhanVienHoaDon
+	@maHD CHAR(8),
+	@maTKNV CHAR(8)
+AS
+BEGIN
+	UPDATE HOADON
+    SET
+        MaTKNV = @maTKNV
+    WHERE MaHD = @maHD;
 END
 GO
 
@@ -960,16 +973,3 @@ BEGIN
         (@newMaHD, @ngay, 0, 0, NULL, @maCN, @maTKKH, null)
 END
 GO
-
-EXEC sp_TraCuuLichSuHoaDonKH 'KH000001'
-GO
-
-EXEC sp_Truy_Van_Ton_Kho_Sap_Het_Han N'SP 100', N'Chi nhánh 7'
-GO
-CREATE NONCLUSTERED INDEX sp_TonKho ON LOSANPHAM (HanSuDung) 
-GO
-DROP INDEX sp_TonKho ON LOSANPHAM
-GO
-CREATE NONCLUSTERED INDEX hoaDonRelated ON HOADON (MaTKKH)
-GO
-DROP INDEX hoaDonRelated ON HOADON

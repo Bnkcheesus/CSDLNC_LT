@@ -82,10 +82,13 @@ export const getServiceInvoiceHistory = async (maTKNV, keyword, branch, type, pa
         const offset = (page - 1) * limit;
         let typeFilter = '';
         if (type === 'all') {
-            typeFilter = 'WHERE HD.MaCN = @branch';
+            typeFilter = 'WHERE HD.MaCN = @branch AND HD.MaTKNV IS NOT NULL';
         }
         else if (type === 'only') {
             typeFilter = 'WHERE HD.MaTKNV = @maTKNV';
+        }
+        else if (type === 'appointments') {
+            typeFilter = 'WHERE HD.MaTKNV IS NULL AND HD.MaCN = @branch';
         }
         let keywordFilter = '';
         if (keyword) {
@@ -107,7 +110,7 @@ export const getServiceInvoiceHistory = async (maTKNV, keyword, branch, type, pa
                 FROM HOADON HD
                 JOIN KHACHHANG KH ON HD.MaTKKH = KH.MaTKKH
                 JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-                JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
+                LEFT JOIN NHANVIEN NV ON HD.MaTKNV = NV.MaTKNV
                 ${typeFilter}
                 ORDER BY HD.NgayLap DESC
                 OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
@@ -166,14 +169,21 @@ export const getServiceInvoiceInfo = async (maHD) => {
     }
 };
 
-export const updateServiceInvoiceInfo = async (maHD, KhuyenMai, HinhThucThanhToan) => {
+export const updateServiceInvoiceInfo = async (maHD, MaTKNV, KhuyenMai, HinhThucThanhToan) => {
     try {
         const pool = await getPool();
+        let query = '';
+        if (!MaTKNV) {
+            query = 'EXEC sp_CapNhatThongTinHoaDon @maHD, @KhuyenMai, @HinhThucThanhToan;';
+        } else {
+            query = 'EXEC sp_CapNhatNhanVienHoaDon @maHD, @MaTKNV;';
+        }
         const result = await pool.request()
             .input('maHD', maHD)
+            .input('MaTKNV', MaTKNV)
             .input('KhuyenMai', KhuyenMai)
             .input('HinhThucThanhToan', HinhThucThanhToan)
-            .query(`EXEC sp_CapNhatThongTinHoaDon @maHD, @KhuyenMai, @HinhThucThanhToan;`);
+            .query(`${query}`);
         return result.rowsAffected[0] > 0;
     } catch (err) {
         console.error('Error updating service invoice info:', err);

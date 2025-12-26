@@ -100,6 +100,7 @@ export default function StaffInvoiceHistory() {
         }}
           types={[
             { key: "all", label: "Hoá đơn chi nhánh" },
+            { key: "appointments", label: "Lịch hẹn chi nhánh" },
             { key: "only", label: "Lịch sử của bạn" }
         ]}
       />
@@ -124,7 +125,10 @@ export default function StaffInvoiceHistory() {
         <div className="bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden">
           {/* table header */}
           <div className="border-b border-gray-100 flex items-center justify-between p-4">
-            <h3 className="text-base font-semibold">Lịch sử hóa đơn dịch vụ {type === "all" ? "- " + branch.TenCN : "của bạn"}</h3>
+            <h3 className="text-base font-semibold">{
+              type === "all" ? "Lịch sử hóa đơn dịch vụ - " + branch.TenCN
+              : type === "appointments" ? "Khách đặt hẹn - " + branch.TenCN
+              : "Lịch sử hóa đơn dịch vụ của bạn"}</h3>
             <input
                 value={customerKeyword}
                 onChange={(e) => setCustomerKeyword(e.target.value)}
