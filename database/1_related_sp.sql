@@ -973,3 +973,57 @@ BEGIN
         (@newMaHD, @ngay, 0, 0, NULL, @maCN, @maTKKH, null)
 END
 GO
+
+--Đặt hàng (khách hàng)
+CREATE OR ALTER PROCEDURE sp_ThemHoaDonDatHangMoi
+    @maTKKH CHAR(8),
+    @method CHAR(2),
+    @newMaHD CHAR(8) OUTPUT,
+	@newMaSDDV CHAR(10) = NULL OUTPUT
+AS
+BEGIN
+    IF (NOT EXISTS (SELECT KHACHHANG.MaTKKH
+    FROM KHACHHANG
+    WHERE MaTKKH = @maTKKH))
+		RETURN
+    
+    DECLARE @maxMaHD CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaHD = MAX(MaHD)
+    FROM HOADON;
+
+    IF (@maxMaHD IS NULL)
+        SET @newMaHD = 'HD000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaHD, 3, 6) AS INT) + 1;
+        SET @newMaHD = 'HD' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO HOADON
+        (MaHD, NgayLap, TongTien, KhuyenMai, HinhThucThanhToan, MaCN, MaTKKH, MaTKNV)
+    VALUES
+        (@newMaHD, GETDATE(), 0, 0, @method, NULL, @maTKKH, NULL);
+
+	DECLARE @maxMaSDDV CHAR(10);
+
+    SELECT @maxMaSDDV = MAX(MaSDDV)
+    FROM SUDUNGDICHVU;
+
+    IF (@maxMaSDDV IS NULL)
+        SET @newMaSDDV = 'SDDV000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaSDDV, 5, 6) AS INT) + 1;
+        SET @newMaSDDV = 'SDDV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+    INSERT INTO SUDUNGDICHVU
+    VALUES
+        (@newMaSDDV, 'MH', 0, @newMaHD);
+
+	INSERT INTO MUAHANG (MaSDDV, MaNVBH)
+    VALUES (@newMaSDDV, NULL);
+END
+GO

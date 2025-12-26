@@ -13,7 +13,9 @@ import {
     getCustomerPackagesByID,
     addAppointment,
     addAppointmentService,
-    getProducts
+    getProducts,
+    addOrder,
+    addOrderDetail
 } from "../models/CustomerModel.js";
 
 export const getCustomerDetails = async (req, res) => {
@@ -314,6 +316,44 @@ export const getProductsController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getProductsController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addOrderController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+        const orderData = req.body;
+
+        const result = await addOrder(maTK, orderData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addOrderController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addOrderDetailController = async (req, res) => {
+    try {
+        const { maSDDV } = req.params;
+        if (!maSDDV) {
+            return res.status(400).json({ message: 'MaSDDV is required' });
+        }
+        const orderDetailData = req.body;
+
+        await addOrderDetail(maSDDV, orderDetailData);
+        return res.status(200).json({
+            success: true,
+            message: 'Order detail added successfully'
+        });
+    } catch (err) {
+        console.error('Error in addOrderDetailController:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

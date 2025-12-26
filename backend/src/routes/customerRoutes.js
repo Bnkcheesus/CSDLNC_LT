@@ -14,7 +14,9 @@ import {
     getCustomerPackages,
     addAppointmentController,
     addAppointmentServiceController,
-    getProductsController
+    getProductsController,
+    addOrderController,
+    addOrderDetailController
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -39,5 +41,7 @@ router.post('/appointment', authMiddleware, addAppointmentController);
 router.post('/appointment/service', authMiddleware, addAppointmentServiceController);
 
 router.get('/products', authMiddleware, getProductsController);
+router.post('/order', authMiddleware, addOrderController);
+router.post('/order/:maSDDV', authMiddleware, addOrderDetailController);
 
 export default router;

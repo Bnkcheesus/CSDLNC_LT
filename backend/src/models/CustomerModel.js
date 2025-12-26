@@ -60,9 +60,10 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
                 TC.TenTC
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
-            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            LEFT JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
             LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
             LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
             LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
             WHERE HD.MaTKKH = @maTK
             ${typeFilter}
@@ -244,8 +245,8 @@ export const getCustomerPurchaseDetailByID = async (maSDDV) => {
             FROM MUAHANG MH
             JOIN SUDUNGDICHVU SDV ON MH.MaSDDV = SDV.MaSDDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
-            JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
-            JOIN NHANVIEN NV ON MH.MaNVBH = NV.MaTKNV
+            LEFT JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            LEFT JOIN NHANVIEN NV ON MH.MaNVBH = NV.MaTKNV
             WHERE MH.MaSDDV = @maSDDV
         `;
 
@@ -558,6 +559,39 @@ export const getProducts = async (keyword, page, limit) => {
         };
     } catch (err) {
         console.error('Error getting products:', err);
+        throw err;
+    }
+};
+
+export const addOrder = async (maTKKH, orderData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('MaTKKH', maTKKH)
+            .input('method', orderData.HinhThucThanhToan)
+            .output('newMaHD')
+            .output('newMaSDDV')
+            .query(`EXEC sp_ThemHoaDonDatHangMoi @MaTKKH, @method, @newMaHD OUTPUT, @newMaSDDV OUTPUT`);
+        const maHD = result.output.newMaHD;
+        const maSDDV = result.output.newMaSDDV;
+        return { MaHD: maHD, MaSDDV: maSDDV };
+    } catch (err) {
+        console.error('Error adding order:', err);
+        throw err;
+    }
+};
+
+export const addOrderDetail = async (maSDDV, orderItemData) => {
+    try {
+        const pool = await getPool();
+        await pool.request()
+            .input('MaSDDV', maSDDV)
+            .input('MaSP', orderItemData.MaSP)
+            .input('SoLuong', orderItemData.SoLuong)
+            .query(`EXEC sp_ThemChiTietMuaHang @MaSDDV, @MaSP, @SoLuong`);
+        return true;
+    } catch (err) {
+        console.error('Error adding order detail:', err);
         throw err;
     }
 };

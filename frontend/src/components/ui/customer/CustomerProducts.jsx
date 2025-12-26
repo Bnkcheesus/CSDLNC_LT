@@ -58,7 +58,7 @@ export default function CustomerProducts() {
             if (existing) {
                 return prev.map(p =>
                 p.MaSP === product.MaSP
-                    ? { ...p, SoLuong: p.SoLuong + 1 }
+                    ? { ...p, SoLuong: p.SoLuong + 1, TongTien: (p.Gia * (p.SoLuong + 1)) }
                     : p
                 );
             }
@@ -67,7 +67,8 @@ export default function CustomerProducts() {
                 TenSP: product.TenSP,
                 LoaiSP: product.LoaiSP,
                 Gia: product.Gia,
-                SoLuong: 1
+                SoLuong: 1,
+                TongTien: product.Gia
             }];
         });
 

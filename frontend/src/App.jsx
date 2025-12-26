@@ -12,6 +12,7 @@ import CustomerPets from './pages/customer/CustomerPets.jsx';
 import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
 import CustomerVaccinationPackages from './pages/customer/CustomerVaccinationPackages.jsx';
 import CustomerOrder from './pages/customer/CustomerOrder.jsx';
+import CustomerCheckout from './pages/customer/CustomerCheckout.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 import StaffProfile from './pages/staff/StaffProfile.jsx';
 import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
@@ -208,6 +209,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerOrder />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/order/checkout"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerCheckout />
             </ProtectedRoute>
           }
         />

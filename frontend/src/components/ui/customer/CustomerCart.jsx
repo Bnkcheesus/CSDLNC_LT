@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-//import axios from "axios";
 import { Trash2 } from "lucide-react";
 
-export default function CustomerProducts() {
-    //const maTK = localStorage.getItem("maTK");
-    //const token = localStorage.getItem("token");
+export default function CustomerCart() {
     const navigate = useNavigate();
 
     const [cart, setCart] = useState(() => {
@@ -20,7 +17,7 @@ export default function CustomerProducts() {
         setCart(prev => prev.filter(p => p.MaSP !== productId));
     };
 
-    const handlePlaceOrder = () => {
+    const handleCheckout = () => {
         navigate('/customer/order/checkout');
     }
 
@@ -68,7 +65,7 @@ export default function CustomerProducts() {
                                     const newQty = Math.max(1, parseInt(e.target.value) || 1);
                                     setCart(prev => prev.map(p =>
                                         p.MaSP === c.MaSP
-                                            ? { ...p, SoLuong: newQty }
+                                            ? { ...p, SoLuong: newQty, TongTien: (p.Gia * newQty) }
                                             : p
                                     ));
                                 }}
@@ -94,22 +91,24 @@ export default function CustomerProducts() {
           </div>   
 
           {/* SUBMIT */}
-        <div className="p-6 text-center">
-            <button
-                onClick={handlePlaceOrder}
-                className="
-                px-6 py-2 
-                bg-blue-500 text-white font-medium
-                rounded 
-                shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
-                hover:brightness-110
-                active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
-                transition-all
-                "
-            >
-                Đặt hàng
-            </button>
-        </div>                             
+        {cart.length > 0 && (
+            <div className="p-6 text-center">
+                <button
+                    onClick={handleCheckout}
+                    className="
+                    px-6 py-2 
+                    bg-blue-500 text-white font-medium
+                    rounded 
+                    shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                    hover:brightness-110
+                    active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                    transition-all
+                    "
+                >
+                    Thanh toán
+                </button>
+            </div>         
+        )}                    
         </div>
     );
 }
