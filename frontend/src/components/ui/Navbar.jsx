@@ -3,9 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 const MENU_CONFIG = [
     { label: "Trang chủ", to: "/customer/home", roles: ["customer"] },
     { label: "Trang chủ", to: "/staff/home", roles: ["manager", "receptionist", "sales", "doctor"] },
-    { label: "Dịch vụ", to: "/customer/history", roles: ["customer"], relatedPaths: ["/customer/khambenh", "/customer/tiemphong", "/customer/muahang"] },
+    { label: "Dịch vụ", to: "/customer/history", roles: ["customer"], relatedPaths: ["/customer/khambenh", "/customer/tiemphong", "/customer/muahang", "/customer/appointment"] },
     { label: "Gói tiêm", to: "/customer/packages", roles: ["customer"], relatedPaths: ["/customer/packages"] },
     { label: "Thú cưng", to: "/customer/pets", roles: ["customer"], relatedPaths: ["/customer/pets/"]},
+    { label: "Mua hàng", to: "/customer/order", roles: ["customer"], relatedPaths: ["/customer/order"] },
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
     { label: "Hoá đơn dịch vụ", to: "/staff/invoices", roles: ["receptionist"], relatedPaths: ["/staff/invoices/"] },
     { label: "Bán hàng", to: "/staff/sales/new", roles: ["sales"] },

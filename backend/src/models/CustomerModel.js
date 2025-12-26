@@ -523,3 +523,41 @@ export const addAppointmentService = async (serviceData) => {
         throw err;
     }
 };
+
+export const getProducts = async (keyword, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        const searchFilter = keyword ? "AND (MaSP LIKE '%' + @keyword + '%' OR TenSP LIKE '%' + @keyword + '%')" : "";
+        const query = `
+            SELECT 
+                MaSP, TenSP, LoaiSP, Gia
+            FROM SANPHAM
+            WHERE LoaiSP = N'Bán lẻ'
+            ${searchFilter}
+            ORDER BY MaSP
+            OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM SANPHAM
+            WHERE LoaiSP = N'Bán lẻ'
+            ${searchFilter};
+        `;
+        const result = await pool.request()
+            .input('keyword', keyword)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+        const products = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+        return {
+            rows: products,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting products:', err);
+        throw err;
+    }
+};

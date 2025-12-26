@@ -12,7 +12,8 @@ import {
     getCustomerPetHistoryByID,
     getCustomerPackagesByID,
     addAppointment,
-    addAppointmentService
+    addAppointmentService,
+    getProducts
 } from "../models/CustomerModel.js";
 
 export const getCustomerDetails = async (req, res) => {
@@ -299,4 +300,20 @@ export const addAppointmentServiceController = async (req, res) => {
         console.error('Error in addAppointmentServiceController:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }  
+};
+
+export const getProductsController = async (req, res) => {
+    try {
+        const keyword = req.query.keyword || null;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const products = await getProducts(keyword, page, limit);
+        return res.status(200).json({
+            success: true,
+            data: products
+        });
+    } catch (err) {
+        console.error('Error in getProductsController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 };

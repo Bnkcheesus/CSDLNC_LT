@@ -13,7 +13,8 @@ import {
     getCustomerPetHistory,
     getCustomerPackages,
     addAppointmentController,
-    addAppointmentServiceController
+    addAppointmentServiceController,
+    getProductsController
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -36,5 +37,7 @@ router.get('/packages', authMiddleware, getCustomerPackages);
 
 router.post('/appointment', authMiddleware, addAppointmentController);
 router.post('/appointment/service', authMiddleware, addAppointmentServiceController);
+
+router.get('/products', authMiddleware, getProductsController);
 
 export default router;
