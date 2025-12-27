@@ -42,6 +42,7 @@ export const getDocServiceHistory = async (maTKNV, type, page, limit) => {
                         AND MaBS = @maTKNV
                     )
                 )
+                AND HD.MaTKNV IS NOT NULL
                 ${typeFilter}
             ORDER BY NgaySuDung DESC
             OFFSET @offset ROWS
@@ -49,6 +50,11 @@ export const getDocServiceHistory = async (maTKNV, type, page, limit) => {
 
             SELECT COUNT(*) AS Total
             FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+            LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
             WHERE
                 (
                     EXISTS (
@@ -65,7 +71,8 @@ export const getDocServiceHistory = async (maTKNV, type, page, limit) => {
                         AND MaBS = @maTKNV
                     )
                 )
-                ${typeFilter}
+                AND HD.MaTKNV IS NOT NULL
+                ${typeFilter};
         `;
 
         const result = await pool.request()
@@ -85,7 +92,96 @@ export const getDocServiceHistory = async (maTKNV, type, page, limit) => {
             currentPage: page
         };
     } catch (err) {
-        console.error('Error getting customer service history by ID:', err);
+        console.error('Error getting doctor service history by ID:', err);
+        throw err;
+    }
+};
+
+export const getDocAppointmentHistory = async (maTKNV, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        const query = `
+            SELECT
+                SDV.MaSDDV,
+                HD.NgayLap AS NgaySuDung,
+                SDV.LoaiDV,
+                KH.MaTKKH,
+                KH.HoTen,
+                TC.MaTC,
+                TC.TenTC
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+            LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+
+            WHERE
+                (
+                    EXISTS (
+                        SELECT 1
+                        FROM KHAMBENH
+                        WHERE MaSDDV = SDV.MaSDDV
+                        AND MaBS = @maTKNV
+                    )
+                    OR
+                    EXISTS (
+                        SELECT 1
+                        FROM TIEMPHONG
+                        WHERE MaSDDV = SDV.MaSDDV
+                        AND MaBS = @maTKNV
+                    )
+                )
+                AND HD.MaTKNV IS NULL
+            ORDER BY NgaySuDung DESC
+            OFFSET @offset ROWS
+            FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+            LEFT JOIN KHACHHANG KH ON TC.MaTKKH = KH.MaTKKH
+            WHERE
+                (
+                    EXISTS (
+                        SELECT 1
+                        FROM KHAMBENH
+                        WHERE MaSDDV = SDV.MaSDDV
+                        AND MaBS = @maTKNV
+                    )
+                    OR
+                    EXISTS (
+                        SELECT 1
+                        FROM TIEMPHONG
+                        WHERE MaSDDV = SDV.MaSDDV
+                        AND MaBS = @maTKNV
+                    )
+                )
+                AND HD.MaTKNV IS NULL;
+        `;
+
+        const result = await pool.request()
+            .input('maTKNV', maTKNV)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+
+        const history = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: history,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting doctor appointment history by ID:', err);
         throw err;
     }
 };

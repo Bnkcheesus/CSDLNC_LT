@@ -1,5 +1,6 @@
 import {
     getDocServiceHistory,
+    getDocAppointmentHistory,
     getDocExaminationInfo,
     updateDocExaminationInfo,
     getToaThuoc,
@@ -27,6 +28,14 @@ export const getDocServiceHistoryController = async (req, res) => {
         }
 
         const { type, page = 1, limit = 10 } = req.query;
+
+        if (type === "app") {
+            const result = await getDocAppointmentHistory(maTK, parseInt(page), parseInt(limit));
+            return res.status(200).json({
+                success: true,
+                data: result
+            });
+        }
 
         const history = await getDocServiceHistory(maTK, type, parseInt(page), parseInt(limit));
         return res.status(200).json({
