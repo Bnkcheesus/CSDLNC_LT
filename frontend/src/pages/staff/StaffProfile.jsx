@@ -11,8 +11,13 @@ export default function StaffProfile() {
         gender: "",
         dob: "",
         ngayVaoLam: "",
-        position: ""
+        position: "",
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
     });
+
+    const [isEditingPassword, setIsEditingPassword] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -23,13 +28,14 @@ export default function StaffProfile() {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setForm({
+                setForm((prevForm) => ({
+                    ...prevForm,
                     name: res.data.data.HoTen ? res.data.data.HoTen : "",
                     gender: res.data.data.GioiTinh ? res.data.data.GioiTinh : "",
                     dob: res.data.data.NgaySinh ? res.data.data.NgaySinh.slice(0, 10) : "",
                     ngayVaoLam: res.data.data.NgayVaoLam ? res.data.data.NgayVaoLam.slice(0, 10) : "",
                     position: res.data.data.ChucVu ? res.data.data.ChucVu : ""
-                });
+                }));
             } catch (err) {
                 console.error("Error fetching customer profile:", err);
             }
@@ -48,15 +54,37 @@ export default function StaffProfile() {
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
+            if (isEditingPassword && (!form.currentPassword || !form.newPassword || !form.confirmNewPassword)) {
+                alert("Vui lòng điền đầy đủ thông tin mật khẩu.");
+                return;
+            }
+
             const token = localStorage.getItem("token");
-            console.log("Updating with data:", form);
             await axios.put(`http://localhost:5000/api/staff/profile`, form, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
+            if (isEditingPassword) {
+                await axios.put(`http://localhost:5000/api/user/password`, {
+                currentPassword: form.currentPassword,
+                newPassword: form.newPassword,
+                confirmNewPassword: form.confirmNewPassword
+              }, {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                  },
+              });
+            }
             alert("Cập nhật thông tin thành công!");
+            setForm((prevForm) => ({
+                ...prevForm,
+                currentPassword: "",
+                newPassword: "",
+                confirmNewPassword: ""
+            }));
+            setIsEditingPassword(false);
         } catch (err) {
             console.error("Error updating customer profile:", err);
             alert("Cập nhật thông tin thất bại.");
@@ -150,6 +178,65 @@ export default function StaffProfile() {
               className="w-full p-2 border rounded bg-gray-200 cursor-not-allowed"
             />
           </div>
+
+          <div>
+            <input
+              type="checkbox"
+              checked={isEditingPassword}
+              onChange={(e) => {
+                  setIsEditingPassword(e.target.checked);
+                  if (!e.target.checked) {
+                      setForm((prevForm) => ({
+                          ...prevForm,
+                          currentPassword: "",
+                          newPassword: "",
+                          confirmNewPassword: ""
+                      }));
+                  }
+              }}
+            />
+            <span> Thay đổi mật khẩu</span>
+          </div>
+
+          {isEditingPassword && (
+            <>
+              {/* Current Password */}
+              <div>
+                <label className="block font-medium mb-1">Mật khẩu hiện tại</label>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  value={form.currentPassword}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label className="block font-medium mb-1">Mật khẩu mới</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={form.newPassword}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              {/* Confirm New Password */}
+              <div>
+                <label className="block font-medium mb-1">Xác nhận mật khẩu mới</label>
+                <input
+                  type="password"
+                  name="confirmNewPassword"
+                  value={form.confirmNewPassword}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+            </>
+          )}
 
           {/* Update button */}
           <button

@@ -1,5 +1,28 @@
 import { getPool } from '../config/db.js';
 
+export const changeUserPassword = async (maTK, currentPassword, newPassword) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTK', maTK)
+            .input('currentPassword', currentPassword)
+            .input('newPassword', newPassword)
+            .query(`
+                DECLARE @rowsAffected INT;
+                UPDATE TAIKHOAN
+                SET PassWord = @newPassword
+                WHERE MaTK = @maTK AND PassWord = @currentPassword;
+                SET @rowsAffected = @@ROWCOUNT;
+                SELECT @rowsAffected AS rowsAffected;
+            `);
+
+        return result.recordset[0].rowsAffected > 0;
+    } catch (err) {
+        console.error('Error changing user password:', err);
+        throw err;
+    }
+};
+
 export const findAccountByID = async (maTK) => {
     try {
         const pool = await getPool();

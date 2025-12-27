@@ -1,4 +1,5 @@
 import {
+    changeUserPassword,
     getUserNameByID,
     getBranches,
     getDoctorsByBranch,
@@ -6,6 +7,30 @@ import {
     getPackages,
     getPackageDetail
 } from "../models/UserModel.js";
+
+export const changeUserPasswordController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        const { currentPassword, newPassword, confirmNewPassword } = req.body;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTK is required' });
+        }
+        if (newPassword !== confirmNewPassword) {
+            return res.status(400).json({ message: 'New password and confirmation do not match' });
+        }
+        const changeSuccess = await changeUserPassword(maTK, currentPassword, newPassword);
+        if (!changeSuccess) {
+            return res.status(400).json({ message: 'Current password is incorrect or failed to change password' });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Password changed successfully'
+        });
+    } catch (err) {
+        console.error('Error in changeUserPassword controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
 
 export const getUserName = async (req, res) => {
     try {
