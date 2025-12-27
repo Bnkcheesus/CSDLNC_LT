@@ -64,6 +64,7 @@ def generate_file(service_file, detail_file_out, proc_name, product_ids, mode='d
     lines = ["USE PETCAREDB", "GO", ""]
     
     count_details = 0
+    batch_counter = 0  # Biến đếm để theo dõi số dòng trong 1 batch
     
     # 2. Duyệt qua TỪNG mã dịch vụ (đảm bảo 'TẤT CẢ' đều có)
     for sddv in service_ids:
@@ -95,6 +96,12 @@ def generate_file(service_file, detail_file_out, proc_name, product_ids, mode='d
             
             lines.append(line)
             count_details += 1
+            batch_counter += 1
+
+            # --- THÊM GO SAU MỖI 100 DÒNG ---
+            if batch_counter >= 100:
+                lines.append("GO")
+                batch_counter = 0  # Reset biến đếm
             
     # 3. Ghi đè vào file gốc
     out_path = get_full_path(detail_file_out)
