@@ -2,7 +2,8 @@ import {
     getUserNameByID,
     getBranches,
     getDoctorsByBranch,
-    getPetsByCustomer
+    getPetsByCustomer,
+    getPackages
 } from "../models/UserModel.js";
 
 export const getUserName = async (req, res) => {
@@ -71,6 +72,19 @@ export const getPetsByCustomerController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getPetsByCustomer controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getPackagesController = async (req, res) => {
+    try {
+        const packages = await getPackages();
+        return res.status(200).json({
+            success: true,
+            data: packages
+        });
+    } catch (err) {
+        console.error('Error in getPackages controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

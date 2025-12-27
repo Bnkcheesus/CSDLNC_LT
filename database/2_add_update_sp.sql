@@ -35,6 +35,18 @@ BEGIN
     SET TongTien = @TongTienMoi
     WHERE MaHD = @MaHD;
 
+	--Cập nhật tổng chi tiêu năm của khách hàng
+	DECLARE @MaTKKH CHAR(8);
+	DECLARE @nam INT;
+	
+	SELECT
+		@MaTKKH = MaTKKH,
+		@nam = YEAR(NgayLap)
+	FROM HOADON
+	WHERE MaHD = @MaHD;
+
+	EXEC sp_CapNhatTongChiTieuNam @MaTKKH, @nam;
+
     -- Thông báo thành công
     PRINT(N'Tổng tiền hóa đơn đã được cập nhật thành công. Mã HD = ' + @MaHD);
 END
