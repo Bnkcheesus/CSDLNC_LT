@@ -2,6 +2,7 @@ import {
     getCustomerDetailsByID,
     updateCustomerDetailsByID,
     getCustomerServiceHistoryByID,
+    getCustomerAppointmentsByID,
     getCustomerExaminationDetailByID,
     getCustomerVaccinationDetailByID,
     getCustomerPurchaseDetailByID,
@@ -71,6 +72,14 @@ export const getCustomerServiceHistory = async (req, res) => {
         const type = req.query.type || 'all';
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+
+        if (type === "app") {
+            const result = await getCustomerAppointmentsByID(maTK, page, limit);
+            return res.status(200).json({
+                success: true,
+                data: result
+            });
+        }
 
         const history = await getCustomerServiceHistoryByID(maTK, type, page, limit);
         return res.status(200).json({

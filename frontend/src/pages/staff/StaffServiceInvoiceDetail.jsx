@@ -222,7 +222,7 @@ export default function StaffServiceInvoiceDetail() {
                         {!isEditing ? (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="p-2 rounded hover:bg-gray-100"
+                                className="p-2 text-blue-600 hover:text-blue-700"
                                 title="Chỉnh sửa"
                             >
                                 <Pencil size={16} />
@@ -231,7 +231,7 @@ export default function StaffServiceInvoiceDetail() {
                             <div className="inline">
                                 <button
                                     onClick={handleUpdateInvoice}
-                                    className="p-2 rounded hover:bg-green-100 text-green-600"
+                                    className="p-2 text-blue-600 hover:text-blue-700"
                                     title="Cập nhật"
                                 >
                                     <Save size={16} />
@@ -244,7 +244,7 @@ export default function StaffServiceInvoiceDetail() {
                                             HinhThucThanhToan: invoice.HinhThucThanhToan || "TM"
                                         });
                                     }}
-                                    className="p-2 rounded hover:bg-red-100 text-red-600"
+                                    className="p-2 text-red-500 hover:text-red-700"
                                     title="Huỷ"
                                 >
                                     <X size={16} />

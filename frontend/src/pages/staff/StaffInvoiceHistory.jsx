@@ -153,7 +153,7 @@ export default function StaffInvoiceHistory() {
                   <thead>
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã hóa đơn</th>
-                      <th className="px-3 py-2">Ngày lập</th>
+                      <th className="px-3 py-2">{type === "appointments" ? "Ngày hẹn" : "Ngày lập"}</th>
                       <th className="px-3 py-2">Nhân viên lập</th>
                       <th className="px-3 py-2">Khách hàng</th>
                       <th className="px-3 py-2">Chi nhánh</th>

@@ -107,7 +107,7 @@ export default function DocServiceHistory() {
                   <thead>
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã SDDV</th>
-                      <th className="px-3 py-2">Ngày SDDV</th>
+                      <th className="px-3 py-2">{type === "app" ? "Ngày hẹn" : "Ngày SDDV"}</th>
                       <th className="px-3 py-2">Loại dịch vụ</th>
                       <th className="px-3 py-2">Khách hàng</th>
                       <th className="px-3 py-2">Thú cưng</th>
