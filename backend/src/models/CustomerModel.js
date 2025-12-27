@@ -373,6 +373,27 @@ export const getCustomerPetsByID = async (maTKKH, page, limit) => {
     }
 };
 
+export const getAllCustomerPetsByID = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query(`
+                SELECT 
+                    MaTC,
+                    TenTC,
+                    Loai,
+                    Giong
+                FROM THUCUNG
+                WHERE MaTKKH = @maTKKH
+            `);
+        return result.recordset || [];
+    } catch (err) {
+        console.error('Error getting all customer pets by ID:', err);
+        throw err;
+    }
+};
+
 export const getCustomerPetProfileByID = async (maTC) => {
     try {
         const pool = await getPool();
@@ -456,6 +477,7 @@ export const getCustomerPackagesByID = async (maTKKH, page, limit) => {
             DK.MaDK,
             DK.NgayDK,
             G.TenGoi,
+            TC.MaTC,
             TC.TenTC
         FROM DANGKYGOITIEM DK
         INNER JOIN GOITIEM G ON DK.MaGoi = G.MaGoi
@@ -489,6 +511,21 @@ export const getCustomerPackagesByID = async (maTKKH, page, limit) => {
         };
     } catch (err) {
         console.error('Error getting customer packages by ID:', err);
+        throw err;
+    }
+};
+
+export const registerCustomerPackageByID = async (registrationData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('MaGoi', registrationData.MaGoi)
+            .input('MaTC', registrationData.MaTC)
+            .input('NgayBatDau', registrationData.NgayBatDau)
+            .query(`EXEC sp_DangKyGoiTiem @MaTC, @MaGoi, @NgayBatDau`);
+        return true;
+    } catch (err) {
+        console.error('Error registering customer package:', err);
         throw err;
     }
 };

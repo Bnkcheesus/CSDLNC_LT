@@ -13,6 +13,7 @@ import CustomerPetHistory from './pages/customer/CustomerPetHistory.jsx';
 import CustomerVaccinationPackages from './pages/customer/CustomerVaccinationPackages.jsx';
 import CustomerOrder from './pages/customer/CustomerOrder.jsx';
 import CustomerCheckout from './pages/customer/CustomerCheckout.jsx';
+import CustomerPackageRegister from './pages/customer/CustomerPackageRegister.jsx';
 import StaffHome from './pages/staff/StaffHome.jsx';
 import StaffProfile from './pages/staff/StaffProfile.jsx';
 import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
@@ -218,6 +219,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["customer"]}>
               <CustomerCheckout />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/customer/packages/:maGoi"
+          element={
+            <ProtectedRoute allowedRoles={["customer"]}>
+              <CustomerPackageRegister />
             </ProtectedRoute>
           }
         />

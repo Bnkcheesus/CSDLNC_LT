@@ -8,9 +8,11 @@ import {
     getServiceRatingByID,
     saveServiceRatingByID,
     getCustomerPetsByID,
+    getAllCustomerPetsByID,
     getCustomerPetProfileByID,
     getCustomerPetHistoryByID,
     getCustomerPackagesByID,
+    registerCustomerPackageByID,
     addAppointment,
     addAppointmentService,
     getProducts,
@@ -203,6 +205,24 @@ export const getCustomerPets = async (req, res) => {
     }
 };
 
+export const getAllCustomerPets = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+
+        const pets = await getAllCustomerPetsByID(maTK);
+        return res.status(200).json({
+            success: true,
+            data: pets
+        });
+    } catch (err) {
+        console.error('Error in getAllCustomerPets controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 export const getCustomerPetProfile = async (req, res) => {
     try {
         const { maTC } = req.params;
@@ -262,6 +282,21 @@ export const getCustomerPackages = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getCustomerPackages controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const registerCustomerPackage = async (req, res) => {
+    try {
+        const packageData = req.body;
+
+        const result = await registerCustomerPackageByID(packageData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in registerCustomerPackage controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

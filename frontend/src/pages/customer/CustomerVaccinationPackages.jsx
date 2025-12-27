@@ -3,13 +3,11 @@ import axios from "axios";
 import Header from "../../components/ui/Header";
 import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
-import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function CustomerVaccinationPackages() {
     const maTK = localStorage.getItem("maTK");
     const token = localStorage.getItem("token");
-    const navigate = useNavigate();
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -48,10 +46,6 @@ export default function CustomerVaccinationPackages() {
         fetchCustomerVaccinationPackages();
     }, [maTK, token, page, limit]);
 
-    const handleViewPackageDetails = (maDK) => {
-        navigate(`/customer/packages/${maDK}`);
-    }
-
   return (
     <div className="min-h-screen bg-white text-sm">
       <Header />
@@ -83,8 +77,7 @@ export default function CustomerVaccinationPackages() {
                       <th className="px-3 py-2">Mã đăng ký</th>
                       <th className="px-3 py-2">Ngày đăng ký</th>
                       <th className="px-3 py-2">Tên gói</th>
-                      <th className="px-3 py-2">Tên thú cưng</th>
-                      <th className="px-3 py-2"></th>
+                      <th className="px-3 py-2">Thú cưng</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -100,17 +93,7 @@ export default function CustomerVaccinationPackages() {
                             : "-"}
                         </td>
                         <td className="px-3 py-3 text-sm">{r.TenGoi || "-"}</td>
-                        <td className="px-3 py-3 text-sm">{r.TenTC || "-"}</td>
-                        <td className="px-3 py-3 text-sm text-right">
-                          <button
-                            onClick={() => handleViewPackageDetails(r.MaDK)}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100"
-                            title="Xem chi tiết gói tiêm"
-                          >
-                            <Eye size={16} />
-                            <span className="sr-only">Xem chi tiết gói tiêm</span>
-                          </button>
-                        </td>
+                        <td className="px-3 py-3 text-sm">{r.MaTC + " - " + r.TenTC || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
