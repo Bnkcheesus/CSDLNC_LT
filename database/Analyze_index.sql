@@ -1,0 +1,8 @@
+USE PETCAREDB
+GO
+
+EXEC sp_TraCuuLichSuHoaDonKH 'KH001728'
+GO
+
+EXEC sp_TraCuuDanhSachThuCungKH 'KH001728'
+GO
