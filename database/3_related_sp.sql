@@ -672,7 +672,8 @@ AS
 BEGIN
 	UPDATE HOADON
     SET
-        MaTKNV = @maTKNV
+        MaTKNV = @maTKNV,
+		NgayLap = GETDATE()
     WHERE MaHD = @maHD;
 END
 GO
