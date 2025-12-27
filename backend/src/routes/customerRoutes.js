@@ -9,9 +9,11 @@ import {
     getServiceRating,
     saveServiceRating,
     getCustomerPets,
+    getAllCustomerPets,
     getCustomerPetProfile,
     getCustomerPetHistory,
     getCustomerPackages,
+    registerCustomerPackage,
     addAppointmentController,
     addAppointmentServiceController,
     getProductsController,
@@ -32,10 +34,12 @@ router.get('/rating/:maSDDV', authMiddleware, getServiceRating);
 router.post('/rating/:maSDDV', authMiddleware, saveServiceRating);
 
 router.get('/pets', authMiddleware, getCustomerPets);
+router.get('/all-pets', authMiddleware, getAllCustomerPets);
 router.get('/pets/:maTC', authMiddleware, getCustomerPetProfile);
 router.get('/pets/:maTC/history', authMiddleware, getCustomerPetHistory);
 
 router.get('/packages', authMiddleware, getCustomerPackages);
+router.post('/packages/register', authMiddleware, registerCustomerPackage);
 
 router.post('/appointment', authMiddleware, addAppointmentController);
 router.post('/appointment/service', authMiddleware, addAppointmentServiceController);

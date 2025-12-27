@@ -34,3 +34,8 @@ GO
 
 
  
+EXEC sp_TraCuuLichSuSDDVKH 'KH001792'
+GO
+
+EXEC sp_TraCuuLichSuKhamTiemTC 'TC000583'
+GO

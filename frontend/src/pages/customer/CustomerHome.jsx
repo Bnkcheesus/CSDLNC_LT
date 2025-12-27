@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "../../components/ui/Header.jsx";
 import Navbar from "../../components/ui/Navbar.jsx";
@@ -53,6 +54,7 @@ export default function CustomerHome() {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) return;
@@ -86,6 +88,11 @@ export default function CustomerHome() {
 
     fetchHomeData();
   }, [token]);
+
+    const handleViewDetails = (maGoi) => {
+        navigate(`/customer/packages/${maGoi}`);
+    }
+
 
   return (
     <div className="min-h-screen bg-white text-sm"> {/* text-sm applies smaller font app-wide for this page */}
@@ -161,11 +168,28 @@ export default function CustomerHome() {
 
                                     <div className="text-xs text-gray-600 space-y-1 mt-2">
                                         <p><Hourglass className="inline-block w-3 h-3 mr-1 text-blue-700" /> Thời hạn: {p.ThoiHan}</p>
-                                        <p><Syringe className="inline-block w-3 h-3 mr-1 text-blue-700" /> Số mũi: {p.SoMui}</p>
+                                        <p><Syringe className="inline-block w-3 h-3 mr-1 text-blue-700" /> Số mũi: {p.SoMuiTiem}</p>
                                         <p><Gift className="inline-block w-3 h-3 mr-1 text-blue-700" /> Ưu đãi: {p.MucUuDai}%</p>
                                         <p className="font-medium text-gray-800">
                                             <CreditCard className="inline-block w-3 h-3 mr-1 text-blue-700" /> {p.TongTienGoi?.toLocaleString()} đ
                                         </p>
+                                    </div>
+                                    <div className="p-2"></div>
+                                    <div className="text-center">
+                                        <button
+                                            onClick={() => handleViewDetails(p.MaGoi)}
+                                            className="
+                                            px-6 py-1
+                                            bg-blue-500 text-white font-semibold
+                                            rounded 
+                                            shadow-[inset_0px_2px_4px_rgba(255,255,255,0.6),inset_0px_-3px_6px_rgba(0,0,0,0.3)]
+                                            hover:brightness-110
+                                            active:shadow-[inset_0px_1px_3px_rgba(0,0,0,0.4)]
+                                            transition-all
+                                            "
+                                        >
+                                            Xem chi tiết và đăng ký
+                                        </button>
                                     </div>
                                 </div>
                             ))}

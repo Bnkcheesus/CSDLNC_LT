@@ -51,7 +51,7 @@ export default function ManagerStaffs() {
     }, [token]);
 
     useEffect(() => {
-        if (!maTK || !token) return;
+        if (!maTK || !token || !branch.MaCN) return;
 
         const fetchStaffs = async () => {
             setLoading(true);

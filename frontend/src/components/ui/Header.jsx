@@ -77,15 +77,17 @@ export default function Header() {
     }, []);
 
     const handleAuthClick = () => {
-        if (localStorage.getItem("token")) {
-            // Logout
-            localStorage.clear();
-            setHoTen("");
+        // Logout
+        if (!localStorage.getItem("token")) {
             navigate("/login");
-        } else {
-            // Navigate to login
-            navigate("/login");
+            return;
         }
+        localStorage.clear();
+        setHoTen("");
+        setRole("");
+        setBranch("");
+        setRank("");
+        navigate("/login");
     };
 
   return (

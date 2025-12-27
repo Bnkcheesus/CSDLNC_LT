@@ -4,7 +4,8 @@ import {
     getBranchesController,
     getDoctorsByBranchController,
     getPetsByCustomerController,
-    getPackagesController
+    getPackagesController,
+    getPackageDetailController
 } from '../controllers/userController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -15,5 +16,6 @@ router.get('/branches', authMiddleware, getBranchesController);
 router.get('/doctors/:maCN', authMiddleware, getDoctorsByBranchController);
 router.get('/pets/:maTKKH', authMiddleware, getPetsByCustomerController);
 router.get('/packages', authMiddleware, getPackagesController);
+router.get('/packages/:maGoi', authMiddleware, getPackageDetailController);
 
 export default router;

@@ -3,7 +3,8 @@ import {
     getBranches,
     getDoctorsByBranch,
     getPetsByCustomer,
-    getPackages
+    getPackages,
+    getPackageDetail
 } from "../models/UserModel.js";
 
 export const getUserName = async (req, res) => {
@@ -85,6 +86,23 @@ export const getPackagesController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getPackages controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getPackageDetailController = async (req, res) => {
+    try {
+        const { maGoi } = req.params;
+        if (!maGoi) {
+            return res.status(400).json({ message: 'MaGoi is required' });
+        }
+        const packageDetail = await getPackageDetail(maGoi);
+        return res.status(200).json({
+            success: true,
+            data: packageDetail
+        });
+    } catch (err) {
+        console.error('Error in getPackageDetail controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
