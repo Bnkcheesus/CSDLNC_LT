@@ -99,3 +99,15 @@ export const getPetsByCustomer = async (maTKKH) => {
         throw err;
     }
 };
+
+export const getPackages = async () => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .query('SELECT * FROM GOITIEM');
+        return result.recordset;
+    } catch (err) {
+        console.error('Error getting packages:', err);
+        throw err;
+    }
+};
