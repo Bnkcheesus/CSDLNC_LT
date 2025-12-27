@@ -410,7 +410,7 @@ END
 GO
 GO
 --5a: Kịch bản Tìm thú cưng có sử dụng dịch vụ tiêm phòng trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Tiem_Phong
     @thang INT,
     @nam INT
 AS
@@ -424,7 +424,7 @@ BEGIN
 END
 GO
 --5b: Kịch bản Tìm thú cưng có sử dụng dịch vụ khám bệnh trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Kham_Benh
     @thang INT,
     @nam INT
 AS
