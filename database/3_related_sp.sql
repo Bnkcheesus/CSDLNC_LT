@@ -410,7 +410,7 @@ END
 GO
 GO
 --5a: Kịch bản Tìm thú cưng có sử dụng dịch vụ tiêm phòng trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Tiem_Phong
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_TP
     @thang INT,
     @nam INT
 AS
@@ -423,8 +423,9 @@ BEGIN
     WHERE YEAR(NgayLap) = @nam AND MONTH(NgayLap) = @thang
 END
 GO
+
 --5b: Kịch bản Tìm thú cưng có sử dụng dịch vụ khám bệnh trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Kham_Benh
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_KB
     @thang INT,
     @nam INT
 AS
@@ -438,9 +439,8 @@ BEGIN
 END
 GO
 
-
-
 -- 6 Kịch bản Tìm doanh thu theo chi nhánh/công ty theo tháng/năm
+--6a
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_thang
     @tencn NVARCHAR(50),
     @thang INT,
@@ -454,7 +454,7 @@ BEGIN
 END
 GO
 
-
+--6b
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_nam
     @tencn NVARCHAR(50),
     @nam INT
@@ -467,7 +467,7 @@ BEGIN
 END
 GO
 
-
+--6c
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_thang
     @thang INT,
     @nam INT
@@ -479,7 +479,7 @@ BEGIN
 END
 GO
 
-
+--6d
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_nam
     @nam INT
 AS
@@ -497,6 +497,7 @@ BEGIN
 END
 GO
 
+--6e
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_tung_thang_trong_nam
 	@nam INT
 AS
@@ -516,6 +517,7 @@ BEGIN
 END
 GO
 
+--6f
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_Tung_CN_theo_nam
 	@nam INT
 AS
