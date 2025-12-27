@@ -802,8 +802,6 @@ BEGIN
 END
 GO
 
-
-
 CREATE OR ALTER PROCEDURE sp_ThongKeTop10Thuoc_theo_nam_va_maCN
 	@nam INT,
 	@maCN CHAR(5)

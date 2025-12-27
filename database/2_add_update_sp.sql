@@ -635,3 +635,56 @@ BEGIN
     PRINT(N'Đăng ký gói tiêm thành công. Mã ĐK = ' + @newMaDK + ', Mã Gói = ' + @MaGoi + ', Mã TC = ' + @MaTC);
 END
 GO
+
+--Cập nhật tổng tiền gói tiêm
+CREATE OR ALTER PROCEDURE sp_CapNhatTongTienGoiTiem
+	@maGoi		CHAR(5)
+AS
+BEGIN
+	DECLARE @TongTien DECIMAL(19,2);
+	SELECT @TongTien = ISNULL(SUM(C.LieuLuong * S.Gia), 0)
+    FROM CHITIETGOITIEM C
+    JOIN SANPHAM S ON C.MaSP = S.MaSP
+    WHERE C.MaGoi = @maGoi;
+
+	UPDATE GOITIEM
+	SET TongTienGoi = @TongTien * ((100 - MucUuDai) / 100.0)
+	WHERE MaGoi = @maGoi;
+END
+GO
+
+--Thêm chi tiết gói tiêm
+CREATE OR ALTER PROCEDURE sp_ThemChiTietGoiTiem
+	@maSP		CHAR(8),
+	@maGoi		CHAR(5),
+	@thoiGian	NVARCHAR(20),
+	@lieuLuong	INT
+AS
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM SANPHAM WHERE MaSP = @maSP)
+    BEGIN
+        RAISERROR(N'Lỗi: Sản phẩm có mã %s không tồn tại.', 16, 1, @maSP);
+        RETURN;
+    END
+
+	IF NOT EXISTS (SELECT 1 FROM GOITIEM WHERE MaGoi = @maGoi)
+    BEGIN
+        RAISERROR(N'Lỗi: Gói tiêm có mã %s không tồn tại.', 16, 1, @maGoi);
+		RETURN;
+    END
+
+	-- Chỉ được thêm sản phẩm là vaccine
+    DECLARE @LoaiSP NVARCHAR(20);
+    SELECT @LoaiSP = LoaiSP FROM SANPHAM WHERE MaSP = @maSP;
+    IF @LoaiSP <> N'Vaccine'
+    BEGIN
+        RAISERROR(N'Lỗi: Sản phẩm có mã %s không phải là vaccine.', 16, 1, @maSP);
+        RETURN;
+    END
+
+	INSERT INTO CHITIETGOITIEM (MaSP, MaGoi, ThoiGian, LieuLuong)
+	VALUES (@maSP, @maGoi, @thoiGian, @lieuLuong)
+
+	EXEC sp_CapNhatTongTienGoiTiem @maGoi;
+END
+GO
