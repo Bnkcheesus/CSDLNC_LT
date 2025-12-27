@@ -6,3 +6,9 @@ GO
 
 EXEC sp_TraCuuDanhSachThuCungKH 'KH001728'
 GO
+
+EXEC sp_TraCuuLichSuSDDVKH 'KH001792'
+GO
+
+EXEC sp_TraCuuLichSuKhamTiemTC 'TC000583'
+GO
