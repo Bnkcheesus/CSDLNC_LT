@@ -225,7 +225,7 @@ export default function SalesAddPurchase() {
     <div className="min-h-screen bg-white text-sm">
       <Header />
       <Navbar />
-      <PageTitle title="Hoá đơn mua hàng" />
+      <PageTitle title="Tạo hoá đơn mua hàng" />
 
       <div className="max-w-5xl mx-auto mt-6 bg-white border rounded shadow-sm">
 
