@@ -162,6 +162,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 HD.MaHD,
                 HD.NgayLap,
                 CN.TenCN,
+                TC.MaTC,
                 TC.TenTC,
                 NV.HoTen AS TenBS,
                 KB.TrieuChung,
@@ -207,6 +208,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 MaHD: detail.MaHD,
                 NgayLap: detail.NgayLap,
                 TenCN: detail.TenCN,
+                MaTC: detail.MaTC,
                 TenTC: detail.TenTC,
                 TenBS: detail.TenBS,
                 TrieuChung: detail.TrieuChung,
@@ -231,6 +233,7 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
                 HD.MaHD,
                 HD.NgayLap,
                 CN.TenCN,
+                TC.MaTC,
                 TC.TenTC,
                 NV.HoTen AS TenBS,
                 SDV.TongTienDV
@@ -273,6 +276,7 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
                 MaHD: detail.MaHD,
                 NgayLap: detail.NgayLap,
                 TenCN: detail.TenCN,
+                MaTC: detail.MaTC,
                 TenTC: detail.TenTC,
                 TenBS: detail.TenBS,
                 TongTien: detail.TongTienDV
