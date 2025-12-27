@@ -91,7 +91,7 @@ def generate_chitiet_goitiem():
             so_luong = 1 
 
             # Format dựa trên snippet: VALUES ('MaSP', 'MaGT', N'TenMui', SoLuong)
-            line = f"INSERT INTO CHITIETGOITIEM VALUES ('{ma_sp}', '{ma_gt}', N'{ten_mui}', {so_luong})"
+            line = f"EXEC sp_ThemChiTietGoiTiem '{ma_sp}', '{ma_gt}', N'{ten_mui}', {so_luong}"
             
             lines.append(line)
             count += 1
