@@ -116,12 +116,3 @@ export default function CustomerVaccinationDetail() {
         </div>
     );
 }
-
-function Info({ label, value }) {
-    return (
-        <div>
-            <p className="font-medium">{label}</p>
-            <p className="border p-2 rounded bg-gray-50">{value || "—"}</p>
-        </div>
-    );
-}
