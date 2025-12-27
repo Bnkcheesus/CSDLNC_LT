@@ -543,7 +543,7 @@ END
 GO
 
 --7 Tra cứu khách hàng ko có sử dụng dịch vụ trong vòng 3 tháng
-CREATE OR ALTER PROCEDURE sp_Tim_Khach_Hang_Khong_Su_Dung_Dich_Vu_3_Thang
+CREATE OR ALTER PROCEDURE sp_Tim_KH_Khong_SDDV_3_Thang
 AS
 BEGIN
     SELECT DISTINCT KH.MaTKKH, KH.HoTen
