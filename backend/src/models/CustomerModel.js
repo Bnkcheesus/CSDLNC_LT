@@ -66,7 +66,7 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
             LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
             LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
             WHERE HD.MaTKKH = @maTK
-            AND HD.MaTKNV IS NOT NULL
+            AND (SDV.LoaiDV = 'MH' OR HD.MaTKNV IS NOT NULL)
             ${typeFilter}
             ORDER BY HD.NgayLap DESC
             OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
@@ -75,7 +75,7 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             WHERE HD.MaTKKH = @maTK
-            AND HD.MaTKNV IS NOT NULL
+            AND (SDV.LoaiDV = 'MH' OR HD.MaTKNV IS NOT NULL)
             ${typeFilter}
         `;
 
@@ -122,6 +122,7 @@ export const getCustomerAppointmentsByID = async (maTKKH, page, limit) => {
             LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
             WHERE HD.MaTKKH = @maTK
             AND HD.MaTKNV IS NULL
+            AND SDV.LoaiDV IN ('KB', 'TP')
             ORDER BY HD.NgayLap DESC
             OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
 
@@ -129,7 +130,9 @@ export const getCustomerAppointmentsByID = async (maTKKH, page, limit) => {
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             WHERE HD.MaTKKH = @maTK
-            AND HD.MaTKNV IS NULL;
+            AND HD.MaTKNV IS NULL
+            AND SDV.LoaiDV IN ('KB', 'TP')
+            ;
         `;
 
         const result = await pool.request()

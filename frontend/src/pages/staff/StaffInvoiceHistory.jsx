@@ -131,7 +131,10 @@ export default function StaffInvoiceHistory() {
               : "Lịch sử hóa đơn dịch vụ của bạn"}</h3>
             <input
                 value={customerKeyword}
-                onChange={(e) => setCustomerKeyword(e.target.value)}
+                onChange={(e) => {
+                  setCustomerKeyword(e.target.value);
+                  setPage(1);
+                }}
                 className="p-2 border rounded w-full max-w-sm"
                 placeholder="Nhập mã hoặc tên khách hàng để tìm kiếm"
             />
