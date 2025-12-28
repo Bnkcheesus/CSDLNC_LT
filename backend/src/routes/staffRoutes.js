@@ -13,7 +13,8 @@ import {
     getVaccinationDetailController,
     getPurchaseDetailController,
     addCustomerPetController,
-    addCustomerController
+    addCustomerController,
+    getStaffHomeStatsController
 } from '../controllers/staffController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -34,5 +35,7 @@ router.get('/muahang/:maSDDV', authMiddleware, getPurchaseDetailController);
 
 router.post('/pets', authMiddleware, addCustomerPetController);
 router.post('/customers', authMiddleware, addCustomerController);
+
+router.get('/home-stats', authMiddleware, getStaffHomeStatsController);
 
 export default router;

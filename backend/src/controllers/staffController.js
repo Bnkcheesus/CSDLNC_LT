@@ -13,7 +13,9 @@ import {
     getVaccinationDetail,
     getPurchaseDetail,
     addCustomerPet,
-    addCustomer
+    addCustomer,
+    getTaskCountForStaff,
+    getAverageRatingForStaff
 } from '../models/StaffModel.js';
 
 export const getStaffProfileController = async (req, res) => {
@@ -276,6 +278,27 @@ export const addCustomerController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in addCustomer controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getStaffHomeStatsController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKNV is required' });
+        }
+        const taskCount = await getTaskCountForStaff(maTK);
+        const averageRating = await getAverageRatingForStaff(maTK);
+        return res.status(200).json({
+            success: true,
+            data: {
+                taskCount: taskCount,
+                averageRating: averageRating
+            }
+        });
+    } catch (err) {
+        console.error('Error in getStaffHomeStats controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
