@@ -292,7 +292,7 @@ export default function SalesAddPurchase() {
           <div>
             <label className="font-medium">Ngày lập</label>
             <input
-                value={selectedInvoice ? selectedInvoice.NgayLap : ""}
+                value={selectedInvoice ? new Date(selectedInvoice.NgayLap).toLocaleDateString() : ""}
                 disabled
                 className="w-full p-2 border bg-gray-100 rounded"
                 placeholder="Ngày lập"
