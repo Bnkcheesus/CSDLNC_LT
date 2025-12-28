@@ -378,9 +378,9 @@ export const saveServiceRatingByID = async (maSDDV, rating) => {
         await pool.request()
             .input('maSDDV', maSDDV)
             .input('diem', rating.diem)
-            .input('thaiDoNhanVien', rating.thaiDoNhanVien)
-            .input('mucDoHaiLong', rating.mucDoHaiLong)
-            .input('binhLuan', rating.binhLuan)
+            .input('thaiDoNhanVien', rating.thaiDoNhanVien ? rating.thaiDoNhanVien : null)
+            .input('mucDoHaiLong', rating.mucDoHaiLong ? rating.mucDoHaiLong : null)
+            .input('binhLuan', rating.binhLuan ? rating.binhLuan : null)
             .query(`
                 INSERT INTO DANHGIA (MaSDDV, Diem, ThaiDoNhanVien, MucDoHaiLong, BinhLuan)
                 VALUES (@maSDDV, @diem, @thaiDoNhanVien, @mucDoHaiLong, @binhLuan)
