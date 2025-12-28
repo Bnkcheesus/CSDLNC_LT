@@ -30,7 +30,7 @@ cd CSDLNC_LT.git
 ### 2️⃣ Khởi tạo cơ sở dữ liệu SQL Server
 
 1. Mở **SQL Server Management Studio (SSMS)**
-2. Bên trong thư mục `database/`, lần lượt chạy toàn bộ script của các file `init.sql`, `1_related_sp.sql`, `2_add_update_sp.sql` để tạo database **PETCAREDB**, các bảng, ràng buộc, và stored
+2. Bên trong thư mục `database/`, lần lượt chạy toàn bộ script của các file `1_init.sql`, `2_index.sql`, `3_related_sp.sql`, `4_add_update_sp.sql` để tạo database **PETCAREDB**, các bảng, ràng buộc, và stored
 3. Bên trong thư mục `database/data/`, lần lượt chạy toàn bộ script của 20 file `.sql` theo thứ tự để tạo dữ liệu mẫu
 
 ### 3️⃣ Tạo file `.env` (backend)
