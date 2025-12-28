@@ -6,6 +6,7 @@ export default function CategoryBar({
         { key: "KB", label: "Khám bệnh" },
         { key: "TP", label: "Tiêm phòng" },
         { key: "MH", label: "Mua hàng" },
+        { key: "app", label: "Lịch hẹn" }
     ]
 }) {
     return (

@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+    changeUserPasswordController,
     getUserName,
     getBranchesController,
     getDoctorsByBranchController,
@@ -11,6 +12,7 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
+router.put('/password', authMiddleware, changeUserPasswordController);
 router.get('/name', authMiddleware, getUserName);
 router.get('/branches', authMiddleware, getBranchesController);
 router.get('/doctors/:maCN', authMiddleware, getDoctorsByBranchController);

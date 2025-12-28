@@ -59,13 +59,13 @@ export default function CustomerPurchaseDetail() {
                                 {/* General Information */}
                                 <section className="border-b">
                                     <h3 className="text-base font-semibold mb-3">Thông tin chung</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Info label="Mã mua hàng" value={detail.MaSDDV} />
-                                        <Info label="Mã hoá đơn" value={detail.MaHD} />
-                                        <Info label="Ngày mua hàng" value={detail.NgayLap ? new Date(detail.NgayLap).toLocaleDateString() : "-"} />
-                                        <Info label="Chi nhánh" value={detail.TenCN || "-"} />
-                                        <Info label="Nhân viên bán hàng" value={detail.TenNV || "-"} />
-                                        <Info label="Tổng tiền" value={`${detail.TongTien ? detail.TongTien.toLocaleString() + " đ" : "-" }`} />
+                                    <div className="grid grid-cols-2 md:grid-cols-2 gap-y-2 text-sm">
+                                        <p><strong>Mã mua hàng:</strong> {detail.MaSDDV}</p>
+                                        <p><strong>Mã hoá đơn:</strong> {detail.MaHD}</p>
+                                        <p><strong>Ngày mua hàng:</strong> {detail.NgayLap ? new Date(detail.NgayLap).toLocaleDateString() : "-"}</p>
+                                        <p><strong>Chi nhánh:</strong> {detail.TenCN || "-"}</p>
+                                        <p><strong>Nhân viên bán hàng:</strong> {detail.TenNV || "-"}</p>
+                                        <p><strong>Tổng tiền:</strong> {`${detail.TongTien ? detail.TongTien.toLocaleString() + " đ" : "-" }`}</p>
                                     </div>
                                     <div className="p-4"> </div>
                                 </section>
@@ -110,15 +110,6 @@ export default function CustomerPurchaseDetail() {
                     </>
                 )}
             </div>
-        </div>
-    );
-}
-
-function Info({ label, value }) {
-    return (
-        <div>
-            <p className="font-medium">{label}</p>
-            <p className="border p-2 rounded bg-gray-50">{value || "—"}</p>
         </div>
     );
 }

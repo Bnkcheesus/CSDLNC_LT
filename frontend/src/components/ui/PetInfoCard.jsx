@@ -79,9 +79,9 @@ export default function PetInfoCard({ pet, role='' }) {
                                     onClick={handleSave}
                                     disabled={loading}
                                     title="Lưu"
-                                    className="text-green-600 hover:text-green-700"
+                                    className="text-blue-600 hover:text-blue-700"
                                 >
-                                    <Check size={18} />
+                                    <Check size={16} />
                                 </button>
                             ) : (
                                 <button
@@ -89,7 +89,7 @@ export default function PetInfoCard({ pet, role='' }) {
                                     title="Chỉnh sửa"
                                     className="text-blue-600 hover:text-blue-700"
                                 >
-                                    <Pencil size={18} />
+                                    <Pencil size={16} />
                                 </button>
                             )}
                         </>

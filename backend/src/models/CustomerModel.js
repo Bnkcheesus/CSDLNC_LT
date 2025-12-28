@@ -66,6 +66,7 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
             LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
             LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
             WHERE HD.MaTKKH = @maTK
+            AND (SDV.LoaiDV = 'MH' OR HD.MaTKNV IS NOT NULL)
             ${typeFilter}
             ORDER BY HD.NgayLap DESC
             OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
@@ -74,12 +75,68 @@ export const getCustomerServiceHistoryByID = async (maTKKH, type, page, limit) =
             FROM SUDUNGDICHVU SDV
             JOIN HOADON HD ON SDV.MaHD = HD.MaHD
             WHERE HD.MaTKKH = @maTK
+            AND (SDV.LoaiDV = 'MH' OR HD.MaTKNV IS NOT NULL)
             ${typeFilter}
         `;
 
         const result = await pool.request()
             .input('maTK', maTKKH)
             .input('type', type)
+            .input('offset', offset)
+            .input('limit', limit)
+            .query(query);
+
+        const history = result.recordsets[0];
+        const total = result.recordsets[1][0].Total;
+
+        return {
+            rows: history,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page
+        };
+    } catch (err) {
+        console.error('Error getting customer service history by ID:', err);
+        throw err;
+    }
+};
+
+export const getCustomerAppointmentsByID = async (maTKKH, page, limit) => {
+    try {
+        const pool = await getPool();
+        const offset = (page - 1) * limit;
+        const query = `
+            SELECT 
+                SDV.MaSDDV, 
+                SDV.LoaiDV,
+                HD.NgayLap AS NgaySuDung,
+                CN.TenCN,
+                TC.MaTC,
+                TC.TenTC
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            LEFT JOIN CHINHANH CN ON HD.MaCN = CN.MaCN
+            LEFT JOIN KHAMBENH KB ON KB.MaSDDV = SDV.MaSDDV
+            LEFT JOIN TIEMPHONG TP ON TP.MaSDDV = SDV.MaSDDV
+            LEFT JOIN MUAHANG MH ON MH.MaSDDV = SDV.MaSDDV
+            LEFT JOIN THUCUNG TC ON TC.MaTC = COALESCE(KB.MaTC, TP.MaTC)
+            WHERE HD.MaTKKH = @maTK
+            AND HD.MaTKNV IS NULL
+            AND SDV.LoaiDV IN ('KB', 'TP')
+            ORDER BY HD.NgayLap DESC
+            OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY;
+
+            SELECT COUNT(*) AS Total
+            FROM SUDUNGDICHVU SDV
+            JOIN HOADON HD ON SDV.MaHD = HD.MaHD
+            WHERE HD.MaTKKH = @maTK
+            AND HD.MaTKNV IS NULL
+            AND SDV.LoaiDV IN ('KB', 'TP')
+            ;
+        `;
+
+        const result = await pool.request()
+            .input('maTK', maTKKH)
             .input('offset', offset)
             .input('limit', limit)
             .query(query);
@@ -108,6 +165,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 HD.MaHD,
                 HD.NgayLap,
                 CN.TenCN,
+                TC.MaTC,
                 TC.TenTC,
                 NV.HoTen AS TenBS,
                 KB.TrieuChung,
@@ -153,6 +211,7 @@ export const getCustomerExaminationDetailByID = async (maSDDV) => {
                 MaHD: detail.MaHD,
                 NgayLap: detail.NgayLap,
                 TenCN: detail.TenCN,
+                MaTC: detail.MaTC,
                 TenTC: detail.TenTC,
                 TenBS: detail.TenBS,
                 TrieuChung: detail.TrieuChung,
@@ -177,6 +236,7 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
                 HD.MaHD,
                 HD.NgayLap,
                 CN.TenCN,
+                TC.MaTC,
                 TC.TenTC,
                 NV.HoTen AS TenBS,
                 SDV.TongTienDV
@@ -219,6 +279,7 @@ export const getCustomerVaccinationDetailByID = async (maSDDV) => {
                 MaHD: detail.MaHD,
                 NgayLap: detail.NgayLap,
                 TenCN: detail.TenCN,
+                MaTC: detail.MaTC,
                 TenTC: detail.TenTC,
                 TenBS: detail.TenBS,
                 TongTien: detail.TongTienDV
@@ -629,6 +690,45 @@ export const addOrderDetail = async (maSDDV, orderItemData) => {
         return true;
     } catch (err) {
         console.error('Error adding order detail:', err);
+        throw err;
+    }
+};
+
+export const countCustomerPets = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT COUNT(*) AS PetCount FROM THUCUNG WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].PetCount || 0;
+    } catch (err) {
+        console.error('Error counting customer pets:', err);
+        throw err;
+    }
+};
+
+export const countCustomerInvoices = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT COUNT(*) AS InvoiceCount FROM HOADON WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].InvoiceCount || 0;
+    } catch (err) {
+        console.error('Error counting customer invoices:', err);
+        throw err;
+    }
+};
+
+export const getCustomerTotalPayment = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT TongChiTieuNam FROM KHACHHANG WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].TongChiTieuNam || 0;
+    } catch (err) {
+        console.error('Error getting customer total payment:', err);
         throw err;
     }
 };

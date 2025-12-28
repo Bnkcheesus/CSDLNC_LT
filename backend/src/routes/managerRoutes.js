@@ -5,7 +5,8 @@ import {
     getYearsController,
     getSystemProductsRecordController,
     getProductsRecordOfBranchController,
-    getStaffRecordOfBranchController
+    getStaffRecordOfBranchController,
+    addStaffController
 } from '../controllers/managerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -17,5 +18,5 @@ router.get('/years', authMiddleware, getYearsController);
 router.get('/products', authMiddleware, getSystemProductsRecordController);
 router.get('/products/:maCN', authMiddleware, getProductsRecordOfBranchController);
 router.get('/staffs/:maCN', authMiddleware, getStaffRecordOfBranchController);
-
+router.post('/staffs', authMiddleware, addStaffController);
 export default router;

@@ -254,3 +254,116 @@ export const getPurchaseDetail = async (maSDDV) => {
         throw err;
     }
 };
+
+export const addCustomerPet = async (petData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', petData.MaTKKH)
+            .input('TenTC', petData.TenTC)
+            .input('Loai', petData.Loai)
+            .input('Giong', petData.Giong)
+            .input('NgaySinh', petData.NgaySinh)
+            .input('GioiTinh', petData.GioiTinh)
+            .output('newMaTC')
+            .query('EXEC sp_ThemThuCungKH @maTKKH, @TenTC, @Loai, @Giong, @NgaySinh, @GioiTinh, @newMaTC OUTPUT');
+        return {
+            MaTC: result.output.newMaTC
+        };
+    } catch (err) {
+        console.error('Error adding customer pet:', err);
+        throw err;
+    }
+};
+
+export const addCustomer = async (customerData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('HoTen', customerData.HoTen)
+            .input('SDT', customerData.SDT)
+            .input('CCCD', customerData.CCCD)
+            .output('newMaTKKH')
+            .query('EXEC sp_ThemKhachHangMoi @HoTen, @SDT, @CCCD, @newMaTKKH OUTPUT');
+        return {
+            MaTKKH: result.output.newMaTKKH
+        };
+    } catch (err) {
+        console.error('Error adding customer:', err);
+        throw err;
+    }
+};
+
+export const getTaskCountForStaff = async (maTKNV) => {
+    try {
+        const pool = await getPool();
+        const role = await pool.request()
+            .input('maTKNV', maTKNV)
+            .query('SELECT ChucVu FROM NHANVIEN WHERE MaTKNV = @maTKNV');
+        let query = '';
+        if (role.recordset[0].ChucVu === 'BSTY') {
+            query = `
+                SELECT COUNT(*) AS TaskCount
+                FROM KHAMBENH KB
+                JOIN SUDUNGDICHVU SDDV ON KB.MaSDDV = SDDV.MaSDDV
+                JOIN HOADON HD ON SDDV.MaHD = HD.MaHD
+                WHERE KB.MaBS = @maTKNV
+                AND HD.MaTKNV IS NOT NULL;
+            `;
+        } else if (role.recordset[0].ChucVu === 'NVBH') {
+            query = `
+                SELECT COUNT(*) AS TaskCount
+                FROM MUAHANG MH
+                WHERE MH.MaNVBH = @maTKNV;
+            `;
+        } else if (role.recordset[0].ChucVu === 'NVTT') {
+            query = `
+                SELECT COUNT(*) AS TaskCount
+                FROM HOADON HD
+                WHERE HD.MaTKNV = @maTKNV;
+            `;
+        }
+        const result = await pool.request()
+            .input('maTKNV', maTKNV)
+            .query(query);
+        return result.recordset[0].TaskCount || 0;
+    } catch (err) {
+        console.error('Error getting task count for staff:', err);
+        throw err;
+    }
+};
+
+export const getAverageRatingForStaff = async (maTKNV) => {
+    try {
+        const pool = await getPool();
+        const role = await pool.request()
+            .input('maTKNV', maTKNV)
+            .query('SELECT ChucVu FROM NHANVIEN WHERE MaTKNV = @maTKNV');
+        let query = '';
+        if (role.recordset[0].ChucVu === 'BSTY') {
+            query = `
+                SELECT AVG(Diem) AS AverageRating
+                FROM DANHGIA DG
+                JOIN SUDUNGDICHVU SDDV ON DG.MaSDDV = SDDV.MaSDDV
+                JOIN KHAMBENH KB ON SDDV.MaSDDV = KB.MaSDDV
+                WHERE KB.MaBS = @maTKNV;
+            `;
+        } else if (role.recordset[0].ChucVu === 'NVBH') {
+            query = `
+                SELECT AVG(Diem) AS AverageRating
+                FROM DANHGIA DG
+                JOIN MUAHANG MH ON DG.MaSDDV = MH.MaSDDV
+                WHERE MH.MaNVBH = @maTKNV;
+            `;
+        } else if (role.recordset[0].ChucVu === 'NVTT') {
+            return 0;
+        }
+        const result = await pool.request()
+            .input('maTKNV', maTKNV)
+            .query(query);
+        return result.recordset[0].AverageRating || 0;
+    } catch (err) {
+        console.error('Error getting average rating for staff:', err);
+        throw err;
+    }
+};

@@ -59,14 +59,14 @@ export default function CustomerVaccinationDetail() {
                                 {/* General Information */}
                                 <section className="border-b">
                                     <h3 className="text-base font-semibold mb-3">Thông tin chung</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Info label="Mã tiêm phòng" value={detail.MaSDDV} />
-                                        <Info label="Mã hoá đơn" value={detail.MaHD} />
-                                        <Info label="Ngày tiêm" value={detail.NgayLap ? new Date(detail.NgayLap).toLocaleDateString() : "-"} />
-                                        <Info label="Chi nhánh" value={detail.TenCN || "-"} />
-                                        <Info label="Thú cưng" value={detail.TenTC || "-"} />
-                                        <Info label="Bác sĩ" value={detail.TenBS || "-"} />
-                                        <Info label="Tổng tiền" value={`${detail.TongTien ? detail.TongTien.toLocaleString() + " đ" : "-"}`} />
+                                    <div className="grid grid-cols-2 md:grid-cols-2 gap-y-2 text-sm">
+                                        <p><strong>Mã tiêm phòng:</strong> {detail.MaSDDV}</p>
+                                        <p><strong>Mã hoá đơn:</strong> {detail.MaHD}</p>
+                                        <p><strong>Ngày tiêm:</strong> {detail.NgayLap ? new Date(detail.NgayLap).toLocaleDateString() : "-"}</p>
+                                        <p><strong>Chi nhánh:</strong> {detail.TenCN || "-"}</p>
+                                        <p><strong>Thú cưng:</strong> {detail.MaTC ? detail.MaTC + " - " + detail.TenTC : "-"}</p>
+                                        <p><strong>Bác sĩ:</strong> {detail.TenBS || "-"}</p>
+                                        <p><strong>Tổng tiền:</strong> {`${detail.TongTien ? detail.TongTien.toLocaleString() + " đ" : "-"}`}</p>
                                     </div>
                                     <div className="p-4"> </div>
                                 </section>
@@ -113,15 +113,6 @@ export default function CustomerVaccinationDetail() {
                     </>
                 )}
             </div>
-        </div>
-    );
-}
-
-function Info({ label, value }) {
-    return (
-        <div>
-            <p className="font-medium">{label}</p>
-            <p className="border p-2 rounded bg-gray-50">{value || "—"}</p>
         </div>
     );
 }

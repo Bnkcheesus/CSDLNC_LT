@@ -19,6 +19,8 @@ import StaffProfile from './pages/staff/StaffProfile.jsx';
 import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
 import StaffServiceInvoiceDetail from './pages/staff/StaffServiceInvoiceDetail.jsx';
 import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
+import StaffAddCustomer from './pages/staff/StaffAddCustomer.jsx';
+import StaffAddCustomerPet from './pages/staff/StaffAddCustomerPet.jsx';
 import DocServiceHistory from './pages/staff/DocServiceHistory.jsx';
 import DocExamination from './pages/staff/DocExamination.jsx';
 import DocVaccination from './pages/staff/DocVaccination.jsx';
@@ -26,6 +28,7 @@ import SalesAddPurchase from './pages/staff/SalesAddPurchase.jsx';
 import ManagerRevenue from './pages/manager/ManagerRevenue.jsx';
 import ManagerProducts from './pages/manager/ManagerProducts.jsx';
 import ManagerStaffs from './pages/manager/ManagerStaffs.jsx';
+import ManagerAddStaff from './pages/manager/ManagerAddStaff.jsx';
 
 export default function App() {
   return (
@@ -112,6 +115,24 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["sales"]}>
               <SalesAddPurchase />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route 
+          path="/staff/customers"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffAddCustomer />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/staff/pets"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffAddCustomerPet />
             </ProtectedRoute>
           }
         />
@@ -255,6 +276,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["manager"]}>
               <ManagerStaffs />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/staffs/new"
+          element={
+            <ProtectedRoute allowedRoles={["manager"]}>
+              <ManagerAddStaff />
             </ProtectedRoute>
           }
         />

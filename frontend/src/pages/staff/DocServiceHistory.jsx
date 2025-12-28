@@ -79,7 +79,8 @@ export default function DocServiceHistory() {
           types={[
             { key: "all", label: "Tất cả" },
             { key: "KB", label: "Khám bệnh" },
-            { key: "TP", label: "Tiêm phòng" }
+            { key: "TP", label: "Tiêm phòng" },
+            { key: "app", label: "Lịch hẹn" }
         ]}
       />
 
@@ -106,7 +107,7 @@ export default function DocServiceHistory() {
                   <thead>
                     <tr className="text-xs text-gray-600">
                       <th className="px-3 py-2">Mã SDDV</th>
-                      <th className="px-3 py-2">Ngày SDDV</th>
+                      <th className="px-3 py-2">{type === "app" ? "Ngày hẹn" : "Ngày SDDV"}</th>
                       <th className="px-3 py-2">Loại dịch vụ</th>
                       <th className="px-3 py-2">Khách hàng</th>
                       <th className="px-3 py-2">Thú cưng</th>
@@ -130,8 +131,9 @@ export default function DocServiceHistory() {
                         <td className="px-3 py-3 text-sm">{r.MaTC + " - " + r.TenTC || "-"}</td>
                         <td className="px-3 py-3 text-sm text-right">
                           <button
+                            disabled={type === "app"}
                             onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}
-                            className="inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100"
+                            className={`inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 ${type === "app" ? "opacity-40 cursor-not-allowed" : ""}`}
                             title="Xem chi tiết và chỉnh sửa"
                           >
                             <Eye size={16} />

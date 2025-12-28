@@ -225,7 +225,7 @@ export default function SalesAddPurchase() {
     <div className="min-h-screen bg-white text-sm">
       <Header />
       <Navbar />
-      <PageTitle title="Hoá đơn mua hàng" />
+      <PageTitle title="Tạo hoá đơn mua hàng" />
 
       <div className="max-w-5xl mx-auto mt-6 bg-white border rounded shadow-sm">
 
@@ -292,7 +292,7 @@ export default function SalesAddPurchase() {
           <div>
             <label className="font-medium">Ngày lập</label>
             <input
-                value={selectedInvoice ? selectedInvoice.NgayLap : ""}
+                value={selectedInvoice ? new Date(selectedInvoice.NgayLap).toLocaleDateString() : ""}
                 disabled
                 className="w-full p-2 border bg-gray-100 rounded"
                 placeholder="Ngày lập"

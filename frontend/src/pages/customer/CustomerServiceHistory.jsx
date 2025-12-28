@@ -122,8 +122,8 @@ export default function CustomerServiceHistory() {
                   <table className="w-full table-auto text-left">
                     <thead>
                       <tr className="text-xs text-gray-600">
-                        <th className="px-3 py-2">Mã sử dụng dịch vụ</th>
-                        <th className="px-3 py-2">Ngày sử dụng dịch vụ</th>
+                        <th className="px-3 py-2">Mã SDDV</th>
+                        <th className="px-3 py-2">{type === "app" ? "Ngày hẹn" : "Ngày SDDV"}</th>
                         <th className="px-3 py-2">Loại dịch vụ</th>
                         <th className="px-3 py-2">Chi nhánh</th>
                         <th className="px-3 py-2">Thú cưng</th>
@@ -147,8 +147,9 @@ export default function CustomerServiceHistory() {
                           <td className="px-3 py-3 text-sm">{r.MaTC ? r.MaTC + " - " + r.TenTC : "-"}</td>
                           <td className="px-3 py-3 text-sm text-right">
                             <button
+                              disabled={type === "app"}
                               onClick={() => handleViewDetails(r.LoaiDV, r.MaSDDV)}
-                              className="inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100"
+                              className={`inline-flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 ${type === "app" ? "opacity-40 cursor-not-allowed" : ""}`}
                               title="Xem chi tiết và đánh giá"
                             >
                               <Eye size={16} />

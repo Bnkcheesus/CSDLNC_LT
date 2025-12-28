@@ -11,7 +11,11 @@ import {
     getServiceInvoiceDetail,
     getExaminationDetail,
     getVaccinationDetail,
-    getPurchaseDetail
+    getPurchaseDetail,
+    addCustomerPet,
+    addCustomer,
+    getTaskCountForStaff,
+    getAverageRatingForStaff
 } from '../models/StaffModel.js';
 
 export const getStaffProfileController = async (req, res) => {
@@ -240,6 +244,61 @@ export const getPurchaseDetailController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getPurchaseDetail controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addCustomerPetController = async (req, res) => {
+    try {
+        const petData = req.body;
+        if (!petData || Object.keys(petData).length === 0) {
+            return res.status(400).json({ message: 'Pet data is required' });
+        }
+        const result = await addCustomerPet(petData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addCustomerPet controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addCustomerController = async (req, res) => {
+    try {
+        const customerData = req.body;
+        if (!customerData || Object.keys(customerData).length === 0) {
+            return res.status(400).json({ message: 'Customer data is required' });
+        }
+        const result = await addCustomer(customerData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addCustomer controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getStaffHomeStatsController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKNV is required' });
+        }
+        const taskCount = await getTaskCountForStaff(maTK);
+        const averageRating = await getAverageRatingForStaff(maTK);
+        return res.status(200).json({
+            success: true,
+            data: {
+                taskCount: taskCount,
+                averageRating: averageRating
+            }
+        });
+    } catch (err) {
+        console.error('Error in getStaffHomeStats controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

@@ -374,7 +374,7 @@ export default function DocExamination() {
                     </div>
                     <div>
                         <label className="font-medium">Ngày khám</label>
-                        <input value={sddv.NgaySDDV} disabled className="w-full p-2 border bg-gray-100 rounded" />
+                        <input value={sddv.NgaySDDV ? new Date(sddv.NgaySDDV).toLocaleDateString() : "-"} disabled className="w-full p-2 border bg-gray-100 rounded" />
                     </div>
                     <div>
                         <label className="font-medium">Khách hàng</label>

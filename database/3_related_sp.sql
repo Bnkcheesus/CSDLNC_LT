@@ -410,7 +410,7 @@ END
 GO
 GO
 --5a: Kịch bản Tìm thú cưng có sử dụng dịch vụ tiêm phòng trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Tiem_Phong
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_TP
     @thang INT,
     @nam INT
 AS
@@ -423,8 +423,9 @@ BEGIN
     WHERE YEAR(NgayLap) = @nam AND MONTH(NgayLap) = @thang
 END
 GO
+
 --5b: Kịch bản Tìm thú cưng có sử dụng dịch vụ khám bệnh trong tháng năm
-CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_Kham_Benh
+CREATE OR ALTER PROCEDURE sp_Tim_Thu_Cung_KB
     @thang INT,
     @nam INT
 AS
@@ -438,9 +439,8 @@ BEGIN
 END
 GO
 
-
-
 -- 6 Kịch bản Tìm doanh thu theo chi nhánh/công ty theo tháng/năm
+--6a
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_thang
     @tencn NVARCHAR(50),
     @thang INT,
@@ -454,7 +454,7 @@ BEGIN
 END
 GO
 
-
+--6b
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CN_theo_nam
     @tencn NVARCHAR(50),
     @nam INT
@@ -467,7 +467,7 @@ BEGIN
 END
 GO
 
-
+--6c
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_thang
     @thang INT,
     @nam INT
@@ -479,7 +479,7 @@ BEGIN
 END
 GO
 
-
+--6d
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_nam
     @nam INT
 AS
@@ -497,6 +497,7 @@ BEGIN
 END
 GO
 
+--6e
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_CT_theo_tung_thang_trong_nam
 	@nam INT
 AS
@@ -516,6 +517,7 @@ BEGIN
 END
 GO
 
+--6f
 CREATE OR ALTER PROCEDURE sp_Tinh_Doanh_Thu_Tung_CN_theo_nam
 	@nam INT
 AS
@@ -670,7 +672,8 @@ AS
 BEGIN
 	UPDATE HOADON
     SET
-        MaTKNV = @maTKNV
+        MaTKNV = @maTKNV,
+		NgayLap = GETDATE()
     WHERE MaHD = @maHD;
 END
 GO
@@ -1023,5 +1026,92 @@ BEGIN
 
 	INSERT INTO MUAHANG (MaSDDV, MaNVBH)
     VALUES (@newMaSDDV, NULL);
+END
+GO
+
+--Thêm thú cưng
+CREATE OR ALTER PROCEDURE sp_ThemThuCungKH
+	@maTKKH CHAR(8),
+	@TenTC CHAR(8),
+	@Loai NVARCHAR(50),
+	@Giong NVARCHAR(50),
+	@NgaySinh DATE,
+	@GioiTinh NVARCHAR(3),
+	@newMaTC CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTC CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTC = MAX(MaTC)
+    FROM THUCUNG;
+
+    IF (@maxMaTC IS NULL)
+        SET @newMaTC = 'TC000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTC, 3, 6) AS INT) + 1;
+        SET @newMaTC = 'TC' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+	INSERT INTO THUCUNG (MaTC, TenTC, Loai, Giong, NgaySinh, GioiTinh, MATKKH)
+	VALUES (@newMaTC, @TenTC, @Loai, @Giong, @NgaySinh, @GioiTinh, @maTKKH);
+END
+GO
+
+--Thêm khách hàng mới
+CREATE OR ALTER PROCEDURE sp_ThemKhachHangMoi
+	@HoTen NVARCHAR(100),
+	@SDT CHAR(10),
+	@CCCD CHAR(12),
+	@newMaTKKH CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTK CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTK = MAX(MaTKKH)
+    FROM KHACHHANG;
+
+    IF (@maxMaTK IS NULL)
+        SET @newMaTKKH = 'KH000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTK, 3, 6) AS INT) + 1;
+        SET @newMaTKKH = 'KH' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+	INSERT INTO TAIKHOAN (MaTK, Password, LoaiTK) VALUES (@newMaTKKH, N'123456', 'KH');
+	INSERT INTO KHACHHANG (MaTKKH, HoTen, SDT, CCCD) VALUES (@newMaTKKH, @HoTen, @SDT, @CCCD);
+END
+GO
+
+--Thêm nhân viên mới
+CREATE OR ALTER PROCEDURE sp_ThemNhanVienMoi
+	@HoTen NVARCHAR(100),
+	@NgayVaoLam DATE,
+	@ChucVu VARCHAR(4),
+	@LuongCoBan DECIMAL(19,2),
+	@MaCN CHAR(5),
+	@newMaTKNV CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTK CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTK = MAX(MaTKNV)
+    FROM NHANVIEN;
+
+    IF (@maxMaTK IS NULL)
+        SET @newMaTKNV = 'NV000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTK, 3, 6) AS INT) + 1;
+        SET @newMaTKNV = 'NV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+	INSERT INTO TAIKHOAN (MaTK, Password, LoaiTK) VALUES (@newMaTKNV, N'123456', 'NV');
+	INSERT INTO NHANVIEN (MaTKNV, HoTen, NgayVaoLam, ChucVu, LuongCoBan) VALUES (@newMaTKNV, @HoTen, @NgayVaoLam, @ChucVu, @LuongCoBan);
+
+	INSERT INTO LICHSULAMVIEC (MaTKNV, MaCN, NgayBatDau, NgayKetThuc)
+	VALUES (@newMaTKNV, @MaCN, @NgayVaoLam, NULL);
 END
 GO

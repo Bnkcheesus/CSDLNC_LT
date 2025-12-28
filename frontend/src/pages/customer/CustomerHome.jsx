@@ -56,12 +56,19 @@ export default function CustomerHome() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const [cards, setCards] = useState([]);
+
   useEffect(() => {
     if (!token) return;
     const fetchHomeData = async () => {
       setLoading(true);
       setError("");
       try {
+        const resStats = await axios.get(`http://localhost:5000/api/customer/home-stats`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
         const resBranches = await axios.get(`http://localhost:5000/api/user/branches`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -72,10 +79,15 @@ export default function CustomerHome() {
             Authorization: `Bearer ${token}`,
           }
         });
-        if (!resBranches.data.success || !resPackages.data.success) {
+        if (!resStats.data.success || !resBranches.data.success || !resPackages.data.success) {
           setError("Failed to fetch data");
           return;
         }
+        setCards([
+            { label: "Tổng số thú cưng", value: resStats.data.data.petCount || 0 },
+            { label: "Tổng số hóa đơn", value: resStats.data.data.invoiceCount || 0 },
+            { label: `Tổng chi tiêu năm (${new Date().getFullYear()})`, value: resStats.data.data.totalPayment || 0 },
+        ]);
         setBranches(resBranches.data.data || []);
         setPackages(resPackages.data.data || []);
       } catch (err) {
@@ -93,7 +105,6 @@ export default function CustomerHome() {
         navigate(`/customer/packages/${maGoi}`);
     }
 
-
   return (
     <div className="min-h-screen bg-white text-sm"> {/* text-sm applies smaller font app-wide for this page */}
       <Header />
@@ -108,6 +119,19 @@ export default function CustomerHome() {
             <div className="text-center text-red-600 py-6">{error}</div>
         ) : (
             <>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {cards.map((c) => (
+                        <div
+                            key={c.label}
+                            className="bg-white border rounded shadow-sm p-4"
+                        >
+                            <p className="text-gray-500 text-xs">{c.label}</p>
+                            <p className="text-lg font-semibold">
+                                {c.label === "Tổng số thú cưng" ? c.value : c.label === "Tổng số hóa đơn" ? c.value : c.value.toLocaleString() + " đ"}
+                            </p>
+                        </div>
+                    ))}
+                </div>
                 {/* ===== CHI NHÁNH ===== */}
                 <div className="p-6">
                     <h3 className="text-base font-semibold mb-4">
