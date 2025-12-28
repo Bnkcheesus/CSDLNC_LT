@@ -690,3 +690,42 @@ export const addOrderDetail = async (maSDDV, orderItemData) => {
         throw err;
     }
 };
+
+export const countCustomerPets = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT COUNT(*) AS PetCount FROM THUCUNG WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].PetCount || 0;
+    } catch (err) {
+        console.error('Error counting customer pets:', err);
+        throw err;
+    }
+};
+
+export const countCustomerInvoices = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT COUNT(*) AS InvoiceCount FROM HOADON WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].InvoiceCount || 0;
+    } catch (err) {
+        console.error('Error counting customer invoices:', err);
+        throw err;
+    }
+};
+
+export const getCustomerTotalPayment = async (maTKKH) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', maTKKH)
+            .query('SELECT TongChiTieuNam FROM KHACHHANG WHERE MaTKKH = @maTKKH');
+        return result.recordset[0].TongChiTieuNam || 0;
+    } catch (err) {
+        console.error('Error getting customer total payment:', err);
+        throw err;
+    }
+};

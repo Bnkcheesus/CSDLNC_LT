@@ -18,7 +18,10 @@ import {
     addAppointmentService,
     getProducts,
     addOrder,
-    addOrderDetail
+    addOrderDetail,
+    countCustomerPets,
+    countCustomerInvoices,
+    getCustomerTotalPayment
 } from "../models/CustomerModel.js";
 
 export const getCustomerDetails = async (req, res) => {
@@ -398,6 +401,33 @@ export const addOrderDetailController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in addOrderDetailController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getCustomerHomeStatsController = async (req, res) => {
+    try {
+        const maTK = req.user.maTK;
+        if (!maTK) {
+            return res.status(400).json({ message: 'MaTKKH is required' });
+        }
+        const petCount = await countCustomerPets(maTK);
+        const invoiceCount = await countCustomerInvoices(maTK);
+        const totalPayment = await getCustomerTotalPayment(maTK);
+
+        if (petCount === null || invoiceCount === null || totalPayment === null) {
+            return res.status(500).json({ message: 'Failed to fetch customer stats' });
+        }
+        return res.status(200).json({
+            success: true,
+            data: {
+                petCount: petCount,
+                invoiceCount: invoiceCount || 0,
+                totalPayment: totalPayment || 0
+            }
+        });
+    } catch (err) {
+        console.error('Error in getCustomerHomeStatsController:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

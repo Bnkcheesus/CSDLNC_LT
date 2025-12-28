@@ -18,7 +18,8 @@ import {
     addAppointmentServiceController,
     getProductsController,
     addOrderController,
-    addOrderDetailController
+    addOrderDetailController,
+    getCustomerHomeStatsController
 } from '../controllers/customerController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -47,5 +48,7 @@ router.post('/appointment/service', authMiddleware, addAppointmentServiceControl
 router.get('/products', authMiddleware, getProductsController);
 router.post('/order', authMiddleware, addOrderController);
 router.post('/order/:maSDDV', authMiddleware, addOrderDetailController);
+
+router.get('/home-stats', authMiddleware, getCustomerHomeStatsController);
 
 export default router;
