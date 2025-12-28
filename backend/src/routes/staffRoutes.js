@@ -12,7 +12,8 @@ import {
     getExaminationDetailController,
     getVaccinationDetailController,
     getPurchaseDetailController,
-    addCustomerPetController
+    addCustomerPetController,
+    addCustomerController
 } from '../controllers/staffController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -32,5 +33,6 @@ router.get('/tiemphong/:maSDDV', authMiddleware, getVaccinationDetailController)
 router.get('/muahang/:maSDDV', authMiddleware, getPurchaseDetailController);
 
 router.post('/pets', authMiddleware, addCustomerPetController);
+router.post('/customers', authMiddleware, addCustomerController);
 
 export default router;

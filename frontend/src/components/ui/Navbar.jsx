@@ -9,6 +9,7 @@ const MENU_CONFIG = [
     { label: "Mua hàng", to: "/customer/order", roles: ["customer"], relatedPaths: ["/customer/order"] },
     { label: "Thông tin cá nhân", to: "/customer/profile", roles: ["customer"] },
     { label: "Hoá đơn dịch vụ", to: "/staff/invoices", roles: ["receptionist"], relatedPaths: ["/staff/invoices/"] },
+    { label: "Khách hàng", to: "/staff/customers", roles: ["receptionist"], relatedPaths: ["/staff/customers/"] },
     { label: "Thú cưng", to: "/staff/pets", roles: ["receptionist"], relatedPaths: ["/staff/pets/"] },
     { label: "Bán hàng", to: "/staff/sales/new", roles: ["sales"] },
     { label: "Khám bệnh & tiêm phòng", to: "/staff/doctor/history", roles: ["doctor"], relatedPaths: ["/staff/doctor/khambenh/", "/staff/doctor/tiemphong/"] },

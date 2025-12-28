@@ -12,7 +12,8 @@ import {
     getExaminationDetail,
     getVaccinationDetail,
     getPurchaseDetail,
-    addCustomerPet
+    addCustomerPet,
+    addCustomer
 } from '../models/StaffModel.js';
 
 export const getStaffProfileController = async (req, res) => {
@@ -258,6 +259,23 @@ export const addCustomerPetController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in addCustomerPet controller:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addCustomerController = async (req, res) => {
+    try {
+        const customerData = req.body;
+        if (!customerData || Object.keys(customerData).length === 0) {
+            return res.status(400).json({ message: 'Customer data is required' });
+        }
+        const result = await addCustomer(customerData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addCustomer controller:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };

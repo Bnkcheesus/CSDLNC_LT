@@ -1058,3 +1058,29 @@ BEGIN
 	VALUES (@newMaTC, @TenTC, @Loai, @Giong, @NgaySinh, @GioiTinh, @maTKKH);
 END
 GO
+
+--Thêm khách hàng mới
+CREATE OR ALTER PROCEDURE sp_ThemKhachHangMoi
+	@HoTen NVARCHAR(100),
+	@SDT CHAR(10),
+	@CCCD CHAR(12),
+	@newMaTKKH CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTK CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTK = MAX(MaTKKH)
+    FROM KHACHHANG;
+
+    IF (@maxMaTK IS NULL)
+        SET @newMaTKKH = 'KH000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTK, 3, 6) AS INT) + 1;
+        SET @newMaTKKH = 'KH' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+	INSERT INTO TAIKHOAN (MaTK, Password, LoaiTK) VALUES (@newMaTKKH, N'123456', 'KH');
+	INSERT INTO KHACHHANG (MaTKKH, HoTen, SDT, CCCD) VALUES (@newMaTKKH, @HoTen, @SDT, @CCCD);
+END
+GO

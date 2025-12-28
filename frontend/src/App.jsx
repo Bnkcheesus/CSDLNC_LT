@@ -19,6 +19,7 @@ import StaffProfile from './pages/staff/StaffProfile.jsx';
 import StaffInvoiceHistory from './pages/staff/StaffInvoiceHistory.jsx';
 import StaffServiceInvoiceDetail from './pages/staff/StaffServiceInvoiceDetail.jsx';
 import StaffAddServiceInvoice from './pages/staff/StaffAddServiceInvoice.jsx';
+import StaffAddCustomer from './pages/staff/StaffAddCustomer.jsx';
 import StaffAddCustomerPet from './pages/staff/StaffAddCustomerPet.jsx';
 import DocServiceHistory from './pages/staff/DocServiceHistory.jsx';
 import DocExamination from './pages/staff/DocExamination.jsx';
@@ -113,6 +114,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["sales"]}>
               <SalesAddPurchase />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route 
+          path="/staff/customers"
+          element={
+            <ProtectedRoute allowedRoles={["receptionist"]}>
+              <StaffAddCustomer />
             </ProtectedRoute>
           }
         />

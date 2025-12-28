@@ -275,3 +275,21 @@ export const addCustomerPet = async (petData) => {
         throw err;
     }
 };
+
+export const addCustomer = async (customerData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('HoTen', customerData.HoTen)
+            .input('SDT', customerData.SDT)
+            .input('CCCD', customerData.CCCD)
+            .output('newMaTKKH')
+            .query('EXEC sp_ThemKhachHangMoi @HoTen, @SDT, @CCCD, @newMaTKKH OUTPUT');
+        return {
+            MaTKKH: result.output.newMaTKKH
+        };
+    } catch (err) {
+        console.error('Error adding customer:', err);
+        throw err;
+    }
+};

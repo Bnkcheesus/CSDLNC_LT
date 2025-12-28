@@ -100,7 +100,7 @@ export default function StaffAddCustomerPet() {
     <div className="min-h-screen bg-white text-sm">
       <Header />
       <Navbar />
-      <PageTitle title="Thêm hoá đơn dịch vụ" />
+      <PageTitle title="Thêm thú cưng khách hàng" />
 
       <div className="max-w-5xl mx-auto mt-6 bg-white border rounded shadow-sm">
 
