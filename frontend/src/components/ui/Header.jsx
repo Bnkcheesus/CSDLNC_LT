@@ -82,6 +82,17 @@ export default function Header() {
             navigate("/login");
             return;
         }
+
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+        if (cart.length > 0) {
+            const ok = window.confirm(
+                "Khi đăng xuất, sản phẩm trong giỏ hàng sẽ bị xoá. Bạn có muốn đăng xuất không?"
+            );
+
+            if (!ok) return;
+        }
+            
         localStorage.clear();
         setHoTen("");
         setRole("");
