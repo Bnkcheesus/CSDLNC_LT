@@ -4,7 +4,7 @@ import Navbar from "../../components/ui/Navbar";
 import PageTitle from "../../components/ui/PageTitle.jsx";
 import axios from "axios";
 
-export default function StaffAddCustomerPet() {
+export default function StaffAddCustomer() {
     const token = localStorage.getItem("token");
 
     const [customer, setCustomer] = useState({

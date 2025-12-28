@@ -1084,3 +1084,34 @@ BEGIN
 	INSERT INTO KHACHHANG (MaTKKH, HoTen, SDT, CCCD) VALUES (@newMaTKKH, @HoTen, @SDT, @CCCD);
 END
 GO
+
+--Thêm nhân viên mới
+CREATE OR ALTER PROCEDURE sp_ThemNhanVienMoi
+	@HoTen NVARCHAR(100),
+	@NgayVaoLam DATE,
+	@ChucVu VARCHAR(4),
+	@LuongCoBan DECIMAL(19,2),
+	@MaCN CHAR(5),
+	@newMaTKNV CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTK CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTK = MAX(MaTKNV)
+    FROM NHANVIEN;
+
+    IF (@maxMaTK IS NULL)
+        SET @newMaTKNV = 'NV000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTK, 3, 6) AS INT) + 1;
+        SET @newMaTKNV = 'NV' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+	INSERT INTO TAIKHOAN (MaTK, Password, LoaiTK) VALUES (@newMaTKNV, N'123456', 'NV');
+	INSERT INTO NHANVIEN (MaTKNV, HoTen, NgayVaoLam, ChucVu, LuongCoBan) VALUES (@newMaTKNV, @HoTen, @NgayVaoLam, @ChucVu, @LuongCoBan);
+
+	INSERT INTO LICHSULAMVIEC (MaTKNV, MaCN, NgayBatDau, NgayKetThuc)
+	VALUES (@newMaTKNV, @MaCN, @NgayVaoLam, NULL);
+END
+GO

@@ -28,6 +28,7 @@ import SalesAddPurchase from './pages/staff/SalesAddPurchase.jsx';
 import ManagerRevenue from './pages/manager/ManagerRevenue.jsx';
 import ManagerProducts from './pages/manager/ManagerProducts.jsx';
 import ManagerStaffs from './pages/manager/ManagerStaffs.jsx';
+import ManagerAddStaff from './pages/manager/ManagerAddStaff.jsx';
 
 export default function App() {
   return (
@@ -275,6 +276,15 @@ export default function App() {
           element={
             <ProtectedRoute allowedRoles={["manager"]}>
               <ManagerStaffs />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/staffs/new"
+          element={
+            <ProtectedRoute allowedRoles={["manager"]}>
+              <ManagerAddStaff />
             </ProtectedRoute>
           }
         />

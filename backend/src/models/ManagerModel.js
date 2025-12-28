@@ -1,4 +1,3 @@
-import e from 'express';
 import { getPool } from '../config/db.js';
 
 export const getRevenue = async (year) => {
@@ -195,6 +194,24 @@ export const getStaffRecordOfBranch = async (type, page, limit, order, maCN) => 
         };
     } catch (err) {
         console.error('Error in getStaffRecordOfBranch:', err);
+        throw err;
+    }
+};
+
+export const addStaff = async (staffData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('HoTen', staffData.HoTen)
+            .input('NgayVaoLam', staffData.NgayVaoLam)
+            .input('ChucVu', staffData.ChucVu)
+            .input('LuongCoBan', staffData.LuongCoBan)
+            .input('MaCN', staffData.MaCN)
+            .output('newMaTKNV')
+            .query(`EXEC sp_ThemNhanVienMoi @HoTen, @NgayVaoLam, @ChucVu, @LuongCoBan, @MaCN, @newMaTKNV OUTPUT;`);
+        return { MaTKNV: result.output.newMaTKNV };
+    } catch (err) {
+        console.error('Error in addStaff:', err);
         throw err;
     }
 };

@@ -5,7 +5,8 @@ import {
     getYears,
     getSystemProductsRecord,
     getProductsRecordOfBranch,
-    getStaffRecordOfBranch
+    getStaffRecordOfBranch,
+    addStaff
 } from "../models/ManagerModel.js";
 
 export const getSystemRevenueController = async (req, res) => {
@@ -127,6 +128,23 @@ export const getStaffRecordOfBranchController = async (req, res) => {
         });
     } catch (err) {
         console.error('Error in getStaffRecordOfBranchController:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const addStaffController = async (req, res) => {
+    try {
+        const staffData = req.body;
+        if (!staffData || Object.keys(staffData).length === 0) {
+            return res.status(400).json({ message: 'Staff data is required' });
+        }
+        const result = await addStaff(staffData);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    } catch (err) {
+        console.error('Error in addStaffController:', err);
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
