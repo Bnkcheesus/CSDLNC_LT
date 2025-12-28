@@ -1028,3 +1028,33 @@ BEGIN
     VALUES (@newMaSDDV, NULL);
 END
 GO
+
+--Thêm thú cưng
+CREATE OR ALTER PROCEDURE sp_ThemThuCungKH
+	@maTKKH CHAR(8),
+	@TenTC CHAR(8),
+	@Loai NVARCHAR(50),
+	@Giong NVARCHAR(50),
+	@NgaySinh DATE,
+	@GioiTinh NVARCHAR(3),
+	@newMaTC CHAR(8) = NULL OUTPUT
+AS
+BEGIN
+	DECLARE @maxMaTC CHAR(8);
+    DECLARE @num INT;
+
+    SELECT @maxMaTC = MAX(MaTC)
+    FROM THUCUNG;
+
+    IF (@maxMaTC IS NULL)
+        SET @newMaTC = 'TC000001';
+    ELSE
+    BEGIN
+        SET @num = CAST(SUBSTRING(@maxMaTC, 3, 6) AS INT) + 1;
+        SET @newMaTC = 'TC' + RIGHT('000000' + CAST(@num AS VARCHAR(6)), 6);
+    END
+
+	INSERT INTO THUCUNG (MaTC, TenTC, Loai, Giong, NgaySinh, GioiTinh, MATKKH)
+	VALUES (@newMaTC, @TenTC, @Loai, @Giong, @NgaySinh, @GioiTinh, @maTKKH);
+END
+GO

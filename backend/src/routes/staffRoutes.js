@@ -11,7 +11,8 @@ import {
     getServiceInvoiceDetailController,
     getExaminationDetailController,
     getVaccinationDetailController,
-    getPurchaseDetailController
+    getPurchaseDetailController,
+    addCustomerPetController
 } from '../controllers/staffController.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 
@@ -29,5 +30,7 @@ router.get('/invoices/:maHD/details', authMiddleware, getServiceInvoiceDetailCon
 router.get('/khambenh/:maSDDV', authMiddleware, getExaminationDetailController);
 router.get('/tiemphong/:maSDDV', authMiddleware, getVaccinationDetailController);
 router.get('/muahang/:maSDDV', authMiddleware, getPurchaseDetailController);
+
+router.post('/pets', authMiddleware, addCustomerPetController);
 
 export default router;

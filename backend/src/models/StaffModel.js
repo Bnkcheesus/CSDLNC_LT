@@ -254,3 +254,24 @@ export const getPurchaseDetail = async (maSDDV) => {
         throw err;
     }
 };
+
+export const addCustomerPet = async (petData) => {
+    try {
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('maTKKH', petData.MaTKKH)
+            .input('TenTC', petData.TenTC)
+            .input('Loai', petData.Loai)
+            .input('Giong', petData.Giong)
+            .input('NgaySinh', petData.NgaySinh)
+            .input('GioiTinh', petData.GioiTinh)
+            .output('newMaTC')
+            .query('EXEC sp_ThemThuCungKH @maTKKH, @TenTC, @Loai, @Giong, @NgaySinh, @GioiTinh, @newMaTC OUTPUT');
+        return {
+            MaTC: result.output.newMaTC
+        };
+    } catch (err) {
+        console.error('Error adding customer pet:', err);
+        throw err;
+    }
+};
